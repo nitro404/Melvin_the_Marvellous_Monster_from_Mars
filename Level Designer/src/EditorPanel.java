@@ -31,10 +31,10 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	final public static int MODE_TILING = 0;
 	final public static int MODE_DRAWING = 1;
 	
-	public static Point gridTopIsometric;
-	public static Point gridRightIsometric;
-	public static Point gridBottomIsometric;
-	public static Point gridLeftIsometric;
+	private Point topLeft;
+	private Point topRight;
+	private Point bottomRight;
+	private Point bottomLeft;
 	
 	public EditorPanel() {
 		world = null;
@@ -87,7 +87,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 			return world.dimensions;
 		}
 		else {
-			return new Dimension(16 * World.ISOMETRIC_GRID_WIDTH, 16 * World.ISOMETRIC_GRID_HEIGHT);
+			return new Dimension(16 * World.GRID_SIZE, 16 * World.GRID_SIZE);
 		}
 	}
 	
@@ -120,10 +120,10 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
 		if(orientation == SwingConstants.HORIZONTAL) {
-			return visibleRect.width - World.ISOMETRIC_GRID_WIDTH;
+			return visibleRect.width - World.GRID_SIZE;
 		}
 		else {
-			return visibleRect.height - World.ISOMETRIC_GRID_HEIGHT;
+			return visibleRect.height - World.GRID_SIZE;
 		}
 	}
 	
@@ -143,7 +143,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	public void mouseReleased(MouseEvent e) {
 		if(mode == MODE_DRAWING) {
 			if(e.getButton() == MouseEvent.BUTTON3) {
-				selectedPoint = new Vertex(World.getCartesianPoint(e.getPoint()));
+				selectedPoint = new Vertex(e.getPoint());
 				selectVertex();
 				popupMenuDeleteVertex.setEnabled(selectedVertex != null);
 				popupMenu.show(this, e.getX(), e.getY());
@@ -153,7 +153,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				if(selectedVertex != null) {
 					previousVertex = selectedVertex; 
 				}
-				selectedPoint = new Vertex(World.getCartesianPoint(e.getPoint()));
+				selectedPoint = new Vertex(e.getPoint());
 				selectVertex();
 				
 				if(previousVertex != null && selectedVertex != null && !previousVertex.equals(selectedVertex)) {
@@ -167,18 +167,8 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		}
 		else if(mode == MODE_TILING) {
 			if(activeTile == SHEEP) {
-				world.sheep.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0));
+				world.objects.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0));
 			}
-			else if(activeTile == LANDMINE) {
-				world.sheep.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0));
-			}
-			else if(activeTile == ROCK) {
-				world.rocks.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0));				
-			}
-			else if(activeTile == FENCE) {
-				world.fences.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0));				
-			}
-			
 		}
 		this.update();
 	}
@@ -219,11 +209,10 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	}
 	
 	public void getSelectedGridBlock(Point p) {
-		Point origin = World.getCartesianPoint(gridTopIsometric);
-		Point current = World.getCartesianPoint(p);
-		Point offset = new Point(current.x - origin.x, current.y - origin.y);
-		Point location = new Point(offset.x / World.CARTESIAN_GRID_INCREMENT,
-				 				   offset.y / World.CARTESIAN_GRID_INCREMENT);
+		Point current = p;
+		Point offset = new Point(current.x, current.y);
+		Point location = new Point(offset.x / World.GRID_SIZE,
+				 				   offset.y / World.GRID_SIZE);
 		if(location.x < 0 || location.y < 0 || location.x >= world.gridSize.x || location.y >= world.gridSize.y) {
 			selectedGridBlock = null;
 		}
@@ -231,11 +220,13 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	}
 	
 	public void drawTile(BufferedImage tileToDraw, int x, int y, Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
-		Point topLeft = World.getIsometricPoint(new Point( x * World.CARTESIAN_GRID_INCREMENT, y * World.CARTESIAN_GRID_INCREMENT));
-		int xPos = ((world.dimensions.width / 2) + topLeft.x - World.CARTESIAN_GRID_INCREMENT + 4);
-		int yPos = topLeft.y - 3;
-		g2.drawImage(tileToDraw, null, xPos, yPos);
+		if(mode == MODE_TILING) {
+			Graphics2D g2 = (Graphics2D) g;
+			Point topLeft = new Point( x * World.GRID_SIZE, y * World.GRID_SIZE);
+			int xPos = topLeft.x - World.GRID_SIZE;
+			int yPos = topLeft.y;
+			g2.drawImage(tileToDraw, null, xPos, yPos);
+		}
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -246,61 +237,45 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 			world.paintOn(g);
 		}
 		
-		drawIsometricGrid(g);
+		drawGrid(g);
 		
 		if(selectedGridBlock != null && activeTile != null) {
 			drawTile(activeTile, selectedGridBlock.x, selectedGridBlock.y, g);
 		}
 	}
 	
-	public void drawIsometricGrid(Graphics g) {
+	public void drawGrid(Graphics g) {
 		if(world != null) {
 			g.setColor(new Color(64, 64, 64));
-			Point topLeft, topRight, bottomRight, bottomLeft;
 			
-			int w = World.CARTESIAN_GRID_INCREMENT;
-			int offset = world.dimensions.width / 2;
+			int w = World.GRID_SIZE;
 			for(int i=0;i<world.gridSize.x;i++) {
 				for(int j=0;j<world.gridSize.y;j++) {
-					topLeft =     World.getIsometricPoint(new Point( i*w,     j*w));
-					topRight =    World.getIsometricPoint(new Point((i*w)+w,  j*w));
-					bottomRight = World.getIsometricPoint(new Point((i*w)+w, (j*w)+w));
-					bottomLeft =  World.getIsometricPoint(new Point( i*w,    (j*w)+w));
+					topLeft =     new Point( i*w,     j*w);
+					topRight =    new Point((i*w)+w,  j*w);
+					bottomRight = new Point((i*w)+w, (j*w)+w);
+					bottomLeft =  new Point( i*w,    (j*w)+w);
 					
-					if(selectedGridBlock != null && i == selectedGridBlock.x && j == selectedGridBlock.y) {
+					if(mode == MODE_TILING && selectedGridBlock != null && i == selectedGridBlock.x && j == selectedGridBlock.y) {
 						Graphics2D g2 = (Graphics2D) g;
 						Stroke s = g2.getStroke();
 						g2.setStroke(new BasicStroke(2));
 						g2.setColor(new Color(255, 0, 0));
 						
-						g2.drawLine(offset + topLeft.x,     topLeft.y,     offset + topRight.x,    topRight.y);
-						g2.drawLine(offset + topRight.x,    topRight.y,    offset + bottomRight.x, bottomRight.y);
-						g2.drawLine(offset + bottomRight.x, bottomRight.y, offset + bottomLeft.x,  bottomLeft.y);
-						g2.drawLine(offset + bottomLeft.x,  bottomLeft.y,  offset + topLeft.x,     topLeft.y);
+						g2.drawLine(topLeft.x,     topLeft.y,     topRight.x,    topRight.y);
+						g2.drawLine(topRight.x,    topRight.y,    bottomRight.x, bottomRight.y);
+						g2.drawLine(bottomRight.x, bottomRight.y, bottomLeft.x,  bottomLeft.y);
+						g2.drawLine(bottomLeft.x,  bottomLeft.y,  topLeft.x,     topLeft.y);
 						
 						g2.setStroke(s);
 					}
 					else {
 						g.setColor(new Color(64, 64, 64));
 						
-						g.drawLine(offset + topLeft.x,     topLeft.y,     offset + topRight.x,    topRight.y);
-						g.drawLine(offset + topRight.x,    topRight.y,    offset + bottomRight.x, bottomRight.y);
-						g.drawLine(offset + bottomRight.x, bottomRight.y, offset + bottomLeft.x,  bottomLeft.y);
-						g.drawLine(offset + bottomLeft.x,  bottomLeft.y,  offset + topLeft.x,     topLeft.y);
-					}
-					
-					if(i == 0 && j == 0) {
-						gridTopIsometric = new Point(offset + topLeft.x, topLeft.y);
-					}
-					else if(i == 0 && j == world.gridSize.y - 1) {
-						gridLeftIsometric = new Point(offset + bottomLeft.x, bottomLeft.y);
-					}
-					else if(i == world.gridSize.x - 1 && j == 0) {
-						gridRightIsometric = new Point(offset + topRight.x, topRight.y);
-					}
-					else if(i == world.gridSize.x - 1 && j == world.gridSize.y - 1) {
-						gridBottomIsometric = new Point(offset + bottomRight.x, bottomRight.y);
-						
+						g.drawLine(topLeft.x,     topLeft.y,     topRight.x,    topRight.y);
+						g.drawLine(topRight.x,    topRight.y,    bottomRight.x, bottomRight.y);
+						g.drawLine(bottomRight.x, bottomRight.y, bottomLeft.x,  bottomLeft.y);
+						g.drawLine(bottomLeft.x,  bottomLeft.y,  topLeft.x,     topLeft.y);
 					}
 				}
 			}

@@ -44,7 +44,7 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 	}
 	
 	public void drawSprites(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
+		/*Graphics2D g2 = (Graphics2D) g;
 		int yPos = 20;
 		int xPos = 30;
 		int inc = 40;
@@ -60,7 +60,7 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 			if(i==2) { yPos += 35; }
 			else if(i==3) { yPos += 75; }
 			paletteSelections.elementAt(i).setLocation(xPos + 5, yPos += inc);
-		}
+		}*/
 	}
 	
 	public Dimension getPreferredSize() {

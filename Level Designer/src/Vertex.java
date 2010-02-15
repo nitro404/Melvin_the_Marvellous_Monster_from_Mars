@@ -51,11 +51,9 @@ public class Vertex {
 	
 	public void paintOn(Graphics g) {
 		int radius = 2;
-		if(EditorPanel.gridTopIsometric != null) {
-			g.fillOval(World.getIsometricX(x, y) - radius, 
-					   World.getIsometricY(x, y) - radius,
-					   radius * 2, radius * 2);
-		}
+		g.fillOval(x - radius, 
+				   y - radius,
+				   radius * 2, radius * 2);
 	}
 	
 	public boolean equals(Object o) {

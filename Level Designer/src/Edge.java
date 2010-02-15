@@ -52,10 +52,7 @@ public class Edge {
 	}
 	
 	public void paintOn(Graphics g) {
-		g.drawLine(World.getIsometricX(a.x, a.y),
-				   World.getIsometricY(a.x, a.y),
-				   World.getIsometricX(b.x, b.y),
-				   World.getIsometricY(b.x, b.y));
+		g.drawLine(a.x, a.y, b.x, b.y);
 	}
 	
 	public boolean equals(Object o) {

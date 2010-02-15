@@ -8,11 +8,13 @@ public class EditorWindow extends JFrame implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	
-	final public static String MAP_DIRECTORY = "\\Maps";
-//	final public static String SPRITE_DIRECTORY = "..\\LambMines\\Content\\Textures";
-	final public static String SPRITE_DIRECTORY = "Sprites";
+	final public static String MAP_DIRECTORY = "..\\Maps";
+	final public static String SPRITE_DIRECTORY = "..\\Sprites";
 	
 	public World world;
+	
+	final public static int DEFAULT_WIDTH = 15;
+	final public static int DEFAULT_HEIGHT = 10;
 	
 	private JMenuBar menu;
 	private JMenu menuFile;
@@ -37,12 +39,12 @@ public class EditorWindow extends JFrame implements ActionListener {
 	private JFileChooser fileChooser; 
 	
 	public EditorWindow() {
-		super("2D World Editor");
+		super("2D Cartesian Level Editor");
 		setSize(1024, 768);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir") + MAP_DIRECTORY));
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir") + "\\" + MAP_DIRECTORY).getAbsoluteFile());
 		
 		createMenu();
 		
@@ -136,7 +138,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 			EditorPanel.mode = EditorPanel.MODE_DRAWING;
 		}
 		else if(e.getSource() == menuHelpAbout) {
-			JOptionPane.showMessageDialog(this, "Lamb Mines 2D Level Designer created by Kevin Scroggins.", "2D Level Designer", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "2D Level Designer created by Kevin Scroggins.", "2D Level Designer", JOptionPane.INFORMATION_MESSAGE);
 		}
 		
 		update();
@@ -145,40 +147,42 @@ public class EditorWindow extends JFrame implements ActionListener {
 	public void createNewMap() {
 		this.world = new World();
 		editorPanel.setWorld(world);
-		setMapDimensions(16, 16);
+		setMapDimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 	
 	public void setMapDimensions(World world) {
-		String data = JOptionPane.showInputDialog(this, "Please enter new map dimensions (ie. 16x16).", "Map Dimensions", JOptionPane.QUESTION_MESSAGE);
-		StringTokenizer st = new StringTokenizer(data.trim(), ",x");
-		int newWidth = 0, newHeight = 0;
-		boolean valid = true;
-		if(st.countTokens() != 2) { valid = false; }
-		if(valid) {
-			try {
-				newWidth = Integer.parseInt(st.nextToken().trim());
-				newHeight = Integer.parseInt(st.nextToken().trim());
+		String data = JOptionPane.showInputDialog(this, "Please enter new map dimensions (ie. 8x8).", "Map Dimensions", JOptionPane.QUESTION_MESSAGE);
+		if(data != null) {
+			StringTokenizer st = new StringTokenizer(data.trim(), ",x");
+			int newWidth = 0, newHeight = 0;
+			boolean valid = true;
+			if(st.countTokens() != 2) { valid = false; }
+			if(valid) {
+				try {
+					newWidth = Integer.parseInt(st.nextToken().trim());
+					newHeight = Integer.parseInt(st.nextToken().trim());
+				}
+				catch(NumberFormatException e) {
+					valid = false;
+				}
+				if(newWidth <= 0 || newHeight <= 0) {
+					valid = false;
+				}
 			}
-			catch(NumberFormatException e) {
-				valid = false;
+			
+			if(valid) {
+				setMapDimensions(newWidth, newHeight);
 			}
-			if(newWidth <= 0 || newHeight <= 0) {
-				valid = false;
+			else {
+				JOptionPane.showMessageDialog(this, "Invalid map dimension entered, please the form \"AxB\" or \"A, B\".", "Invalid Dimension", JOptionPane.ERROR_MESSAGE);
 			}
-		}
-		
-		if(valid) {
-			setMapDimensions(newWidth, newHeight);
-		}
-		else {
-			JOptionPane.showMessageDialog(this, "Invalid map dimension entered, please the form \"AxB\" or \"A, B\".", "Invalid Dimension", JOptionPane.ERROR_MESSAGE);
 		}
 		update();
 	}
 	
 	public void setMapDimensions(int newWidth, int newHeight) {
 		world.gridSize = new Vertex(newWidth, newHeight);
-		world.dimensions = new Dimension(newWidth * (World.CARTESIAN_GRID_INCREMENT * 2), newHeight * World.CARTESIAN_GRID_INCREMENT);
+		world.dimensions = new Dimension((newWidth * World.GRID_SIZE) + 1, (newHeight * World.GRID_SIZE) + 1);
 	}
 	
 	public void update() {
