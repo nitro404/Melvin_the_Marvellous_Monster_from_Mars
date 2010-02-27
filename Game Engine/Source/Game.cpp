@@ -2,8 +2,7 @@
 
 Game::Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow) {
 	if(!verifySettings(settings)) {
-		MessageBoxA(NULL, "Settings file is invalid.", "Error", MB_OK);
-		PostQuitMessage(0);
+		quit("Error", "Settings file is invalid.");
 	}
 
 	this->windowPosX = atoi(settings->getValue("Window Position Horizontal"));
@@ -21,11 +20,10 @@ Game::Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR w
 	this->d3dDevice = NULL;
 	
 	if(!init(hInstance, WndProc, winClassName, title, nCmdShow)) {
-		MessageBoxA(NULL, "Error initializing game.", "Error", MB_OK);
-		PostQuitMessage(0);
+		quit("Error", "Error initializing game.");
 	}
 
-	player = new Player(windowWidth/3,windowHeight-100, windowWidth, windowHeight, d3dDevice);
+	player = new Player(windowWidth/3,windowHeight-100, windowWidth, windowHeight, settings, d3dDevice);
 }
 
 Game::~Game() {
@@ -113,7 +111,8 @@ bool loadMap(char * fileName) {
 }
 
 bool Game::verifySettings(Variables * settings) {
-	return	settings->hasValue("Window Width") &&
+	return	settings->hasValue("Sprite Directory") &&
+			settings->hasValue("Window Width") &&
 			settings->hasValue("Window Height");
 }
 

@@ -2,6 +2,7 @@
 
 #include "Includes.h"
 #include "DirectX.h"
+#include "Variables.h"
 #include "Point.h"
 
 struct PlayerVertex {
@@ -15,7 +16,7 @@ struct PlayerVertex {
 
 class Player {
 public:
-	Player(int x, int y, int xBoundary, int yBoundary, LPDIRECT3DDEVICE9 d3dDevice);
+	Player(int x, int y, int xBoundary, int yBoundary, Variables * settings, LPDIRECT3DDEVICE9 d3dDevice);
 	~Player();
 	
 	void tick();
@@ -28,7 +29,7 @@ public:
 	void moveDown();
 
 private:
-	bool init(LPDIRECT3DDEVICE9 d3dDevice);
+	bool init(Variables * settings, LPDIRECT3DDEVICE9 d3dDevice);
 
 protected:
 	PlayerVertex vertex[PLAYER_VERTEX_COUNT];

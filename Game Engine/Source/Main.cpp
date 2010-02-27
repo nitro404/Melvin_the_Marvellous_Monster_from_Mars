@@ -4,11 +4,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	Variables * settings = new Variables();
 	if (!settings->parseFrom("settings.ini")) {
 		delete settings;
-		MessageBoxA(NULL, "Could not find the settings file \"settings.ini\".", "Error", MB_OK);
-		PostQuitMessage(0);
+		quit("Error", "Could not find the settings file \"settings.ini\".");
 	}
 	
-	Game game = Game(settings, hInstance, WndProc, L"game", L"Melvin the Marvelous Monster from Mars", nCmdShow);
+	Game game = Game(settings, hInstance, WndProc, L"game", L"Melvin the Marvellous Monster from Mars", nCmdShow);
 	game.run();
 	
 	return 0;

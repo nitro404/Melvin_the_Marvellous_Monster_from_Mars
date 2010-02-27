@@ -3,14 +3,14 @@
 int Player::movementSpeed = 6;
 float Player::maxJumpHeight = 27;
 
-Player::Player(int x, int y, int xBoundary, int yBoundary, LPDIRECT3DDEVICE9 d3dDevice) : vertexBuffer(NULL) {
+Player::Player(int x, int y, int xBoundary, int yBoundary, Variables * settings, LPDIRECT3DDEVICE9 d3dDevice) : vertexBuffer(NULL) {
 	this->position = Point(x, y);
 	this->boundary = Point(xBoundary - 100, yBoundary - 100);
 	this->isJumping = false;
 
-	if(!init(d3dDevice)) {
+	if(!init(settings, d3dDevice)) {
 		MessageBoxA(NULL, "Error initializing player.", "Error", MB_OK);
-		PostQuitMessage(0);
+		exit(1);
 	}
 }
 
@@ -46,10 +46,14 @@ void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 	playerSprite->End();
 }
 
-bool Player::init(LPDIRECT3DDEVICE9 d3dDevice) {
+bool Player::init(Variables * settings, LPDIRECT3DDEVICE9 d3dDevice) {
 	D3DXCreateSprite(d3dDevice, &playerSprite);
 	
-	if(FAILED(D3DXCreateTextureFromFile(d3dDevice, L"../Sprites/Alien.PNG", &playerTexture))) {
+	USES_CONVERSION;
+	wstring spriteFileName(A2W(settings->getValue("Sprite Directory")));
+	spriteFileName.append(L"\\Alien.PNG");
+
+	if(FAILED(D3DXCreateTextureFromFile(d3dDevice, spriteFileName.c_str(), &playerTexture))) {
 		return false;
 	}
 	
