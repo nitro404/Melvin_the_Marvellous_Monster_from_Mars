@@ -1,0 +1,72 @@
+//	RECT spriteRect;
+
+	
+	/*
+	spriteRect.top = 0;
+	spriteRect.left = 0;
+	spriteRect.right = 150;
+	spriteRect.bottom = 150;
+
+	this->boundary = Point(xBoundary - spriteRect.right, yBoundary - spriteRect.bottom);
+	*/
+
+	/*
+	d3dPosition.x = (float) position.x;
+	d3dPosition.y = (float) position.y;
+	d3dPositionOffset.x = (float) position.x - 150;
+	d3dPositionOffset.y = (float) position.y - 150;
+	*/
+
+void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
+//	if(vertexBuffer != NULL) { vertexBuffer->Release(); }
+
+	/*
+	int i;
+	PlayerVertex * pVtx;
+
+	D3DXMATRIX matTransform;
+	D3DXMatrixTranslation(&matTransform, (float) position.x, (float) position.y, 1);
+
+	if(FAILED(vertexBuffer->Lock(0, sizeof(PlayerVertex) * PLAYER_VERTEX_COUNT, (void **) &pVtx, 0))) { return; }
+	memcpy(pVtx, vertex, sizeof(PlayerVertex) * PLAYER_VERTEX_COUNT);
+	for(i=0;i<PLAYER_VERTEX_COUNT;i++) { D3DXVec3TransformCoord(&pVtx[i].pos, &vertex[i].pos, &matTransform); }
+	vertexBuffer->Unlock();
+	
+	d3dDevice->SetStreamSource(0, vertexBuffer, 0, sizeof(PlayerVertex) );
+	d3dDevice->SetFVF(D3DFVF_PLAYER_VERTEX);
+	d3dDevice->SetRenderState(D3DRS_COLORVERTEX, FALSE);
+	d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 3);
+	*/
+}
+
+bool Player::init(LPDIRECT3DDEVICE9 d3dDevice) {
+	/*
+	int i;
+	VOID * pVtx;
+
+	for(i=0;i<PLAYER_VERTEX_COUNT;i++) {
+		vertex[i].pos.z = 0.5;
+		vertex[i].rhw = 0.5;
+		vertex[i].colour = D3DCOLOR_XRGB(255, 0, 0);
+	}
+
+	float sizeX = 10;
+	float sizeY = 10;
+	
+	vertex[0].pos.x = (float) position.x - sizeX; vertex[0].pos.y = (float) position.y - sizeY;
+	vertex[1].pos.x = (float) position.x + sizeX; vertex[1].pos.y = (float) position.y - sizeY;
+	vertex[2].pos.x = (float) position.x + sizeX; vertex[2].pos.y = (float) position.y + sizeY;
+	vertex[3].pos.x = (float) position.x + sizeX; vertex[3].pos.y = (float) position.y + sizeY;
+	vertex[4].pos.x = (float) position.x - sizeX; vertex[4].pos.y = (float) position.y + sizeY;
+	vertex[5].pos.x = (float) position.x - sizeX; vertex[5].pos.y = (float) position.y - sizeY;
+	
+	if(FAILED(d3dDevice->CreateVertexBuffer(PLAYER_VERTEX_COUNT * sizeof(PlayerVertex), 0, D3DFVF_PLAYER_VERTEX, D3DPOOL_DEFAULT, &vertexBuffer, NULL))) { return false; }
+	
+	if(FAILED(vertexBuffer->Lock(0, sizeof(PlayerVertex) * PLAYER_VERTEX_COUNT, (void **) &pVtx, 0 ))) { return false; }
+	memcpy(pVtx, vertex, sizeof(PlayerVertex) * PLAYER_VERTEX_COUNT);
+	vertexBuffer->Unlock();
+	*/
+
+	return true;
+}
+

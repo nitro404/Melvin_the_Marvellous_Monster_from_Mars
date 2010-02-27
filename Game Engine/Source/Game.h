@@ -1,11 +1,14 @@
-#ifndef _GAME_H
-#define _GAME_H
+#pragma once
 
 #include "Includes.h"
+#include "DirectX.h"
+#include "Variables.h"
+#include "Player.h"
+#include "Object.h"
 
 class Game {
 public:
-	Game(int posX, int posY, int width, int height, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow);
+	Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow);
 	~Game();
 	
 	void processKeyboardInput();
@@ -14,16 +17,23 @@ public:
 	int run();
 	void tick();
 	void draw();
-
+	
+//TODO:
+	bool loadMap(char * fileName);
+	
 private:
-	int init(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow);
-	int RegisterWndClass(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName);
+	bool init(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow);
+	bool RegisterWndClass(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName);
+	bool verifySettings(Variables * settings);
 
 public:
 	int windowPosX, windowPosY;
 	int windowWidth, windowHeight;
+	Variables * settings;
 
 private:
+	Player * player;
+
 	HINSTANCE hInstance;
 	HWND hWnd;
 
@@ -34,11 +44,9 @@ private:
 	DIMOUSESTATE mouseState;
 	
 	LPDIRECT3D9 d3d;
-	LPDIRECT3DDEVICE9 d3dDev;
+	LPDIRECT3DDEVICE9 d3dDevice;
 	
 	time_t lastRenderTime;
 	int fps;
 	time_t timePerFrame;
 };
-
-#endif

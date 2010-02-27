@@ -187,12 +187,28 @@
 				RelativePath=".\Source\Main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Source\Player.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Variable.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Variables.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\Source\DirectX.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Source\Game.h"
 				>
@@ -203,6 +219,26 @@
 			</File>
 			<File
 				RelativePath=".\Source\Main.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Player.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Point.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Variable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Variables.h"
 				>
 			</File>
 		</Filter>

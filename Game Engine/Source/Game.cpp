@@ -1,25 +1,36 @@
 #include "Game.h"
 
-Game::Game(int posX, int posY, int width, int height, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow) {
-	this->windowPosX = posX;
-	this->windowPosY = posY;
-	this->windowWidth = width;
-	this->windowHeight = height;
+Game::Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow) {
+	if(!verifySettings(settings)) {
+		MessageBoxA(NULL, "Settings file is invalid.", "Error", MB_OK);
+		PostQuitMessage(0);
+	}
+
+	this->windowPosX = atoi(settings->getValue("Window Position Horizontal"));
+	this->windowPosY = atoi(settings->getValue("Window Position Vertical"));
+	this->windowWidth = atoi(settings->getValue("Window Width"));
+	this->windowHeight = atoi(settings->getValue("Window Height"));
+
+	this->settings = settings;
 
 	this->directInput = NULL;
 	this->keyboard = NULL;
 	this->mouse = NULL;
 
 	this->d3d = NULL;
-	this->d3dDev = NULL;
-
-	if(init(hInstance, WndProc, winClassName, title, nCmdShow) != 0) {
+	this->d3dDevice = NULL;
+	
+	if(!init(hInstance, WndProc, winClassName, title, nCmdShow)) {
 		MessageBoxA(NULL, "Error initializing game.", "Error", MB_OK);
 		PostQuitMessage(0);
 	}
+
+	player = new Player(windowWidth/3,windowHeight-100, windowWidth, windowHeight, d3dDevice);
 }
 
 Game::~Game() {
+	if(settings != NULL) { delete settings; }
+	if(player != NULL) { delete player; }
 	if(keyboard != NULL) {
 		keyboard->Unacquire();
 		keyboard->Release();
@@ -31,8 +42,8 @@ Game::~Game() {
 	if(directInput != NULL) {
 		directInput->Release();
 	}
-	if(d3dDev != NULL) {
-		d3dDev->Release();
+	if(d3dDevice != NULL) {
+		d3dDevice->Release();
 	}
 	if(d3d != NULL) {
 		d3d->Release();
@@ -42,16 +53,20 @@ Game::~Game() {
 void Game::tick() {
 	processKeyboardInput();
 	processMouseInput();
+	
+	player->tick();
 }
 
 void Game::draw() {
-	d3dDev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+	d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(173, 244, 255), 1.0f, 0);
 	
-	d3dDev->BeginScene();
+	d3dDevice->BeginScene();
+
+	player->draw(d3dDevice);
 	
-	d3dDev->EndScene();
+	d3dDevice->EndScene();
 	
-	d3dDev->Present(NULL, NULL, NULL, NULL);
+	d3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
 int Game::run() {
@@ -81,21 +96,42 @@ int Game::run() {
     return msg.wParam;
 }
 
-int Game::init(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow) {
+bool loadMap(char * fileName) {
+	if(fileName == NULL || strlen(fileName) == 0) { return false; }
+
+	ifstream in(fileName);
+	if(in.bad()) { return false; }
+
+	const int MAX_STRING_LENGTH = 1024;
+	char input[MAX_STRING_LENGTH];
+	
+	in.getline(input, MAX_STRING_LENGTH);
+	
+	if(in.is_open()) { in.close(); }
+
+	return true;
+}
+
+bool Game::verifySettings(Variables * settings) {
+	return	settings->hasValue("Window Width") &&
+			settings->hasValue("Window Height");
+}
+
+bool Game::init(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow) {
 	this->hInstance = hInstance;
 	this->fps = 60;
 	this->timePerFrame = 1000 / fps;
 	
-	if(RegisterWndClass(hInstance, WndProc, winClassName) != 0) {
+	if(!RegisterWndClass(hInstance, WndProc, winClassName)) {
 		MessageBoxA(NULL, "Could not register class.", "Error", MB_OK);
-		return 1;
+		return false;
 	}
 	
 	hWnd = CreateWindow(winClassName, title, WS_OVERLAPPEDWINDOW, windowPosX, windowPosY, windowWidth, windowHeight, NULL, NULL, hInstance, NULL);
 	
 	if(hWnd == NULL) {
 		MessageBoxA(NULL, "Could not create window.", "Error", MB_OK);
-		return 1;
+		return false;
 	}
 	
 	ShowWindow(hWnd, nCmdShow);
@@ -103,7 +139,7 @@ int Game::init(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTS
 	
 	D3DPRESENT_PARAMETERS d3dpp;
 	d3d = Direct3DCreate9(D3D_SDK_VERSION);
-	if(d3d == NULL) { return 1; }
+	if(d3d == NULL) { return false; }
 	ZeroMemory(&d3dpp, sizeof(d3dpp));
 	d3dpp.BackBufferWidth = windowWidth;
 	d3dpp.BackBufferHeight = windowHeight;
@@ -111,25 +147,25 @@ int Game::init(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTS
 	d3dpp.hDeviceWindow = hWnd;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 
-	if(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3dDev) != S_OK) {
-		return 1;
+	if(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3dDevice) != S_OK) {
+		return false;
 	}
 	
 	DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **) &directInput, NULL);
-	if(directInput == NULL) { return 1; }
+	if(directInput == NULL) { return false; }
 	
-	if(directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL) != S_OK) { return 1; }
-	if(keyboard->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND) != DI_OK) { return 1; }
-	if(keyboard->SetDataFormat(&c_dfDIKeyboard) != DI_OK) { return 1; }
+	if(directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL) != S_OK) { return false; }
+	if(keyboard->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND) != DI_OK) { return false; }
+	if(keyboard->SetDataFormat(&c_dfDIKeyboard) != DI_OK) { return false; }
 	
-	if(directInput->CreateDevice(GUID_SysMouse, &mouse, NULL) != DI_OK) { return 1; }
-	if(mouse->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND) != DI_OK) { return 1; }
-	if(mouse->SetDataFormat(&c_dfDIMouse) != DI_OK) { return 1; }
-	
-	return 0;
+	if(directInput->CreateDevice(GUID_SysMouse, &mouse, NULL) != DI_OK) { return false; }
+	if(mouse->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND) != DI_OK) { return false; }
+	if(mouse->SetDataFormat(&c_dfDIMouse) != DI_OK) { return false; }
+
+	return true;
 }
 
-int Game::RegisterWndClass(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName) {
+bool Game::RegisterWndClass(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName) {
 	WNDCLASS wc;
 	
 	wc.style		 = CS_HREDRAW | CS_VREDRAW;
@@ -144,10 +180,10 @@ int Game::RegisterWndClass(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClas
 	wc.hIcon = NULL;
 	
 	if(RegisterClass(&wc) == 0) {
-		return 1;
+		return false;
 	}
 	
-	return 0;
+	return true;
 }
 
 void Game::processKeyboardInput() {
@@ -170,21 +206,22 @@ void Game::processKeyboardInput() {
 	}
 	
 	if(keyboardState[DIK_LEFT] & 0x80 || keyboardState[DIK_A] & 0x80) {
-//		rocket->processKeys(DIK_LEFT);
+		player->moveLeft();
 	}
-
+	
 	if(keyboardState[DIK_RIGHT] & 0x80 || keyboardState[DIK_D] & 0x80) {
-//		rocket->processKeys(DIK_RIGHT);
+		player->moveRight();
 	}
-
+	
 	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {
-//		rocket->processKeys(DIK_UP);
+		player->jump();
+//		player->moveUp();
 	}
-
+	
 	if(keyboardState[DIK_DOWN] & 0x80 || keyboardState[DIK_S] & 0x80) {
-//		rocket->processKeys(DIK_DOWN);
+//		player->moveDown();
 	}
-
+	
 	if(keyboardState[DIK_ESCAPE] & 0x80) {
 		if(MessageBoxA(NULL, "Are you sure you want to quit?", "Quit", MB_YESNO) == IDYES) {
 			PostQuitMessage(0);
