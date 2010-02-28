@@ -1,5 +1,5 @@
 //Created: January 15, 2009
-//Revised: February 14, 2010
+//Revised: February 27, 2010
 
 #include "Variables.h"
 
@@ -172,12 +172,16 @@ bool Variables::parseFrom(const char * _fileName, bool _append) {
 			for(i=0;i<this->_variables->size();i++) {
 				if(*this->_variables->at(i) == *v) {
 					duplicate = true;
+					delete v;
 					break;
 				}
 			}
 			if(!duplicate) {
 				this->_variables->push_back(v);
 			}
+		}
+		else {
+			delete v;
 		}
 	}
 	

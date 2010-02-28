@@ -1,5 +1,13 @@
 #include "Main.h"
 
+#if _DEBUG
+#include <vld.h>
+#include <crtdbg.h>
+void checkForLeaks() {
+	_CrtDumpMemoryLeaks();
+}
+#endif
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) {
 	Variables * settings = new Variables();
 	if (!settings->parseFrom("settings.ini")) {
@@ -10,8 +18,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	Game game = Game(settings, hInstance, WndProc, L"game", L"Melvin the Marvellous Monster from Mars", nCmdShow);
 	game.run();
 	
+	#if _DEBUG
+	atexit(checkForLeaks);
+	#endif
+
 	return 0;
 }
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch(message) {

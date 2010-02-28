@@ -28,13 +28,10 @@ public:
 	void moveUp();
 	void moveDown();
 
-private:
-	bool init(Variables * settings, LPDIRECT3DDEVICE9 d3dDevice);
-
 protected:
 	PlayerVertex vertex[PLAYER_VERTEX_COUNT];
 	LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
-	
+
 private:
 	static int movementSpeed;
 
@@ -45,7 +42,9 @@ private:
 	float jumpTick;
 	static float maxJumpHeight;
 	
+	wstring spriteFileName;
 	LPDIRECT3DTEXTURE9 playerTexture;
 	LPD3DXSPRITE playerSprite;
+	int spriteWidth, spriteHeight;
 	D3DCOLOR playerColour;
 };

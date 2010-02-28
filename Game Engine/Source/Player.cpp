@@ -4,19 +4,60 @@ int Player::movementSpeed = 6;
 float Player::maxJumpHeight = 27;
 
 Player::Player(int x, int y, int xBoundary, int yBoundary, Variables * settings, LPDIRECT3DDEVICE9 d3dDevice) : vertexBuffer(NULL) {
-	this->position = Point(x, y);
-	this->boundary = Point(xBoundary - 100, yBoundary - 100);
+	D3DXCreateSprite(d3dDevice, &playerSprite);
+	
+	USES_CONVERSION;
+	spriteFileName = wstring(A2W(settings->getValue("Sprite Directory")));
+	spriteFileName.append(L"\\Alien.PNG");
+
+	if(FAILED(D3DXCreateTextureFromFile(d3dDevice, spriteFileName.c_str(), &playerTexture))) {
+		quit("Error", "Error loading player texture.");
+	}
+	
+	D3DSURFACE_DESC description;
+	playerTexture->GetLevelDesc(0, &description);
+	spriteWidth = description.Width;
+	spriteHeight = description.Height;
+
+	this->boundary = Point(xBoundary - spriteWidth, yBoundary - spriteHeight);
+	this->position = Point(boundary.x / 2.0f, boundary.y);
 	this->isJumping = false;
 
-	if(!init(settings, d3dDevice)) {
-		MessageBoxA(NULL, "Error initializing player.", "Error", MB_OK);
-		exit(1);
+	// initalize red box
+	int i;
+	VOID * pVtx;
+
+	for(i=0;i<PLAYER_VERTEX_COUNT;i++) {
+		vertex[i].pos.z = 0;
+		vertex[i].rhw = 0.5;
+		vertex[i].colour = D3DCOLOR_XRGB(255, 0, 0);
 	}
+
+	float xPos = 10;
+	float yPos = 10;
+	float sizeX = 10;
+	float sizeY = 10;
+	
+	vertex[0].pos.x = (float) xPos - sizeX; vertex[0].pos.y = (float) yPos - sizeY;
+	vertex[1].pos.x = (float) xPos + sizeX; vertex[1].pos.y = (float) yPos - sizeY;
+	vertex[2].pos.x = (float) xPos + sizeX; vertex[2].pos.y = (float) yPos + sizeY;
+	vertex[3].pos.x = (float) xPos + sizeX; vertex[3].pos.y = (float) yPos + sizeY;
+	vertex[4].pos.x = (float) xPos - sizeX; vertex[4].pos.y = (float) yPos + sizeY;
+	vertex[5].pos.x = (float) xPos - sizeX; vertex[5].pos.y = (float) yPos - sizeY;
+	
+	if(FAILED(d3dDevice->CreateVertexBuffer(PLAYER_VERTEX_COUNT * sizeof(PlayerVertex), 0, D3DFVF_PLAYER_VERTEX, D3DPOOL_DEFAULT, &vertexBuffer, NULL))) { quit("Error", "Error creating vertex buffer for player."); }
+	if(FAILED(vertexBuffer->Lock(0, sizeof(PlayerVertex) * PLAYER_VERTEX_COUNT, (void **) &pVtx, 0))) { quit("Error", "Error locking vertex buffer for player."); }
+	memcpy(pVtx, vertex, sizeof(PlayerVertex) * PLAYER_VERTEX_COUNT);
+	vertexBuffer->Unlock();
 }
 
 Player::~Player() {
 	if(playerTexture != NULL) { playerTexture->Release(); }
 	if(playerSprite != NULL) { playerSprite->Release(); }
+
+	if(vertexBuffer != NULL) {
+		vertexBuffer->Release();
+	}
 }
 
 void Player::tick() {
@@ -34,7 +75,7 @@ void Player::tick() {
 void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 	D3DXMATRIX transformation;
 	D3DXVECTOR2 translation = D3DXVECTOR2((float) position.x, (float) position.y);
-	D3DXVECTOR2 scaling(0.4f, 0.4f);
+	D3DXVECTOR2 scaling(1, 1);
 
 	D3DXMatrixTransformation2D(&transformation, NULL, 0, &scaling, NULL, 0, &translation);
 	playerSprite->SetTransform(&transformation);
@@ -44,20 +85,23 @@ void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 	playerSprite->Draw(playerTexture, NULL, NULL, NULL, playerColour);
 
 	playerSprite->End();
-}
 
-bool Player::init(Variables * settings, LPDIRECT3DDEVICE9 d3dDevice) {
-	D3DXCreateSprite(d3dDevice, &playerSprite);
-	
-	USES_CONVERSION;
-	wstring spriteFileName(A2W(settings->getValue("Sprite Directory")));
-	spriteFileName.append(L"\\Alien.PNG");
+	// draw red box
+	int i;
+	PlayerVertex * pVtx;
 
-	if(FAILED(D3DXCreateTextureFromFile(d3dDevice, spriteFileName.c_str(), &playerTexture))) {
-		return false;
-	}
+	D3DXMATRIX matTransform;
+	D3DXMatrixTranslation(&matTransform, (float) position.x, (float) position.y, 1);
+
+	if(FAILED(vertexBuffer->Lock(0, sizeof(PlayerVertex) * PLAYER_VERTEX_COUNT, (void **) &pVtx, 0))) { return; }
+	memcpy(pVtx, vertex, sizeof(PlayerVertex) * PLAYER_VERTEX_COUNT);
+	for(i=0;i<PLAYER_VERTEX_COUNT;i++) { D3DXVec3TransformCoord(&pVtx[i].pos, &vertex[i].pos, &matTransform); }
+	vertexBuffer->Unlock();
 	
-	return true;
+	d3dDevice->SetStreamSource(0, vertexBuffer, 0, sizeof(PlayerVertex) );
+	d3dDevice->SetFVF(D3DFVF_PLAYER_VERTEX);
+	d3dDevice->SetRenderState(D3DRS_COLORVERTEX, FALSE);
+	d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 3);
 }
 
 void Player::moveLeft() {

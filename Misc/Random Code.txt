@@ -70,3 +70,31 @@ bool Player::init(LPDIRECT3DDEVICE9 d3dDevice) {
 	return true;
 }
 
+
+struct PlayerVertex {
+    D3DXVECTOR3 pos;
+	float rhw;
+    DWORD colour;
+};
+
+#define D3DFVF_PLAYER_VERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE)
+#define PLAYER_VERTEX_COUNT 5
+
+
+protected:
+	PlayerVertex vertex[PLAYER_VERTEX_COUNT];
+	LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
+
+
+struct ObjectVertex {
+    D3DXVECTOR3 pos;
+	float rhw;
+    DWORD colour;
+};
+
+#define D3DFVF_OBJECT_VERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE)
+
+protected:
+	ObjectVertex vertex[4];
+	LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
+

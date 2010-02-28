@@ -23,7 +23,7 @@ Game::Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR w
 		quit("Error", "Error initializing game.");
 	}
 
-	player = new Player(windowWidth/3,windowHeight-100, windowWidth, windowHeight, settings, d3dDevice);
+	player = new Player(0, 0, windowWidth, windowHeight, settings, d3dDevice);
 }
 
 Game::~Game() {
@@ -82,8 +82,9 @@ int Game::run() {
         }
 		
 		tick();
+
 		draw();
-		
+
 		elapsedTime = (DWORD) (GetTickCount() - lastRenderTime);
 		if(elapsedTime < timePerFrame) {
 			Sleep((DWORD) (timePerFrame - elapsedTime));

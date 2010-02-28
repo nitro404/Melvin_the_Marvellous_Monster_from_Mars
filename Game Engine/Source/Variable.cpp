@@ -137,6 +137,10 @@ bool Variable::parseFrom(const char * _data) {
 		id[j++] = _data[i];
 	}
 	id[j] = '\0';
+	if(strlen(id) == 0) {
+		delete [] id;
+		return false;
+	}
 	
 	start = separatorIndex + 1;
 	end = strlen(_data) - 1;
