@@ -1,22 +1,11 @@
 #pragma once
 
 #include "Includes.h"
-#include "DirectX.h"
-#include "Variables.h"
-#include "Point.h"
-
-struct PlayerVertex {
-    D3DXVECTOR3 pos;
-	float rhw;
-    DWORD colour;
-};
-
-#define D3DFVF_PLAYER_VERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE)
-#define PLAYER_VERTEX_COUNT 5
+#include "Sprite.h"
 
 class Player {
 public:
-	Player(int x, int y, int xBoundary, int yBoundary, Variables * settings, LPDIRECT3DDEVICE9 d3dDevice);
+	Player(float xPos, float yPos, int xBoundary, int yBoundary, Sprite * sprite);
 	~Player();
 	
 	void tick();
@@ -25,26 +14,20 @@ public:
 	void moveLeft();
 	void moveRight();
 	void jump();
-	void moveUp();
-	void moveDown();
-
-protected:
-	PlayerVertex vertex[PLAYER_VERTEX_COUNT];
-	LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
 
 private:
-	static int movementSpeed;
+	Sprite * playerSprite;
 
-	Point position;
-	Point boundary;
+	D3DXVECTOR2 position;
+	D3DXVECTOR2 boundary;
+	D3DXVECTOR2 scale;
+	D3DXVECTOR2 offset;
+
+	static int movementSpeed;
 
 	bool isJumping;
 	float jumpTick;
 	static float maxJumpHeight;
-	
-	wstring spriteFileName;
-	LPDIRECT3DTEXTURE9 playerTexture;
-	LPD3DXSPRITE playerSprite;
-	int spriteWidth, spriteHeight;
+
 	D3DCOLOR playerColour;
 };

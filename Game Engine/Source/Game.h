@@ -3,8 +3,9 @@
 #include "Includes.h"
 #include "DirectX.h"
 #include "Variables.h"
-#include "Player.h"
+#include "Sprite.h"
 #include "Object.h"
+#include "Player.h"
 
 class Game {
 public:
@@ -32,6 +33,7 @@ public:
 	Variables * settings;
 
 private:
+	Sprite * playerSprite;
 	Player * player;
 
 	HINSTANCE hInstance;

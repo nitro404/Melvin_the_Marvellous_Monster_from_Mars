@@ -23,11 +23,13 @@ Game::Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR w
 		quit("Error", "Error initializing game.");
 	}
 
-	player = new Player(0, 0, windowWidth, windowHeight, settings, d3dDevice);
+	playerSprite = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
+	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, playerSprite);
 }
 
 Game::~Game() {
 	if(settings != NULL) { delete settings; }
+	if(playerSprite != NULL) { delete playerSprite; }
 	if(player != NULL) { delete player; }
 	if(keyboard != NULL) {
 		keyboard->Unacquire();

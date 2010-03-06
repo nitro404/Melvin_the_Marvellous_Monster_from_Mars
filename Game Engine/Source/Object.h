@@ -2,18 +2,17 @@
 
 #include "Includes.h"
 #include "DirectX.h"
+#include "Sprite.h"
 
 class Object {
 public:
 	Object() { }
-	virtual ~Object() {
-		if(position != NULL) { delete position; }
-	}
+	virtual ~Object() { }
 
 	virtual void tick() { }
 	virtual void draw() { }
 	virtual void readFrom(ifstream & input) { }
 
 private:
-	Point * position;
+	D3DXVECTOR2 position;
 };
