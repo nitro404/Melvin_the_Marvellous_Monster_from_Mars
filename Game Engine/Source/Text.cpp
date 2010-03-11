@@ -35,6 +35,15 @@ Text::~Text() {
 	if(sprite != NULL) { sprite->Release(); }
 }
 
+void Text::setColour(D3DCOLOR newColour) {
+	colour = newColour;
+}
+
+void Text::setPosition(int x, int y) {
+	this->x = x;
+	this->y = y;
+}
+
 void Text::draw(const char * text, ...) {
 	int length = strlen(text);
 

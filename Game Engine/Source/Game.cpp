@@ -1,6 +1,26 @@
 #include "Game.h"
 
-Game::Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow) {
+Game::Game(Variables * settings,
+		   HINSTANCE hInstance,
+		   WNDPROC WndProc,
+		   LPCTSTR winClassName,
+		   LPCTSTR title,
+		   int nCmdShow)
+		   : mainMenu(NULL),
+			 mainMenuActive(true),
+			 helpItemOffset(250),
+			 helpItemIncrement(55),
+			 helpScreenActive(false),
+			 spaceBarPressed(false),
+			 menuUpKeyPressed(false),
+			 menuDownKeyPressed(false),
+			 menuSelectKeyPressed(false),
+			 escapeKeyPressed(false),
+			 directInput(NULL),
+			 keyboard(NULL),
+			 mouse(NULL),
+			 d3d(NULL),
+			 d3dDevice(NULL) {
 	if(!verifySettings(settings)) {
 		quit("Error", "Settings file is invalid.");
 	}
@@ -11,13 +31,6 @@ Game::Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR w
 	this->windowHeight = atoi(settings->getValue("Window Height"));
 
 	this->settings = settings;
-
-	this->directInput = NULL;
-	this->keyboard = NULL;
-	this->mouse = NULL;
-
-	this->d3d = NULL;
-	this->d3dDevice = NULL;
 	
 	if(!init(hInstance, WndProc, winClassName, title, nCmdShow)) {
 		quit("Error", "Error initializing game.");
@@ -25,6 +38,19 @@ Game::Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR w
 
 	playerSprite = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
 	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, playerSprite);
+
+	// create the main menu
+	mainMenu = new Menu("Melvin the Marvellous Monster from Mars", windowWidth, windowHeight, D3DCOLOR_RGBA(0, 255, 0, 255), D3DCOLOR_RGBA(0, 255, 0, 255), D3DCOLOR_RGBA(0, 170, 0, 255), d3dDevice);
+	mainMenu->addMenuItem("New Game", d3dDevice);
+	mainMenu->addMenuItem("Load Game", d3dDevice);
+	mainMenu->addMenuItem("Help", d3dDevice);
+	mainMenu->addMenuItem("Quit", d3dDevice);
+
+	// create the help screen
+	helpTitleText = new Text("System", 58, Text::BOLD, false, Text::CENTER, Text::CENTER, (int) (windowWidth / 2.0f), 100, D3DCOLOR_RGBA(0, 255, 0, 255), d3dDevice);
+	for(unsigned int i=0;i<helpItemMessages.size();i++) {
+		helpItemText.push_back(new Text("System", 42, Text::BOLD, false, Text::CENTER, Text::CENTER, (int) (windowWidth / 2.0f),  helpItemOffset + (i * helpItemIncrement), D3DCOLOR_RGBA(0, 170, 0, 255), d3dDevice));
+	}
 }
 
 Game::~Game() {
@@ -69,6 +95,26 @@ void Game::draw() {
 	d3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
+void Game::drawHelp() {
+	d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+	
+	d3dDevice->BeginScene();
+
+	// display help title
+	helpTitleText->draw("Help");
+
+	// display help items
+	for(unsigned int i=0;i<helpItemText.size();i++) {
+		helpItemText.at(i)->draw(helpItemMessages.at(i));
+	}
+
+	d3dDevice->EndScene();
+	
+	d3dDevice->Present(NULL, NULL, NULL, NULL);
+}
+
+void Game::reset() { }
+
 int Game::run() {
     MSG msg;
 	DWORD elapsedTime = 0;
@@ -83,9 +129,23 @@ int Game::run() {
             DispatchMessage(&msg);
         }
 		
-		tick();
+		if(mainMenuActive) {
+			processKeyboardInput();
 
-		draw();
+			if(helpScreenActive) {
+				drawHelp();
+			}
+			else {
+				mainMenu->draw(d3dDevice);
+			}
+			
+		}
+		// otherwise, render the game
+		else {
+			tick();
+
+			draw();
+		}
 
 		elapsedTime = (DWORD) (GetTickCount() - lastRenderTime);
 		if(elapsedTime < timePerFrame) {
@@ -189,6 +249,8 @@ bool Game::RegisterWndClass(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winCla
 }
 
 void Game::processKeyboardInput() {
+	if(!GetFocus()) { return; }
+
 	int result;
 	while((result = keyboard->GetDeviceState(256, keyboardState)) != DI_OK) {
 		switch(result) {
@@ -206,7 +268,80 @@ void Game::processKeyboardInput() {
 				return;
 		}
 	}
-	
+
+	if(keyboardState[DIK_ESCAPE] & 0x80) {
+		if(!escapeKeyPressed) {
+			if(helpScreenActive) {
+				helpScreenActive = false;
+			}
+			else if(!mainMenuActive) {
+				mainMenuActive = true;
+			}
+			else {
+				PostQuitMessage(0);
+			}
+		}
+		escapeKeyPressed = true;
+	}
+	else {
+		escapeKeyPressed = false;
+	}
+
+	processMainMenuInput();
+
+	processPlayerInput();
+}
+
+void Game::processMainMenuInput() {
+	if(helpScreenActive || !mainMenuActive) { return; }
+
+	if(keyboardState[DIK_RETURN] & 0x80 || keyboardState[DIK_SPACE] & 0x80) {
+		if(!menuSelectKeyPressed) {
+			switch(mainMenu->getIndex()) {
+				// start game in single player mode
+				case 0:
+					mainMenuActive = false;
+					break;
+				// start game in 2 player mode
+				case 1:
+					mainMenuActive = false;
+					break;
+				// display help screen
+				case 2:
+					helpScreenActive = true;
+					break;
+				// quit the game
+				case 3:
+					PostQuitMessage(0);
+					break;
+			}
+		}
+		menuSelectKeyPressed = true;
+	}
+	else { menuSelectKeyPressed = false; }
+
+	// move menu selection up
+	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {
+		if(!menuUpKeyPressed) {
+			mainMenu->moveUp();
+		}
+		menuUpKeyPressed = true;
+	}
+	else { menuUpKeyPressed = false; }
+
+	// move menu selection down
+	if(keyboardState[DIK_DOWN] & 0x80 || keyboardState[DIK_S] & 0x80) {
+		if(!menuDownKeyPressed) {
+			mainMenu->moveDown();
+		}
+		menuDownKeyPressed = true;
+	}
+	else { menuDownKeyPressed = false; }
+}
+
+void Game::processPlayerInput() {
+	if(mainMenuActive || helpScreenActive) { return; }
+
 	if(keyboardState[DIK_LEFT] & 0x80 || keyboardState[DIK_A] & 0x80) {
 		player->moveLeft();
 	}
@@ -217,21 +352,12 @@ void Game::processKeyboardInput() {
 	
 	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {
 		player->jump();
-//		player->moveUp();
-	}
-	
-	if(keyboardState[DIK_DOWN] & 0x80 || keyboardState[DIK_S] & 0x80) {
-//		player->moveDown();
-	}
-	
-	if(keyboardState[DIK_ESCAPE] & 0x80) {
-		if(MessageBoxA(NULL, "Are you sure you want to quit?", "Quit", MB_YESNO) == IDYES) {
-			PostQuitMessage(0);
-		}
 	}
 }
 
 void Game::processMouseInput() {
+	if(!GetFocus()) { return; }
+
 	int result;
 	while((result = mouse->GetDeviceState(sizeof(DIMOUSESTATE), (void *) &mouseState)) != DI_OK) {
 		switch(result) {

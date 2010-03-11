@@ -4,6 +4,7 @@
 #include "DirectX.h"
 #include "Variables.h"
 #include "Sprite.h"
+#include "Menu.h"
 #include "Object.h"
 #include "Player.h"
 
@@ -12,29 +13,52 @@ public:
 	Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow);
 	~Game();
 	
-	void processKeyboardInput();
-	void processMouseInput();
-	
 	int run();
 	void tick();
+	void drawHelp();
 	void draw();
+	void reset();
 	
 //TODO:
 	bool loadMap(char * fileName);
 	
 private:
+	void processKeyboardInput();
+	void processMouseInput();
+	void processMainMenuInput();
+	void processPlayerInput();
+
 	bool init(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow);
 	bool RegisterWndClass(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName);
 	bool verifySettings(Variables * settings);
 
-public:
+private:
 	int windowPosX, windowPosY;
 	int windowWidth, windowHeight;
+
 	Variables * settings;
 
-private:
+//private:
 	Sprite * playerSprite;
 	Player * player;
+
+	Menu * mainMenu;
+	bool mainMenuActive;
+	Text * helpTitleText;
+	vector<char *> helpItemMessages;
+	vector<Text *> helpItemText;
+	int helpItemOffset;
+	int helpItemIncrement;
+	bool helpScreenActive;
+
+//	bool leftMouseButtonPressed;
+//	bool rightMouseButtonPressed;
+	bool spaceBarPressed;
+	bool enterKeyPressed;
+	bool menuUpKeyPressed;
+	bool menuDownKeyPressed;
+	bool menuSelectKeyPressed;
+	bool escapeKeyPressed;
 
 	HINSTANCE hInstance;
 	HWND hWnd;

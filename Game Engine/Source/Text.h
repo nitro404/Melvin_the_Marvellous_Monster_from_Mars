@@ -8,8 +8,10 @@ public:
 	Text(const char * fontFace, int fontSize, int fontWeight, bool italic, int fontAlignment, int fontOffset, int xPos, int yPos, D3DCOLOR fontColour, LPDIRECT3DDEVICE9 d3dDevice);
 	~Text();
 
-//TODO: Load text to sprite instead for speed improvement, possibly preload text as well
 	void draw(const char * text, ...);
+
+	void setColour(D3DCOLOR newColor);
+	void setPosition(int x, int y);
 
 	const static int NORMAL;
 	const static int REGULAR;
