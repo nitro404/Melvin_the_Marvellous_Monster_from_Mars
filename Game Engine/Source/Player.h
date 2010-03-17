@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Includes.h"
+#include "Variables.h"
 #include "Sprite.h"
+#include "SpriteSheet.h"
 
 class Player {
 public:
-	Player(float xPos, float yPos, int xBoundary, int yBoundary, Sprite * sprite);
+	Player(float xPos, float yPos, int xBoundary, int yBoundary, Variables * settings, LPDIRECT3DDEVICE9 d3dDevice);
 	~Player();
 	
 	void tick();
@@ -17,6 +19,10 @@ public:
 
 private:
 	Sprite * playerSprite;
+	Sprite * playerSpriteSheet;
+	SpriteSheet * playerSprites;
+
+	Variables * settings;
 
 	D3DXVECTOR2 position;
 	D3DXVECTOR2 boundary;

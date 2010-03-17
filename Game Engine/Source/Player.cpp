@@ -7,9 +7,31 @@ Player::Player(float x,
 			   float y,
 			   int xBoundary,
 			   int yBoundary,
-			   Sprite * sprite)
-				: playerSprite(sprite),
-				  isJumping(false) {
+			   Variables * settings,
+			   LPDIRECT3DDEVICE9 d3dDevice)
+				: isJumping(false) {
+	this->settings = settings;
+	
+	int _x = 8,		_y = 8,		_s = _x * _y;
+	int _w = 126,	_h = 126,	_xi = _w + 2,	_yi = _h + 2;
+	int _sx = 1,	_sy = 1,	_c = 0;
+	SpriteSheetOffset * offsets = new SpriteSheetOffset[_s];
+	for(int i=0;i<_x;i++,_sx=1) {
+		for(int j=0;j<_y;j++) {
+			offsets[_c].x = _sx;
+			offsets[_c].y = _sy;
+			offsets[_c].w = _w;
+			offsets[_c].h = _h;
+			_sx += _xi;
+			_c++;
+		}
+		_sy += _yi;
+	}
+	playerSpriteSheet = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
+	playerSprites = new SpriteSheet(playerSpriteSheet, offsets, _s);
+	delete [] offsets;
+	playerSprite = playerSprites->getSprite(5);
+
 	this->boundary = D3DXVECTOR2((float) xBoundary, (float) yBoundary);
 	this->scale = D3DXVECTOR2(1, 1);
 	this->offset = D3DXVECTOR2(playerSprite->getWidth() / 2.0f, playerSprite->getHeight() / 2.0f);

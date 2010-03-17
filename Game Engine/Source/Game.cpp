@@ -21,23 +21,22 @@ Game::Game(Variables * settings,
 			 mouse(NULL),
 			 d3d(NULL),
 			 d3dDevice(NULL) {
+	this->settings = settings;
 	if(!verifySettings(settings)) {
 		quit("Error", "Settings file is invalid.");
 	}
-
+	
 	this->windowPosX = atoi(settings->getValue("Window Position Horizontal"));
 	this->windowPosY = atoi(settings->getValue("Window Position Vertical"));
 	this->windowWidth = atoi(settings->getValue("Window Width"));
 	this->windowHeight = atoi(settings->getValue("Window Height"));
-
-	this->settings = settings;
 	
 	if(!init(hInstance, WndProc, winClassName, title, nCmdShow)) {
 		quit("Error", "Error initializing game.");
 	}
 
-	playerSprite = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
-	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, playerSprite);
+//	playerSprite = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
+	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, settings, d3dDevice);
 
 	// create the main menu
 	mainMenu = new Menu("Melvin the Marvellous Monster from Mars", windowWidth, windowHeight, D3DCOLOR_RGBA(0, 255, 0, 255), D3DCOLOR_RGBA(0, 255, 0, 255), D3DCOLOR_RGBA(0, 170, 0, 255), d3dDevice);
@@ -54,9 +53,8 @@ Game::Game(Variables * settings,
 }
 
 Game::~Game() {
-	if(settings != NULL) { delete settings; }
-	if(playerSprite != NULL) { delete playerSprite; }
-	if(player != NULL) { delete player; }
+	delete settings;
+	delete player;
 	if(keyboard != NULL) {
 		keyboard->Unacquire();
 		keyboard->Release();

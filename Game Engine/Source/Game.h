@@ -39,7 +39,7 @@ private:
 	Variables * settings;
 
 //private:
-	Sprite * playerSprite;
+//	Sprite * playerSprite;
 	Player * player;
 
 	Menu * mainMenu;
