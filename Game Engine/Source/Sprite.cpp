@@ -33,6 +33,8 @@ Sprite::Sprite(char * fileName, char * directory, LPDIRECT3DDEVICE9 d3dDevice) :
 	this->yOffset = -1;
 
 	this->ownsSprite = true;
+	
+	D3DXMatrixScaling(&flipMatrix, -1, 1, 1);
 }
 
 Sprite::~Sprite() {
@@ -65,6 +67,27 @@ void Sprite::draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotati
 		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), position);
 
 		sprite->SetTransform(&transformationMatrix);
+
+		sprite->Begin(D3DXSPRITE_ALPHABLEND);
+
+		if(xOffset < 0 && yOffset < 0) {
+			sprite->Draw(texture, NULL, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
+		}
+		else {
+			RECT spriteRect = {xOffset, yOffset, xOffset + width, yOffset + height};
+			sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
+		}
+
+		sprite->End();
+	}
+}
+
+void Sprite::drawBackwards(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice) {
+	if(texture != NULL) {
+		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), position);
+		D3DXMatrixMultiply(&flippedTransformationMatrix, &flipMatrix, &transformationMatrix);
+
+		sprite->SetTransform(&flippedTransformationMatrix);
 
 		sprite->Begin(D3DXSPRITE_ALPHABLEND);
 

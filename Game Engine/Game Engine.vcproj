@@ -197,6 +197,18 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Source\Item.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Items.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Level.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Source\Main.h"
 					>
 				</File>
@@ -232,6 +244,18 @@
 				>
 				<File
 					RelativePath=".\Source\Game.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Item.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Items.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Level.cpp"
 					>
 				</File>
 				<File

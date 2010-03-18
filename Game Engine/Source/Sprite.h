@@ -6,12 +6,19 @@
 class Sprite {
 public:
 	Sprite(char * fileName, char * directory, LPDIRECT3DDEVICE9 d3dDevice);
-	Sprite::Sprite(int x, int y,
-				   int spriteWidth, int spriteHeight,
-				   LPDIRECT3DTEXTURE9 externalTexture, LPD3DXSPRITE externalSprite) :	xOffset(x), yOffset(y),
-																						width(spriteWidth), height(spriteHeight),
-																						texture(externalTexture), sprite(externalSprite),
-																						ownsSprite(false) { }
+	Sprite::Sprite(int x,
+				   int y,
+				   int spriteWidth,
+				   int spriteHeight,
+				   LPDIRECT3DTEXTURE9 externalTexture,
+				   LPD3DXSPRITE externalSprite)
+					: xOffset(x),
+					  yOffset(y),
+					  width(spriteWidth),
+					  height(spriteHeight),
+					  texture(externalTexture),
+					  sprite(externalSprite),
+					  ownsSprite(false) { D3DXMatrixScaling(&flipMatrix, -1, 1, 1); }
 	~Sprite();
 
 	int getOffsetX() { return xOffset; }
@@ -25,6 +32,7 @@ public:
 
 	void draw(D3DXMATRIX & transformation, LPDIRECT3DDEVICE9 d3dDevice);
 	void draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
+	void drawBackwards(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
 
 private:
 	LPDIRECT3DTEXTURE9 texture;
@@ -32,6 +40,8 @@ private:
 	bool ownsSprite;
 
 	D3DXMATRIX transformationMatrix;
+	D3DXMATRIX flipMatrix;
+	D3DXMATRIX flippedTransformationMatrix;
 
 	int xOffset;
 	int yOffset;

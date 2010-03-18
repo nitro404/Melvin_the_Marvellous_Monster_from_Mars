@@ -1,36 +1,24 @@
 #include "Player.h"
 
-int Player::movementSpeed = 6;
-float Player::maxJumpHeight = 27;
-
 Player::Player(float x,
 			   float y,
 			   int xBoundary,
 			   int yBoundary,
 			   Variables * settings,
 			   LPDIRECT3DDEVICE9 d3dDevice)
-				: isJumping(false) {
+				: movementSpeed(2.5),
+				  maxJumpHeight(27),
+				  isJumping(false),
+				  isMoving(0),
+				  movingAnimationSequence(0),
+				  movingAnimationInterval(15),
+				  movingAnimationEnd(movingAnimationInterval * 2) {
 	this->settings = settings;
 	
-	int _x = 8,		_y = 8,		_s = _x * _y;
-	int _w = 126,	_h = 126,	_xi = _w + 2,	_yi = _h + 2;
-	int _sx = 1,	_sy = 1,	_c = 0;
-	SpriteSheetOffset * offsets = new SpriteSheetOffset[_s];
-	for(int i=0;i<_x;i++,_sx=1) {
-		for(int j=0;j<_y;j++) {
-			offsets[_c].x = _sx;
-			offsets[_c].y = _sy;
-			offsets[_c].w = _w;
-			offsets[_c].h = _h;
-			_sx += _xi;
-			_c++;
-		}
-		_sy += _yi;
-	}
-	playerSpriteSheet = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
-	playerSprites = new SpriteSheet(playerSpriteSheet, offsets, _s);
-	delete [] offsets;
-	playerSprite = playerSprites->getSprite(5);
+	playerSpriteSheetImage = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
+	playerSpriteSheet = new SpriteSheet(playerSpriteSheetImage, 1, 1, 126, 126, 128, 128, true, 8, 8);
+	playerSprite = playerSpriteSheet->getSprite(5);
+	disguiseSprite = playerSpriteSheet->getSprite(35);
 
 	this->boundary = D3DXVECTOR2((float) xBoundary, (float) yBoundary);
 	this->scale = D3DXVECTOR2(1, 1);
@@ -38,7 +26,10 @@ Player::Player(float x,
 	this->position = D3DXVECTOR2(x, y - (playerSprite->getHeight() * scale.y));
 }
 
-Player::~Player() { }
+Player::~Player() {
+	delete playerSpriteSheet;
+	delete playerSpriteSheetImage;
+}
 
 void Player::tick() {
 	if(isJumping) {
@@ -50,10 +41,27 @@ void Player::tick() {
 		}
 	}
 	playerColour = D3DCOLOR_RGBA(255, 255, 255, 255);
+
+	if(isMoving != 0) {
+		playerSprite = playerSpriteSheet->getSprite(5 + (movingAnimationSequence / movingAnimationInterval));
+		disguiseSprite = playerSpriteSheet->getSprite(35 + (movingAnimationSequence / movingAnimationInterval));
+		
+		movingAnimationSequence++;
+		if(movingAnimationSequence > movingAnimationEnd) {
+			movingAnimationSequence = 0;
+		}
+	}
 }
 
 void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
-	playerSprite->draw(&scale, &offset, 0, NULL, &position, d3dDevice);
+	if(isMoving >= 0) {
+		playerSprite->draw(&scale, &offset, 0, NULL, &position, d3dDevice);
+		disguiseSprite->draw(&scale, &offset, 0, NULL, &position, d3dDevice);
+	}
+	else {
+		playerSprite->drawBackwards(&scale, &offset, 0, NULL, &position, d3dDevice);
+		disguiseSprite->drawBackwards(&scale, &offset, 0, NULL, &position, d3dDevice);
+	}
 }
 
 void Player::moveLeft() {

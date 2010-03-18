@@ -8,19 +8,36 @@ struct SpriteSheetOffset {
 
 class SpriteSheet {
 public:
-	SpriteSheet::SpriteSheet(Sprite * externalSpriteSheet, int x, int y, int w, int h, int xInc, int yInc, int count);
-	SpriteSheet::SpriteSheet(Sprite * externalSpriteSheet, SpriteSheetOffset * offsets, int count);
+	SpriteSheet(Sprite * externalSpriteSheet,
+				SpriteSheetOffset * offsets,
+				int numberOfSprites);
+
+	SpriteSheet(Sprite * externalSpriteSheet,
+				int xOffset,
+				int yOffset,
+				int width,
+				int height,
+				int xIncrement,
+				int yIncrement,
+				int numberOfSprites);
+
+	SpriteSheet(Sprite * externalSpriteSheet,
+				int xOffset,
+				int yOffset,
+				int width,
+				int height,
+				int xIncrement,
+				int yIncrement,
+				bool horizontal,
+				int numberOfRows,
+				int numOfColumns);
+	
 	~SpriteSheet();
 
-	Sprite * SpriteSheet::getSprite(int index);
+	Sprite * getSprite(int index);
+	vector<Sprite *> * getSprites(int startIndex, int endIndex);
 
 private:
 	vector<Sprite *> sprites;
-
-	int xOffset, yOffset;
-	int xIncrement, yIncrement;
-	int width, height;
-	int numberOfSprites;
-
 	Sprite * spriteSheet;
 };
