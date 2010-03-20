@@ -78,6 +78,10 @@ void Sprite::draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotati
 			sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
 
+#ifdef _DEBUG
+		testDrawPoint(d3dDevice, position->x, position->y);
+#endif
+
 		sprite->End();
 	}
 }
@@ -86,6 +90,8 @@ void Sprite::drawBackwards(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, flo
 	if(texture != NULL) {
 		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), position);
 		D3DXMatrixMultiply(&flippedTransformationMatrix, &flipMatrix, &transformationMatrix);
+		//D3DXMATRIX flipMatrixTranslation;
+//		D3DXMatrixTransformation2D(&transformationMatrix, NULL, 0, NULL, NULL, 0, );
 
 		sprite->SetTransform(&flippedTransformationMatrix);
 

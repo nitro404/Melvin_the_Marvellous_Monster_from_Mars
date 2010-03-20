@@ -45,8 +45,6 @@ void Text::setPosition(int x, int y) {
 }
 
 void Text::draw(const char * text, ...) {
-	int length = strlen(text);
-
 	char buffer[256];
 	va_list parameters;
 	va_start(parameters, text);

@@ -62,6 +62,7 @@ bool Items::removeItem(int itemIndex, bool deleteItem) {
 
 	if(deleteItem) { delete this->items.at(itemIndex); }
 	this->items.erase(this->items.begin() + itemIndex);
+	return true;
 }
 
 Item * Items::getItem(const char * itemName) {

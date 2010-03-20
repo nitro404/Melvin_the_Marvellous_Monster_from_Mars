@@ -5,8 +5,9 @@ Level::Level() {
 }
 
 Level::Level(char * fileName) {
+	ifstream in;
 	in.open(fileName); 
-	if(input.bad()) {
+	if(in.bad()) {
 		quit("ERROR: Unable to open level: \"%s\".", fileName);
 	}
 
