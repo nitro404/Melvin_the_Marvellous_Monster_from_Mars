@@ -86,12 +86,56 @@ void Sprite::draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotati
 	}
 }
 
+void Sprite::drawCentered(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice) {
+	if(texture != NULL) {
+		D3DXVECTOR2 center(position->x - scalingOffset->x, position->y - scalingOffset->y);
+		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), &center);
+
+		sprite->SetTransform(&transformationMatrix);
+
+		sprite->Begin(D3DXSPRITE_ALPHABLEND);
+
+		if(xOffset < 0 && yOffset < 0) {
+			sprite->Draw(texture, NULL, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
+		}
+		else {
+			RECT spriteRect = {xOffset, yOffset, xOffset + width, yOffset + height};
+			sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
+		}
+
+		sprite->End();
+	}
+}
+
 void Sprite::drawBackwards(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice) {
 	if(texture != NULL) {
-		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), position);
+		D3DXVECTOR2 flippedPosition(position->x + (scalingOffset->x * 2), position->y);
+		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), &flippedPosition);
 		D3DXMatrixMultiply(&flippedTransformationMatrix, &flipMatrix, &transformationMatrix);
 		//D3DXMATRIX flipMatrixTranslation;
 //		D3DXMatrixTransformation2D(&transformationMatrix, NULL, 0, NULL, NULL, 0, );
+
+		sprite->SetTransform(&flippedTransformationMatrix);
+
+		sprite->Begin(D3DXSPRITE_ALPHABLEND);
+
+		if(xOffset < 0 && yOffset < 0) {
+			sprite->Draw(texture, NULL, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
+		}
+		else {
+			RECT spriteRect = {xOffset, yOffset, xOffset + width, yOffset + height};
+			sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
+		}
+
+		sprite->End();
+	}
+}
+
+void Sprite::drawBackwardsCentered(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice) {
+	if(texture != NULL) {
+		D3DXVECTOR2 flippedCenter(position->x + scalingOffset->x, position->y - scalingOffset->y);
+		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), &flippedCenter);
+		D3DXMatrixMultiply(&flippedTransformationMatrix, &flipMatrix, &transformationMatrix);
 
 		sprite->SetTransform(&flippedTransformationMatrix);
 

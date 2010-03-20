@@ -18,6 +18,8 @@ public:
 	virtual float getY() { return position.y + offset.y; }
 	virtual float getOffsetX() { return offset.x; }
 	virtual float getOffsetY() { return offset.y; }
+	virtual float getHeight() { return size.x; }
+	virtual float getWidth() { return size.y; }
 
 	virtual float getOrientation() { return orientation; }
 	virtual float getVelocityX() { return velocity.x; }
@@ -49,6 +51,7 @@ protected:
 	float minScale;
 	float maxScale;
 	D3DXVECTOR2 scale;
+	D3DXVECTOR2 size;
 	float scaleSpeed;
 	bool scaleDirection;
 
