@@ -1,7 +1,6 @@
 import java.util.Vector;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Polygon;
 import java.io.*;
 
 public class Graph {

@@ -69,6 +69,7 @@ SpriteSheet::~SpriteSheet() {
 }
 
 Sprite * SpriteSheet::getSprite(int index) {
+	if(index < 0 || index >= (int) sprites.size()) { return NULL; }
 	return sprites.at(index);
 }
 

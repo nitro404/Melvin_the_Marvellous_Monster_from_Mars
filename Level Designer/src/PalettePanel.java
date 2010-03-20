@@ -1,10 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.io.*;
 import java.util.Vector;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 
 public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 	
@@ -12,7 +9,7 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 	
 	private EditorWindow editorWindow;
 	
-	private BufferedImage activeTile;
+	private Sprite activeSprite;
 	
 	private Vector<JRadioButton> paletteSelections;
 	
@@ -21,14 +18,14 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 		
 		createPaletteChooser();
 		
-		this.activeTile = EditorPanel.SHEEP;
-		this.editorWindow.editorPanel.activeTile = this.activeTile;
+		this.activeSprite = EditorPanel.ALIEN;
+		this.editorWindow.editorPanel.activeSprite = this.activeSprite;
 		
 		update();
 	}
 	
 	public void createPaletteChooser() {
-		int numberOfSprites = 4;
+		int numberOfSprites = 1;
 		paletteSelections = new Vector<JRadioButton>();
 		ButtonGroup paletteSelectionGroup = new ButtonGroup();
 		JRadioButton paletteSelection;
@@ -115,18 +112,9 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 		for(int i=0;i<paletteSelections.size();i++) {
 			if(e.getSource() == paletteSelections.elementAt(i)) {
 				if(i == 0) {
-					this.activeTile =  EditorPanel.SHEEP;
+					this.activeSprite =  EditorPanel.ALIEN;
 				}
-				else if(i == 1) {
-					this.activeTile =  EditorPanel.LANDMINE;
-				}
-				else if(i == 2) {
-					this.activeTile =  EditorPanel.ROCK;
-				}
-				else if(i == 3) {
-					this.activeTile =  EditorPanel.FENCE;
-				}
-				this.editorWindow.editorPanel.activeTile = this.activeTile;
+				this.editorWindow.editorPanel.activeSprite = this.activeSprite;
 			}
 		}
 		this.update();

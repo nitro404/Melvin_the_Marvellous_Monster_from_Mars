@@ -1,12 +1,11 @@
-import java.io.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
 public class PaletteWindow extends JFrame implements ActionListener {
 	
-	private EditorWindow editorWindow;
-	
+	private static final long serialVersionUID = 1L;
+
 	private PalettePanel palettePanel;
 	private JScrollPane palettePanelScrollPane;
 	
@@ -14,8 +13,6 @@ public class PaletteWindow extends JFrame implements ActionListener {
 		super("Palette");
 		setSize(200, 768);
 		setLocation(editorWindow.getX() + editorWindow.getWidth(), editorWindow.getY());
-		
-		this.editorWindow = editorWindow;
 		
 		palettePanel = new PalettePanel(editorWindow);
 		palettePanelScrollPane = new JScrollPane(palettePanel);

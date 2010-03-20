@@ -1,10 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.io.*;
-import java.util.Vector;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 
 public class EditorPanel extends JPanel implements Scrollable, ActionListener, MouseListener, MouseMotionListener {
 	
@@ -20,11 +16,10 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	private JMenuItem popupMenuDeleteVertex;
 	private JMenuItem popupMenuCancel;
 	
-	public BufferedImage activeTile;
-	public static BufferedImage SHEEP;
-	public static BufferedImage LANDMINE;
-	public static BufferedImage ROCK;
-	public static BufferedImage FENCE;
+	public Sprite activeSprite;
+	public static Sprite ALIEN_SPRITESHEET_IMAGE;
+	public static SpriteSheet ALIEN_SPRITESHEET;
+	public static Sprite ALIEN;
 	
 	private Point selectedGridBlock;
 	public static int mode;
@@ -46,7 +41,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		
 		mode = MODE_TILING;
 		selectedGridBlock = null;
-		activeTile = null;
+		activeSprite = null;
 		
 		loadImages();
 		
@@ -70,10 +65,9 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 	public void loadImages() {
 		try {
-			SHEEP = ImageIO.read(new File(EditorWindow.SPRITE_DIRECTORY + "\\sheep.png"));
-			LANDMINE = ImageIO.read(new File(EditorWindow.SPRITE_DIRECTORY + "\\landmine01.png"));
-			ROCK = ImageIO.read(new File(EditorWindow.SPRITE_DIRECTORY + "\\rocks.png"));
-			FENCE = ImageIO.read(new File(EditorWindow.SPRITE_DIRECTORY + "\\grass_fence03.png"));
+			ALIEN_SPRITESHEET_IMAGE = new Sprite("Alien.png", EditorWindow.SPRITE_DIRECTORY);
+			ALIEN_SPRITESHEET = new SpriteSheet(ALIEN_SPRITESHEET_IMAGE, 1, 1, 126, 126, 128, 128, true, 8, 8);
+			ALIEN = ALIEN_SPRITESHEET.getSprite(5);
 		}
 		catch(Exception e) { }
 	}
@@ -166,7 +160,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 			}
 		}
 		else if(mode == MODE_TILING) {
-			if(activeTile == SHEEP) {
+			if(activeSprite == ALIEN) {
 				world.objects.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0));
 			}
 		}
@@ -219,7 +213,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		selectedGridBlock = location;
 	}
 	
-	public void drawTile(BufferedImage tileToDraw, int x, int y, Graphics g) {
+	/*public void drawTile(BufferedImage tileToDraw, int x, int y, Graphics g) {
 		if(mode == MODE_TILING) {
 			Graphics2D g2 = (Graphics2D) g;
 			Point topLeft = new Point( x * World.GRID_SIZE, y * World.GRID_SIZE);
@@ -227,7 +221,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 			int yPos = topLeft.y;
 			g2.drawImage(tileToDraw, null, xPos, yPos);
 		}
-	}
+	}*/
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -237,10 +231,12 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 			world.paintOn(g);
 		}
 		
+		drawObjects(g);
+		
 		drawGrid(g);
 		
-		if(selectedGridBlock != null && activeTile != null) {
-			drawTile(activeTile, selectedGridBlock.x, selectedGridBlock.y, g);
+		if(selectedGridBlock != null && activeSprite != null) {
+			activeSprite.paintOn(g, selectedGridBlock.x * World.GRID_SIZE, selectedGridBlock.y * World.GRID_SIZE);
 		}
 	}
 	
@@ -284,6 +280,12 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		g.setColor(Color.RED);
 		if(selectedVertex != null && mode == MODE_DRAWING) {
 			selectedVertex.paintOn(g);
+		}
+	}
+	
+	public void drawObjects(Graphics g) {
+		for(int i=0;i<world.objects.size();i++) {
+			activeSprite.paintOn(g, world.objects.elementAt(i).location.x * World.GRID_SIZE, world.objects.elementAt(i).location.y * World.GRID_SIZE); 
 		}
 	}
 	
