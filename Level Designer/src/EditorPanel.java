@@ -22,14 +22,10 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	public static Sprite ALIEN;
 	
 	private Point selectedGridBlock;
-	public static int mode;
+	public int mode;
+	public boolean gridEnabled;
 	final public static int MODE_TILING = 0;
 	final public static int MODE_DRAWING = 1;
-	
-	private Point topLeft;
-	private Point topRight;
-	private Point bottomRight;
-	private Point bottomLeft;
 	
 	public EditorPanel() {
 		world = null;
@@ -40,6 +36,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		createPopupMenu();
 		
 		mode = MODE_TILING;
+		gridEnabled = true;
 		selectedGridBlock = null;
 		activeSprite = null;
 		
@@ -160,13 +157,24 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 			}
 		}
 		else if(mode == MODE_TILING) {
-			if(activeSprite == ALIEN) {
-				world.objects.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0));
+			if(selectedGridBlock != null && activeSprite == ALIEN) {
+				world.objects.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0, 0));
 			}
 		}
 		this.update();
 	}
-	public void mouseDragged(MouseEvent e) { }
+	public void mouseDragged(MouseEvent e) {
+		/*
+		if(mode == MODE_DRAWING) {
+			if(selectedVertex != null) {
+				selectedVertex.x = e.getPoint().x;
+				selectedVertex.y = e.getPoint().y;
+			}
+		}
+		this.repaint();
+		*/
+	}
+	
 	public void mouseMoved(MouseEvent e) {
 		if(mode == MODE_TILING) {
 			getSelectedGridBlock(e.getPoint());
@@ -213,16 +221,6 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		selectedGridBlock = location;
 	}
 	
-	/*public void drawTile(BufferedImage tileToDraw, int x, int y, Graphics g) {
-		if(mode == MODE_TILING) {
-			Graphics2D g2 = (Graphics2D) g;
-			Point topLeft = new Point( x * World.GRID_SIZE, y * World.GRID_SIZE);
-			int xPos = topLeft.x - World.GRID_SIZE;
-			int yPos = topLeft.y;
-			g2.drawImage(tileToDraw, null, xPos, yPos);
-		}
-	}*/
-	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
@@ -235,7 +233,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		
 		drawGrid(g);
 		
-		if(selectedGridBlock != null && activeSprite != null) {
+		if(mode == MODE_TILING && selectedGridBlock != null && activeSprite != null) {
 			activeSprite.paintOn(g, selectedGridBlock.x * World.GRID_SIZE, selectedGridBlock.y * World.GRID_SIZE);
 		}
 	}
@@ -244,36 +242,35 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		if(world != null) {
 			g.setColor(new Color(64, 64, 64));
 			
-			int w = World.GRID_SIZE;
-			for(int i=0;i<world.gridSize.x;i++) {
-				for(int j=0;j<world.gridSize.y;j++) {
-					topLeft =     new Point( i*w,     j*w);
-					topRight =    new Point((i*w)+w,  j*w);
-					bottomRight = new Point((i*w)+w, (j*w)+w);
-					bottomLeft =  new Point( i*w,    (j*w)+w);
-					
-					if(mode == MODE_TILING && selectedGridBlock != null && i == selectedGridBlock.x && j == selectedGridBlock.y) {
-						Graphics2D g2 = (Graphics2D) g;
-						Stroke s = g2.getStroke();
-						g2.setStroke(new BasicStroke(2));
-						g2.setColor(new Color(255, 0, 0));
-						
-						g2.drawLine(topLeft.x,     topLeft.y,     topRight.x,    topRight.y);
-						g2.drawLine(topRight.x,    topRight.y,    bottomRight.x, bottomRight.y);
-						g2.drawLine(bottomRight.x, bottomRight.y, bottomLeft.x,  bottomLeft.y);
-						g2.drawLine(bottomLeft.x,  bottomLeft.y,  topLeft.x,     topLeft.y);
-						
-						g2.setStroke(s);
-					}
-					else {
-						g.setColor(new Color(64, 64, 64));
-						
-						g.drawLine(topLeft.x,     topLeft.y,     topRight.x,    topRight.y);
-						g.drawLine(topRight.x,    topRight.y,    bottomRight.x, bottomRight.y);
-						g.drawLine(bottomRight.x, bottomRight.y, bottomLeft.x,  bottomLeft.y);
-						g.drawLine(bottomLeft.x,  bottomLeft.y,  topLeft.x,     topLeft.y);
-					}
+			if(gridEnabled) {
+				for(int i=0;i<world.gridSize.x+1;i++) {
+					g.drawLine(i * World.GRID_SIZE, 0, i * World.GRID_SIZE, world.gridSize.y * World.GRID_SIZE);
 				}
+				
+				for(int j=0;j<world.gridSize.y+1;j++) {
+					g.drawLine(0, j * World.GRID_SIZE, world.gridSize.x * World.GRID_SIZE, j * World.GRID_SIZE);
+				}
+				
+				if(mode == MODE_TILING && selectedGridBlock != null) {
+					Graphics2D g2 = (Graphics2D) g;
+					Stroke s = g2.getStroke();
+					g2.setStroke(new BasicStroke(2));
+					g2.setColor(new Color(255, 0, 0));
+					int w = World.GRID_SIZE;
+					int x = selectedGridBlock.x;
+					int y = selectedGridBlock.y;
+					g2.drawLine( x*w,     y*w,   (x*w)+w,  y*w);
+					g2.drawLine((x*w)+w,  y*w,   (x*w)+w, (y*w)+w);
+					g2.drawLine((x*w)+w, (y*w)+w, x*w,    (y*w)+w);
+					g2.drawLine( x*w,    (y*w)+w, x*w,     y*w);
+					g2.setStroke(s);
+				}
+			}
+			else {
+				g.drawLine(0, 0, 0, world.gridSize.y * World.GRID_SIZE);
+				g.drawLine(world.gridSize.x * World.GRID_SIZE, 0, world.gridSize.x * World.GRID_SIZE, world.gridSize.y * World.GRID_SIZE);
+				g.drawLine(0, 0, world.gridSize.x * World.GRID_SIZE, 0);
+				g.drawLine(0, world.gridSize.y * World.GRID_SIZE, world.gridSize.x * World.GRID_SIZE, world.gridSize.y * World.GRID_SIZE);
 			}
 		}
 		

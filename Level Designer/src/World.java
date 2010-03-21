@@ -94,6 +94,19 @@ public class World {
 			return null;
 		}
 		
+		// read in the grid size
+		input = in.readLine();
+		String gridSizeHeader = input.substring(0, input.indexOf(':', 0)).trim();
+		if(!gridSizeHeader.equals("Grid Size")) {
+			System.out.println("ERROR: Corrupted world file. Expected header \"Grid Size\", found \"" + gridSizeHeader + "\".");
+			return null;
+		}
+		int fileGridSize = Integer.valueOf(input.substring(input.indexOf(':', 0) + 1, input.length()).trim());
+		if(fileGridSize != GRID_SIZE) {
+			System.out.println("ERROR: Incompatible grid size: " + fileGridSize + ". The editor only supports a grid size of " + GRID_SIZE + ".");
+			return null;
+		}
+		
 		// read in the map dimensions
 		input = in.readLine();
 		String dimensionsHeader = input.substring(0, input.indexOf(':', 0)).trim();
@@ -184,6 +197,9 @@ public class World {
 	public void writeTo(PrintWriter out) throws IOException {
 		// write the world header and version
 		out.println(WORLD_TYPE + ": Version " + WORLD_VERSION);
+		
+		// write grid size
+		out.println("Grid Size: " + GRID_SIZE);
 		
 		// write the dimensions
 		out.print("Dimensions: ");

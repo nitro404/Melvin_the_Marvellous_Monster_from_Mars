@@ -25,6 +25,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	private JMenu menuView;
 	private JMenuItem menuViewPalette;
 	private JMenuItem menuViewDimensions;
+	private JMenuItem menuViewGridToggle;
 	private JMenu menuMode;
 	private JMenuItem menuModeTile;
 	private JMenuItem menuModeDraw;
@@ -71,6 +72,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuView = new JMenu("View");
 		menuViewPalette = new JMenuItem("Palette");
 		menuViewDimensions = new JMenuItem("Map Dimensions");
+		menuViewGridToggle = new JMenuItem("Toggle Grid");
 		menuMode = new JMenu("Mode");
 		menuModeTile = new JMenuItem("Tile Textures");
 		menuModeDraw = new JMenuItem("Draw Boundaries");
@@ -83,6 +85,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuFileExit.addActionListener(this);
 		menuViewPalette.addActionListener(this);
 		menuViewDimensions.addActionListener(this);
+		menuViewGridToggle.addActionListener(this);
 		menuMode.addActionListener(this);
 		menuModeTile.addActionListener(this);
 		menuModeDraw.addActionListener(this);
@@ -95,6 +98,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuFile.add(menuFileExit);
 		menuView.add(menuViewPalette);
 		menuView.add(menuViewDimensions);
+		menuView.add(menuViewGridToggle);
 		menuMode.add(menuModeTile);
 		menuMode.add(menuModeDraw);
 		menuHelp.add(menuHelpAbout);
@@ -131,11 +135,15 @@ public class EditorWindow extends JFrame implements ActionListener {
 		else if(e.getSource() == menuViewDimensions) {
 			setMapDimensions(world);
 		}
+		else if(e.getSource() == menuViewGridToggle) {
+			editorPanel.gridEnabled = !editorPanel.gridEnabled;
+			update();
+		}
 		else if(e.getSource() == menuModeTile) {
-			EditorPanel.mode = EditorPanel.MODE_TILING;
+			editorPanel.mode = EditorPanel.MODE_TILING;
 		}
 		else if(e.getSource() == menuModeDraw) {
-			EditorPanel.mode = EditorPanel.MODE_DRAWING;
+			editorPanel.mode = EditorPanel.MODE_DRAWING;
 		}
 		else if(e.getSource() == menuHelpAbout) {
 			JOptionPane.showMessageDialog(this, "2D Level Designer created by Kevin Scroggins.", "2D Level Designer", JOptionPane.INFORMATION_MESSAGE);

@@ -122,3 +122,53 @@ protected:
 
 	delete [] offsets;
 
+
+
+			/*
+			int w = World.GRID_SIZE;
+			for(int i=0;i<world.gridSize.x;i++) {
+				for(int j=0;j<world.gridSize.y;j++) {
+					topLeft =     new Point( i*w,     j*w);
+					topRight =    new Point((i*w)+w,  j*w);
+					bottomRight = new Point((i*w)+w, (j*w)+w);
+					bottomLeft =  new Point( i*w,    (j*w)+w);
+					
+					if(mode == MODE_TILING && selectedGridBlock != null && i == selectedGridBlock.x && j == selectedGridBlock.y) {
+						Graphics2D g2 = (Graphics2D) g;
+						Stroke s = g2.getStroke();
+						g2.setStroke(new BasicStroke(2));
+						g2.setColor(new Color(255, 0, 0));
+						
+						g2.drawLine(topLeft.x,     topLeft.y,     topRight.x,    topRight.y);
+						g2.drawLine(topRight.x,    topRight.y,    bottomRight.x, bottomRight.y);
+						g2.drawLine(bottomRight.x, bottomRight.y, bottomLeft.x,  bottomLeft.y);
+						g2.drawLine(bottomLeft.x,  bottomLeft.y,  topLeft.x,     topLeft.y);
+						
+						g2.setStroke(s);
+					}
+					else {
+						g.setColor(new Color(64, 64, 64));
+						
+						g.drawLine(topLeft.x,     topLeft.y,     topRight.x,    topRight.y);
+						g.drawLine(topRight.x,    topRight.y,    bottomRight.x, bottomRight.y);
+						g.drawLine(bottomRight.x, bottomRight.y, bottomLeft.x,  bottomLeft.y);
+						g.drawLine(bottomLeft.x,  bottomLeft.y,  topLeft.x,     topLeft.y);
+					}
+				}
+			}
+			*/
+
+
+
+	/*public void drawTile(BufferedImage tileToDraw, int x, int y, Graphics g) {
+		if(mode == MODE_TILING) {
+			Graphics2D g2 = (Graphics2D) g;
+			Point topLeft = new Point( x * World.GRID_SIZE, y * World.GRID_SIZE);
+			int xPos = topLeft.x - World.GRID_SIZE;
+			int yPos = topLeft.y;
+			g2.drawImage(tileToDraw, null, xPos, yPos);
+		}
+	}*/
+
+
+
