@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.StringTokenizer;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -8,8 +9,20 @@ public class EditorWindow extends JFrame implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	
-	final public static String MAP_DIRECTORY = "..\\Maps";
-	final public static String SPRITE_DIRECTORY = "..\\Sprites";
+	final public static String DEFAULT_SETTINGS_FILE = "settings.ini";
+	final public static String DEFAULT_MAP_DIRECTORY = "..\\Maps";
+	final public static String DEFAULT_SPRITE_DIRECTORY = "..\\Sprites";
+	private int DEFAULT_EDITOR_WIDTH = 1024;
+	private int DEFAULT_EDITOR_HEIGHT = 768;
+	private int DEFAULT_XPOS = 0;
+	private int DEFAULT_YPOS = 0;
+	
+	private String settingsFileName;
+	public Variables settings;
+	public String mapDirectory;
+	public String spriteDirectory;
+	private Dimension initialEditorSize;
+	private Point initialEditorPosition;
 	
 	public World world;
 	
@@ -39,21 +52,30 @@ public class EditorWindow extends JFrame implements ActionListener {
 	
 	private JFileChooser fileChooser; 
 	
-	public EditorWindow() {
+	public EditorWindow(String settingsFileName) {
 		super("2D Cartesian Level Editor");
-		setSize(1024, 768);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
+		if(!loadSettings(settingsFileName)) {
+			mapDirectory = DEFAULT_MAP_DIRECTORY;
+			spriteDirectory = DEFAULT_SPRITE_DIRECTORY;
+			initialEditorPosition = new Point(DEFAULT_XPOS, DEFAULT_YPOS);
+			initialEditorSize = new Dimension(DEFAULT_EDITOR_WIDTH, DEFAULT_EDITOR_HEIGHT);
+		}
+		
+		setSize(initialEditorSize.width, initialEditorSize.height);
+		setLocation(initialEditorPosition.x, initialEditorPosition.y);
+		
 		fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir") + "\\" + MAP_DIRECTORY).getAbsoluteFile());
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir") + "\\" + mapDirectory).getAbsoluteFile());
 		
 		createMenu();
 		
-		editorPanel = new EditorPanel();
+		editorPanel = new EditorPanel(spriteDirectory, settings);
 		editorPanelScrollPane = new JScrollPane(editorPanel);
 		add(editorPanelScrollPane);
 		
-		paletteWindow = new PaletteWindow(this);
+		paletteWindow = new PaletteWindow(this, settings);
 		paletteWindow.setVisible(true);
 		
 		createNewMap();
@@ -61,7 +83,63 @@ public class EditorWindow extends JFrame implements ActionListener {
 		update();
 	}
 	
-	public void createMenu() {
+	private boolean loadSettings(String settingsFileName) {
+		this.settingsFileName = settingsFileName;
+		if(settingsFileName == null || settingsFileName.trim().length() == 0) {
+			this.settingsFileName = DEFAULT_SETTINGS_FILE;
+		}
+		
+		settings = new Variables();
+		if(!settings.parseFrom(settingsFileName)) {
+			settings = null;
+			return false;
+		}
+		
+		mapDirectory = settings.getValue("Map Directory");
+		if(mapDirectory == null) {
+			mapDirectory = DEFAULT_MAP_DIRECTORY;
+		}
+		spriteDirectory = settings.getValue("Sprite Directory");
+		if(spriteDirectory != null) {
+			File temp = new File(spriteDirectory);
+			if(!temp.exists() || !temp.isDirectory()) {
+				spriteDirectory = DEFAULT_SPRITE_DIRECTORY;
+			}
+		}
+		else {
+			spriteDirectory = DEFAULT_SPRITE_DIRECTORY;
+		}
+		
+		initialEditorPosition = Utilities.parsePoint(settings.getValue("Editor Window Position"));
+		if(initialEditorPosition == null) { initialEditorPosition = new Point(DEFAULT_XPOS, DEFAULT_YPOS); }
+		
+		initialEditorSize = Utilities.parseDimension(settings.getValue("Editor Window Size"));
+		if(initialEditorSize == null) { initialEditorSize = new Dimension(DEFAULT_EDITOR_WIDTH, DEFAULT_EDITOR_HEIGHT); }
+		
+		return true;
+	}
+	
+	//gridColor = JColorChooser.showDialog(this, "Choose Grid Colour", gridColor);
+	private void saveSettings() {
+		PrintWriter out;
+		try {
+			out = new PrintWriter(new FileWriter(settingsFileName));
+			out.println("Map Directory: " + mapDirectory);
+			out.println("Sprite Directory: " + spriteDirectory);
+			out.println("Editor Window Position: " + this.getLocation().x + ", " + this.getLocation().y);
+			out.println("Editor Window Size: " + this.getWidth() + ", " + this.getHeight());
+			out.println("Palette Window Position: " + this.paletteWindow.getLocation().x + ", " + this.paletteWindow.getLocation().y);
+			out.println("Palette Window Size: " + this.paletteWindow.getWidth() + ", " + this.paletteWindow.getHeight());
+			out.println("Grid Colour: " + this.editorPanel.gridColour.getRed() + ", " + this.editorPanel.gridColour.getGreen() + ", " + this.editorPanel.gridColour.getBlue());
+			out.println("Line Colour: " + this.editorPanel.lineColour.getRed() + ", " + this.editorPanel.lineColour.getGreen() + ", " + this.editorPanel.lineColour.getBlue());
+			out.println("Vertex Colour: " + this.editorPanel.vertexColour.getRed() + ", " + this.editorPanel.vertexColour.getGreen() + ", " + this.editorPanel.vertexColour.getBlue());
+			out.println("Selected Colour: " + this.editorPanel.selectedColour.getRed() + ", " + this.editorPanel.selectedColour.getGreen() + ", " + this.editorPanel.selectedColour.getBlue());
+			out.close();
+		}
+		catch(IOException e) { }
+	}
+	
+	private void createMenu() {
 		menu = new JMenuBar();
 		
 		menuFile = new JMenu("File");
@@ -78,7 +156,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuModeDraw = new JMenuItem("Draw Boundaries");
 		menuHelp = new JMenu("Help");
 		menuHelpAbout = new JMenuItem("About");
-		
+			
 		menuFileNewMap.addActionListener(this);
 		menuFileOpenMap.addActionListener(this);
 		menuFileSaveMap.addActionListener(this);

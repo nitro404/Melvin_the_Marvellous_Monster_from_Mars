@@ -6,27 +6,27 @@ import java.io.*;
 public class Graph {
 	
 	public Vector<Edge> edges;
-	public Vector<Vertex> verticies;
+	public Vector<Vertex> vertices;
 	
 	public Graph() {
 		this.edges = new Vector<Edge>();
-		this.verticies = new Vector<Vertex>();
+		this.vertices = new Vector<Vertex>();
 	}
 	
 	public void addVertex(Vertex v) {
-		if(v != null && !this.verticies.contains(v)) {
-			this.verticies.add(v);
+		if(v != null && !this.vertices.contains(v)) {
+			this.vertices.add(v);
 		}
 	}
 	
 	public void addEdge(Edge e) {
 		if(e != null && !this.edges.contains(e)) {
 			this.edges.add(e);
-			if(e.a != null && !this.verticies.contains(e.a)) {
-				this.verticies.add(e.a);
+			if(e.a != null && !this.vertices.contains(e.a)) {
+				this.vertices.add(e.a);
 			}
-			if(e.b != null && !this.verticies.contains(e.b)) {
-				this.verticies.add(e.b);
+			if(e.b != null && !this.vertices.contains(e.b)) {
+				this.vertices.add(e.b);
 			}
 		}
 	}
@@ -62,8 +62,8 @@ public class Graph {
 		for(int i=0;i<this.edges.size();i++) {
 			this.edges.elementAt(i).paintOn(g);
 		}
-		for(int i=0;i<this.verticies.size();i++) {
-			this.verticies.elementAt(i).paintOn(g);
+		for(int i=0;i<this.vertices.size();i++) {
+			this.vertices.elementAt(i).paintOn(g);
 		}
 	}
 	

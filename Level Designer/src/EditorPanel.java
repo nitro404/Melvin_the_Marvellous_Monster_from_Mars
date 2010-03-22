@@ -7,9 +7,11 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	private static final long serialVersionUID = 1L;
 	
 	private World world;
+	private String spriteDirectory;
 	
 	private Vertex selectedPoint;
 	private Vertex selectedVertex;
+	private Vertex vertexToMove;
 	
 	private JPopupMenu popupMenu;
 	private JMenuItem popupMenuNewVertex;
@@ -26,12 +28,22 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	public boolean gridEnabled;
 	final public static int MODE_TILING = 0;
 	final public static int MODE_DRAWING = 1;
+	final private static int DEFAULT_SELECTION_RADIUS = 6;
+	public Color selectedColour;
+	public Color gridColour;
+	public Color lineColour;
+	public Color vertexColour; 
 	
-	public EditorPanel() {
+	final private int doubleClickSpeed = 200;
+	private long lastMouseDown = 0;
+	
+	public EditorPanel(String spriteDirectory, Variables settings) {
 		world = null;
 		setLayout(null);
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		
+		this.spriteDirectory = spriteDirectory;
 		
 		createPopupMenu();
 		
@@ -40,12 +52,40 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		selectedGridBlock = null;
 		activeSprite = null;
 		
+		selectedPoint = null;
+		selectedVertex = null;
+		vertexToMove = null;
+	
+		loadSettings(settings);
+		
 		loadImages();
 		
 		update();
 	}
 	
-	public void createPopupMenu() {
+	private void loadSettings(Variables settings) {
+		gridColour = new Color(64, 64, 64);
+		lineColour = new Color(0, 0, 0);
+		vertexColour = new Color(0, 0, 0);
+		selectedColour = new Color(255, 0, 0);
+		if(settings != null) {
+			Color temp;
+			if((temp = Utilities.parseColour(settings.getValue("Grid Colour"))) != null) {
+				gridColour = temp;
+			}
+			if((temp = Utilities.parseColour(settings.getValue("Line Colour"))) != null) {
+				lineColour = temp;
+			}
+			if((temp = Utilities.parseColour(settings.getValue("Vertex Colour"))) != null) {
+				vertexColour = temp;
+			}
+			if((temp = Utilities.parseColour(settings.getValue("Selected Colour"))) != null) {
+				selectedColour = temp;
+			}
+		}
+	}
+	
+	private void createPopupMenu() {
 		popupMenu = new JPopupMenu();
 		popupMenuNewVertex = new JMenuItem("Create Vertex");
 		popupMenuDeleteVertex = new JMenuItem("Delete Vertex");
@@ -62,7 +102,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 	public void loadImages() {
 		try {
-			ALIEN_SPRITESHEET_IMAGE = new Sprite("Alien.png", EditorWindow.SPRITE_DIRECTORY);
+			ALIEN_SPRITESHEET_IMAGE = new Sprite("Alien.png", spriteDirectory);
 			ALIEN_SPRITESHEET = new SpriteSheet(ALIEN_SPRITESHEET_IMAGE, 1, 1, 126, 126, 128, 128, true, 8, 8);
 			ALIEN = ALIEN_SPRITESHEET.getSprite(5);
 		}
@@ -129,13 +169,33 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	public void mouseClicked(MouseEvent e) { }
 	public void mouseEntered(MouseEvent e) { }
 	public void mouseExited(MouseEvent e) { }
-	public void mousePressed(MouseEvent e) { }
+	
+	public void mousePressed(MouseEvent e) {
+		vertexToMove = null;
+		if(e.getButton() == MouseEvent.BUTTON1) {
+			if(e.getWhen() - lastMouseDown < doubleClickSpeed) {
+				world.addVertex(new Vertex(selectedPoint.x, selectedPoint.y));
+			}
+		}
+		else if(e.getButton() == MouseEvent.BUTTON2) {
+			Vertex previousVertex = selectedVertex;
+			Vertex previousPoint = selectedPoint;
+			
+			selectedPoint = new Vertex(e.getPoint());
+			selectVertex(e.getPoint(), DEFAULT_SELECTION_RADIUS);
+			vertexToMove = selectedVertex; 
+			
+			selectedVertex = previousVertex;
+			previousVertex = previousPoint;
+		}
+		lastMouseDown = e.getWhen();
+	}
 	
 	public void mouseReleased(MouseEvent e) {
 		if(mode == MODE_DRAWING) {
 			if(e.getButton() == MouseEvent.BUTTON3) {
 				selectedPoint = new Vertex(e.getPoint());
-				selectVertex();
+				selectVertex(e.getPoint(), DEFAULT_SELECTION_RADIUS);
 				popupMenuDeleteVertex.setEnabled(selectedVertex != null);
 				popupMenu.show(this, e.getX(), e.getY());
 			}
@@ -145,34 +205,40 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 					previousVertex = selectedVertex; 
 				}
 				selectedPoint = new Vertex(e.getPoint());
-				selectVertex();
+				selectVertex(e.getPoint(), DEFAULT_SELECTION_RADIUS);
 				
 				if(previousVertex != null && selectedVertex != null && !previousVertex.equals(selectedVertex)) {
+					Edge newEdge = new Edge(previousVertex, selectedVertex);
+					
+					if(this.world.edges.containsEdge(newEdge) ||
+					   this.world.edges.containsEdge(new Edge(selectedVertex, previousVertex))) {
+						return;
+					}
+					
 					int result = JOptionPane.showConfirmDialog(this, "Create edge?", "Edge Creation", JOptionPane.YES_NO_OPTION);
 					if(result == JOptionPane.YES_OPTION) {
-						this.world.addEdge(new Edge(new Vertex(previousVertex.x, previousVertex.y),
-													new Vertex(selectedVertex.x, selectedVertex.y)));
+						this.world.addEdge(newEdge);
 					}
 				}
 			}
 		}
 		else if(mode == MODE_TILING) {
-			if(selectedGridBlock != null && activeSprite == ALIEN) {
-				world.objects.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0, 0));
+			if(e.getButton() == MouseEvent.BUTTON1) {
+				if(selectedGridBlock != null && activeSprite == ALIEN) {
+					world.objects.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0, 0));
+				}
 			}
 		}
 		this.update();
 	}
 	public void mouseDragged(MouseEvent e) {
-		/*
 		if(mode == MODE_DRAWING) {
-			if(selectedVertex != null) {
-				selectedVertex.x = e.getPoint().x;
-				selectedVertex.y = e.getPoint().y;
+			if(vertexToMove != null) {
+				vertexToMove.x = e.getPoint().x;
+				vertexToMove.y = e.getPoint().y;
 			}
 		}
 		this.repaint();
-		*/
 	}
 	
 	public void mouseMoved(MouseEvent e) {
@@ -196,13 +262,14 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		this.update();
 	}
 	
-	public void selectVertex() {
-		double maxRadius = 6;
+	public void selectVertex(Point p, int r) {
+		if(p == null) { return; }
+		if(r < 0) { r = 6; }
 		selectedVertex = null;
 		if(world != null) {
-			for(int i=0;i<world.edges.verticies.size();i++) {
-				Vertex v = world.edges.verticies.elementAt(i);
-				if(Math.sqrt( Math.pow( (selectedPoint.x - v.x) , 2) + Math.pow( (selectedPoint.y - v.y) , 2) ) <= maxRadius) {
+			for(int i=0;i<world.edges.vertices.size();i++) {
+				Vertex v = world.edges.vertices.elementAt(i);
+				if(Math.sqrt( Math.pow( (selectedPoint.x - v.x) , 2) + Math.pow( (selectedPoint.y - v.y) , 2) ) <= r) {
 					selectedVertex = v;
 				}
 			}
@@ -240,7 +307,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 	public void drawGrid(Graphics g) {
 		if(world != null) {
-			g.setColor(new Color(64, 64, 64));
+			g.setColor(gridColour);
 			
 			if(gridEnabled) {
 				for(int i=0;i<world.gridSize.x+1;i++) {
@@ -255,7 +322,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 					Graphics2D g2 = (Graphics2D) g;
 					Stroke s = g2.getStroke();
 					g2.setStroke(new BasicStroke(2));
-					g2.setColor(new Color(255, 0, 0));
+					g2.setColor(selectedColour);
 					int w = World.GRID_SIZE;
 					int x = selectedGridBlock.x;
 					int y = selectedGridBlock.y;
@@ -274,9 +341,14 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 			}
 		}
 		
-		g.setColor(Color.RED);
-		if(selectedVertex != null && mode == MODE_DRAWING) {
-			selectedVertex.paintOn(g);
+		g.setColor(selectedColour);
+		if(mode == MODE_DRAWING) {
+			if(vertexToMove != null) {
+				vertexToMove.paintOn(g);
+			}
+			else if(selectedVertex != null) {
+				selectedVertex.paintOn(g);
+			}
 		}
 	}
 	

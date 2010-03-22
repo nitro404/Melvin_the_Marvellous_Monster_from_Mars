@@ -1,0 +1,7 @@
+LEVEL DESIGNER
+   + Snap to grid (move only)
+   + Implement save settings and colour changers (see EditorWindow.saveSettings())
+
+NON-ESSENTIAL
+ + Change grid colour
+ + Change boundary colour

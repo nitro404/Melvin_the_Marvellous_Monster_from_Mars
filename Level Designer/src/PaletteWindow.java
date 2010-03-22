@@ -1,3 +1,5 @@
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -5,20 +7,42 @@ import javax.swing.*;
 public class PaletteWindow extends JFrame implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
+	
+	final public static int DEFAULT_PALETTE_WIDTH = 200;
+	final public static int DEFAULT_PALETTE_HEIGHT = 768;
+	
+	private Point initialPalettePosition;
+	private Dimension initialPaletteSize;
 
 	private PalettePanel palettePanel;
 	private JScrollPane palettePanelScrollPane;
 	
-	public PaletteWindow(EditorWindow editorWindow) {
+	public PaletteWindow(EditorWindow editorWindow, Variables settings) {
 		super("Palette");
-		setSize(200, 768);
-		setLocation(editorWindow.getX() + editorWindow.getWidth(), editorWindow.getY());
+		
+		loadSettings(settings, editorWindow);
+		
+		setSize(initialPaletteSize.width, initialPaletteSize.height);
+		setLocation(initialPalettePosition.x, initialPalettePosition.y);
 		
 		palettePanel = new PalettePanel(editorWindow);
 		palettePanelScrollPane = new JScrollPane(palettePanel);
 		add(palettePanelScrollPane);
 		
 		update();
+	}
+	
+	private void loadSettings(Variables settings, EditorWindow editorWindow) {
+		if(editorWindow == null) { initialPalettePosition = new Point(0, 0); }
+		else { initialPalettePosition = new Point(editorWindow.getX() + editorWindow.getWidth(), editorWindow.getY()); }
+		initialPaletteSize = new Dimension(DEFAULT_PALETTE_WIDTH, DEFAULT_PALETTE_HEIGHT);
+		
+		if(settings != null) {
+			Point p;
+			Dimension d;
+			if((p = Utilities.parsePoint(settings.getValue("Palette Window Position"))) != null) { initialPalettePosition = p; }
+			if((d = Utilities.parseDimension(settings.getValue("Palette Window Size"))) != null) { initialPaletteSize = d; }
+		}
 	}
 	
 	public void actionPerformed(ActionEvent e) { update(); }

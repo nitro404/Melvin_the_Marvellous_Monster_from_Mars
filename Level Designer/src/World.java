@@ -30,7 +30,7 @@ public class World {
 	}
 	
 	public void removeVertex(Vertex v) {
-		edges.verticies.remove(v);
+		edges.vertices.remove(v);
 		Vector<Edge> edgesToRemove = new Vector<Edge>();
 		for(int i=0;i<edges.size();i++) {
 			if(this.edges.edges.elementAt(i).a.equals(v) || this.edges.edges.elementAt(i).b.equals(v)) {
