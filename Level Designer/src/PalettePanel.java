@@ -18,6 +18,8 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 		
 		createPaletteChooser();
 		
+//		this.activeSprite = EditorPanel.ALIEN;
+		EditorPanel.ALIEN = EditorPanel.PLACEHOLDER;
 		this.activeSprite = EditorPanel.ALIEN;
 		this.editorWindow.editorPanel.activeSprite = this.activeSprite;
 		

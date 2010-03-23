@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 public class EditorPanel extends JPanel implements Scrollable, ActionListener, MouseListener, MouseMotionListener {
@@ -8,6 +9,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 	private World world;
 	private String spriteDirectory;
+	private String spriteSheetFileName;
 	
 	private Vertex selectedPoint;
 	private Vertex selectedVertex;
@@ -22,6 +24,10 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	public static Sprite ALIEN_SPRITESHEET_IMAGE;
 	public static SpriteSheet ALIEN_SPRITESHEET;
 	public static Sprite ALIEN;
+	public static Sprite PLACEHOLDER_SPRITESHEET_IMAGE;
+	public static SpriteSheet PLACEHOLDER_SPRITESHEET;
+	public static Sprite PLACEHOLDER;
+	public static SpriteSheet PLACEHOLDER_SPRITESHEET2;
 	
 	private Point selectedGridBlock;
 	public int mode;
@@ -37,13 +43,14 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	final private int doubleClickSpeed = 200;
 	private long lastMouseDown = 0;
 	
-	public EditorPanel(String spriteDirectory, Variables settings) {
+	public EditorPanel(String spriteDirectory, String spriteSheetFileName, Variables settings) {
 		world = null;
 		setLayout(null);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		
 		this.spriteDirectory = spriteDirectory;
+		this.spriteSheetFileName = spriteSheetFileName;
 		
 		createPopupMenu();
 		
@@ -102,9 +109,22 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 	public void loadImages() {
 		try {
+			SpriteSheets spriteSheets = SpriteSheets.parseFrom(spriteSheetFileName, spriteDirectory);
+			ALIEN_SPRITESHEET = spriteSheets.getSpriteSheet("Alien");
+			PLACEHOLDER_SPRITESHEET = spriteSheets.getSpriteSheet("Placeholder 1");  
+			PLACEHOLDER_SPRITESHEET2 = spriteSheets.getSpriteSheet("Placeholder 2");
+			/*
 			ALIEN_SPRITESHEET_IMAGE = new Sprite("Alien.png", spriteDirectory);
-			ALIEN_SPRITESHEET = new SpriteSheet(ALIEN_SPRITESHEET_IMAGE, 1, 1, 126, 126, 128, 128, true, 8, 8);
-			ALIEN = ALIEN_SPRITESHEET.getSprite(5);
+			ALIEN_SPRITESHEET = new SpriteSheet(ALIEN_SPRITESHEET_IMAGE, "Alien", 1, 1, 126, 126, 128, 128, true, 8, 8);
+			ALIEN = ALIEN_SPRITESHEET.getSprite(0);
+			PLACEHOLDER_SPRITESHEET_IMAGE = new Sprite("Placeholder1.png", spriteDirectory);
+			PLACEHOLDER_SPRITESHEET = new SpriteSheet(PLACEHOLDER_SPRITESHEET_IMAGE, "Placeholder 1", 1, 1, 64, 64, 66, 66, true, 1, 2);
+			PLACEHOLDER = PLACEHOLDER_SPRITESHEET.getSprite(0);
+			*/
+			ALIEN = ALIEN_SPRITESHEET.getSprite(0);
+			PLACEHOLDER = PLACEHOLDER_SPRITESHEET.getSprite(0);
+			
+			PLACEHOLDER = PLACEHOLDER_SPRITESHEET2.getSprite("Christmas Tree");
 		}
 		catch(Exception e) { }
 	}
@@ -174,7 +194,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		vertexToMove = null;
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			if(e.getWhen() - lastMouseDown < doubleClickSpeed) {
-				world.addVertex(new Vertex(selectedPoint.x, selectedPoint.y));
+				world.addVertex(new Vertex(e.getPoint()));
 			}
 		}
 		else if(e.getButton() == MouseEvent.BUTTON2) {
@@ -293,7 +313,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		
 		if(world != null) {
 			g.clearRect(0, 0, this.getWidth(), this.getHeight());
-			world.paintOn(g);
+			world.paintOn(g, lineColour, vertexColour);
 		}
 		
 		drawObjects(g);

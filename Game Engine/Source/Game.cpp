@@ -337,20 +337,16 @@ void Game::processMainMenuInput() {
 }
 
 void Game::processPlayerInput() {
-	player->isMoving = 0;
-
 	if(mainMenuActive || helpScreenActive) { return; }
 
 	if(keyboardState[DIK_LEFT] & 0x80 || keyboardState[DIK_A] & 0x80) {
 		player->moveLeft();
-		if(player->isMoving != 0) { player->isMoving = 0; }
-		else { player->isMoving = -1; }
+		player->isMoving = -1;
 	}
 	
 	if(keyboardState[DIK_RIGHT] & 0x80 || keyboardState[DIK_D] & 0x80) {
 		player->moveRight();
-		if(player->isMoving != 0) { player->isMoving = 0; }
-		else { player->isMoving = 1; }
+		player->isMoving = 1;
 	}
 	
 	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {

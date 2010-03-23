@@ -10,6 +10,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	
 	final public static String DEFAULT_SETTINGS_FILE = "settings.ini";
+	final public static String DEFAULT_SPRITESHEET_FILE = "spritesheets.ini";
 	final public static String DEFAULT_MAP_DIRECTORY = "..\\Maps";
 	final public static String DEFAULT_SPRITE_DIRECTORY = "..\\Sprites";
 	private int DEFAULT_EDITOR_WIDTH = 1024;
@@ -18,6 +19,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	private int DEFAULT_YPOS = 0;
 	
 	private String settingsFileName;
+	private String spriteSheetFileName;
 	public Variables settings;
 	public String mapDirectory;
 	public String spriteDirectory;
@@ -34,11 +36,16 @@ public class EditorWindow extends JFrame implements ActionListener {
 	private JMenuItem menuFileNewMap;
 	private JMenuItem menuFileOpenMap;
 	private JMenuItem menuFileSaveMap;
+	private JMenuItem menuFileSaveSettings;
 	private JMenuItem menuFileExit;
 	private JMenu menuView;
 	private JMenuItem menuViewPalette;
 	private JMenuItem menuViewDimensions;
 	private JMenuItem menuViewGridToggle;
+	private JMenuItem menuViewGridColour;
+	private JMenuItem menuViewLineColour;
+	private JMenuItem menuViewVertexColour;
+	private JMenuItem menuViewSelectedColour;
 	private JMenu menuMode;
 	private JMenuItem menuModeTile;
 	private JMenuItem menuModeDraw;
@@ -71,7 +78,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		
 		createMenu();
 		
-		editorPanel = new EditorPanel(spriteDirectory, settings);
+		editorPanel = new EditorPanel(spriteDirectory, spriteSheetFileName, settings);
 		editorPanelScrollPane = new JScrollPane(editorPanel);
 		add(editorPanelScrollPane);
 		
@@ -83,17 +90,29 @@ public class EditorWindow extends JFrame implements ActionListener {
 		update();
 	}
 	
-	private boolean loadSettings(String settingsFileName) {
-		this.settingsFileName = settingsFileName;
-		if(settingsFileName == null || settingsFileName.trim().length() == 0) {
+	private boolean loadSettings(String fileName) {
+		this.settingsFileName = fileName;
+		if(this.settingsFileName == null || this.settingsFileName.trim().length() == 0) {
 			this.settingsFileName = DEFAULT_SETTINGS_FILE;
 		}
 		
 		settings = new Variables();
-		if(!settings.parseFrom(settingsFileName)) {
+		if(!settings.parseFrom(this.settingsFileName)) {
 			settings = null;
 			return false;
 		}
+		
+		this.spriteSheetFileName = settings.getValue("SpriteSheet File");
+		if(this.spriteSheetFileName != null) {
+			File spriteSheetFile = new File(spriteSheetFileName);
+			if(!spriteSheetFile.exists() || !spriteSheetFile.isFile()) {
+				this.spriteSheetFileName = null;
+			}
+		}
+		if(this.spriteSheetFileName == null) {
+			this.spriteSheetFileName = DEFAULT_SPRITESHEET_FILE;
+		}
+		
 		
 		mapDirectory = settings.getValue("Map Directory");
 		if(mapDirectory == null) {
@@ -119,13 +138,13 @@ public class EditorWindow extends JFrame implements ActionListener {
 		return true;
 	}
 	
-	//gridColor = JColorChooser.showDialog(this, "Choose Grid Colour", gridColor);
 	private void saveSettings() {
 		PrintWriter out;
 		try {
-			out = new PrintWriter(new FileWriter(settingsFileName));
-			out.println("Map Directory: " + mapDirectory);
-			out.println("Sprite Directory: " + spriteDirectory);
+			out = new PrintWriter(new FileWriter(this.settingsFileName));
+			out.println("Map Directory: " + this.mapDirectory);
+			out.println("Sprite Directory: " + this.spriteDirectory);
+			out.println("SpriteSheet File: " + this.spriteSheetFileName);
 			out.println("Editor Window Position: " + this.getLocation().x + ", " + this.getLocation().y);
 			out.println("Editor Window Size: " + this.getWidth() + ", " + this.getHeight());
 			out.println("Palette Window Position: " + this.paletteWindow.getLocation().x + ", " + this.paletteWindow.getLocation().y);
@@ -146,11 +165,16 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuFileNewMap = new JMenuItem("New Map");
 		menuFileOpenMap = new JMenuItem("Open Map");
 		menuFileSaveMap = new JMenuItem("Save Map");
+		menuFileSaveSettings = new JMenuItem("Save Settings");
 		menuFileExit = new JMenuItem("Exit");
 		menuView = new JMenu("View");
 		menuViewPalette = new JMenuItem("Palette");
 		menuViewDimensions = new JMenuItem("Map Dimensions");
 		menuViewGridToggle = new JMenuItem("Toggle Grid");
+		menuViewGridColour = new JMenuItem("Grid Colour");
+		menuViewLineColour = new JMenuItem("Line Colour");
+		menuViewVertexColour = new JMenuItem("Vertex Colour");
+		menuViewSelectedColour = new JMenuItem("Selected Colour");
 		menuMode = new JMenu("Mode");
 		menuModeTile = new JMenuItem("Tile Textures");
 		menuModeDraw = new JMenuItem("Draw Boundaries");
@@ -160,10 +184,15 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuFileNewMap.addActionListener(this);
 		menuFileOpenMap.addActionListener(this);
 		menuFileSaveMap.addActionListener(this);
+		menuFileSaveSettings.addActionListener(this);
 		menuFileExit.addActionListener(this);
 		menuViewPalette.addActionListener(this);
 		menuViewDimensions.addActionListener(this);
 		menuViewGridToggle.addActionListener(this);
+		menuViewGridColour.addActionListener(this);
+		menuViewLineColour.addActionListener(this);
+		menuViewVertexColour.addActionListener(this);
+		menuViewSelectedColour.addActionListener(this);
 		menuMode.addActionListener(this);
 		menuModeTile.addActionListener(this);
 		menuModeDraw.addActionListener(this);
@@ -173,10 +202,16 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuFile.add(menuFileOpenMap);
 		menuFile.add(menuFileSaveMap);
 		menuFile.addSeparator();
+		menuFile.add(menuFileSaveSettings);
 		menuFile.add(menuFileExit);
 		menuView.add(menuViewPalette);
 		menuView.add(menuViewDimensions);
 		menuView.add(menuViewGridToggle);
+		menuView.addSeparator();
+		menuView.add(menuViewGridColour);
+		menuView.add(menuViewLineColour);
+		menuView.add(menuViewVertexColour);
+		menuView.add(menuViewSelectedColour);
 		menuMode.add(menuModeTile);
 		menuMode.add(menuModeDraw);
 		menuHelp.add(menuHelpAbout);
@@ -204,6 +239,9 @@ public class EditorWindow extends JFrame implements ActionListener {
 				world.writeTo(fileChooser.getSelectedFile().getAbsolutePath());
 			}
 		}
+		else if(e.getSource() == menuFileSaveSettings) {
+			saveSettings();
+		}
 		else if(e.getSource() == menuFileExit) {
 			System.exit(0);
 		}
@@ -215,6 +253,22 @@ public class EditorWindow extends JFrame implements ActionListener {
 		}
 		else if(e.getSource() == menuViewGridToggle) {
 			editorPanel.gridEnabled = !editorPanel.gridEnabled;
+			update();
+		}
+		else if(e.getSource() == menuViewGridColour) {
+			editorPanel.gridColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.gridColour);
+			update();
+		}
+		else if(e.getSource() == menuViewLineColour) {
+			editorPanel.lineColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.lineColour);
+			update();
+		}
+		else if(e.getSource() == menuViewVertexColour) {
+			editorPanel.vertexColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.vertexColour);
+			update();
+		}
+		else if(e.getSource() == menuViewSelectedColour) {
+			editorPanel.selectedColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.selectedColour);
 			update();
 		}
 		else if(e.getSource() == menuModeTile) {

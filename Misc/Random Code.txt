@@ -172,3 +172,83 @@ protected:
 
 
 
+
+
+/*
+	public static Vector<SpriteSheet> parseFrom(File file, boolean append) {
+		if(file == null || !file.exists() || !file.isFile()) { return null; }
+		
+		// parse until empty line or attributes
+		
+		// cycle through variables parsed
+		
+		// then read x number of attributes
+		
+		Variables variables;
+		Variables attributes;
+		Variable v;
+		BufferedReader in;
+		String input;
+		String data;
+		int spriteIndex;
+		String spriteName, spriteType;
+		try {
+			variables = new Variables();
+			
+			in = new BufferedReader(new FileReader(file));
+			while((input = in.readLine()) != null) {
+				data = input.trim();
+				
+				if(data.length() == 0) {
+					continue;
+				}
+				else {
+					v = Variable.parseFrom(input);
+					
+					if(v != null) {
+						variables.add(v);
+					}
+					
+					if(v.getID().equalsIgnoreCase("Attributes")) {
+						this.name = variables.getValue("Sprite Name");
+						String spriteSheetFileName;
+						int spriteSheetType;
+						Point firstSpriteOffset;
+						Dimension spriteSize 
+						
+						int numberOfAttributes;
+						try { numberOfAttributes = Integer.parseInt(v.getValue()); }
+						catch(NumberFormatException e) { return false; }
+						
+						attributes = new Variables();
+						for(int i=0;i<numberOfAttributes;i++) {
+							for(int j=0;j<3;j++) {
+								attributes.add(Variable.parseFrom(in.readLine()));
+							}
+							try { spriteIndex = Integer.parseInt(attributes.getValue("Sprite")); }
+							catch(NumberFormatException e) { return false; }
+							if(spriteIndex < 0 || spriteIndex >= sprites.size()) { return false; }
+							spriteName = attributes.getValue("Name");
+							spriteType = attributes.getValue("Type");
+							if(spriteName == null || spriteType == null) { return false; }
+							sprites.elementAt(spriteIndex).setName(spriteName);
+							sprites.elementAt(spriteIndex).setParentName(this.name);
+							sprites.elementAt(spriteIndex).setType(Sprite.parseType(spriteType));
+						}
+						
+						variables = new Variables();
+					}
+				}
+			}
+			
+			in.close();
+		}
+		catch(IOException e) {
+			return false;
+		}
+		
+		return true;
+	}*/
+
+
+

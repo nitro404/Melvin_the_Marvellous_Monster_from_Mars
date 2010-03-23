@@ -56,12 +56,13 @@ public class Graph {
 		}
 	}
 	
-	public void paintOn(Graphics g) {
-		g.setColor(new Color(0, 0, 0));
-		
+	public void paintOn(Graphics g, Color lineColour, Color vertexColour) {
+		g.setColor(lineColour);
 		for(int i=0;i<this.edges.size();i++) {
 			this.edges.elementAt(i).paintOn(g);
 		}
+		
+		g.setColor(vertexColour);
 		for(int i=0;i<this.vertices.size();i++) {
 			this.vertices.elementAt(i).paintOn(g);
 		}

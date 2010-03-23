@@ -225,8 +225,8 @@ public class World {
 		}
 	}
 
-	public void paintOn(Graphics g) {
-		edges.paintOn(g);
+	public void paintOn(Graphics g, Color lineColour, Color vertexColour) {
+		edges.paintOn(g, lineColour, vertexColour);
 	}
 	
 	public boolean equals(Object o) {

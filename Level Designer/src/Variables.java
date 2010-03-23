@@ -155,10 +155,12 @@ public class Variables {
 	}
 	
 	public boolean parseFrom(String fileName) {
+		if(fileName == null) { return false; }
 		return parseFrom(new File(fileName), false);
 	}
 	
 	public boolean parseFrom(String fileName, boolean append) {
+		if(fileName == null) { return false; }
 		return parseFrom(new File(fileName), append);
 	}
 	

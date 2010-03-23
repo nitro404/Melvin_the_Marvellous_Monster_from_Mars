@@ -10,8 +10,8 @@ Player::Player(float xPos,
 				  isJumping(false),
 				  isMoving(0),
 				  movingAnimationSequence(0),
-				  movingAnimationInterval(15),
-				  movingAnimationEnd(movingAnimationInterval * 2),
+				  movingAnimationInterval(12),
+				  movingAnimationEnd(movingAnimationInterval * 3),
 				  disguise(1) {
 	this->windowHeight = windowHeight;
 	this->windowWidth = windowWidth;
@@ -19,8 +19,8 @@ Player::Player(float xPos,
 	
 	this->playerSpriteSheetImage = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
 	this->playerSpriteSheet = new SpriteSheet(playerSpriteSheetImage, 1, 1, 126, 126, 128, 128, true, 8, 8);
-	this->playerSprite = playerSpriteSheet->getSprite(5);
-	this->disguiseSprite = playerSpriteSheet->getSprite(35);
+	this->playerSprite = playerSpriteSheet->getSprite(0);
+	this->disguiseSprite = playerSpriteSheet->getSprite(3);
 
 	this->scale = D3DXVECTOR2(1, 1);
 	this->size = D3DXVECTOR2(playerSprite->getWidth() * scale.x, playerSprite->getHeight() * scale.y);
@@ -47,8 +47,8 @@ void Player::tick() {
 	playerColour = D3DCOLOR_RGBA(255, 255, 255, 255);
 
 	if(isMoving != 0) {
-		playerSprite = playerSpriteSheet->getSprite(5 + (movingAnimationSequence / movingAnimationInterval));
-		disguiseSprite = playerSpriteSheet->getSprite(35 + (movingAnimationSequence / movingAnimationInterval));
+		playerSprite = playerSpriteSheet->getSprite(movingAnimationSequence / movingAnimationInterval);
+		disguiseSprite = playerSpriteSheet->getSprite(3 + (movingAnimationSequence / movingAnimationInterval));
 		
 		movingAnimationSequence++;
 		if(movingAnimationSequence >= movingAnimationEnd) {
@@ -59,15 +59,15 @@ void Player::tick() {
 
 void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 	if(isMoving >= 0) {
-		playerSprite->drawCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
-		if(disguise > 0) {
-			disguiseSprite->drawCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
-		}
-	}
-	else {
 		playerSprite->drawBackwardsCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
 		if(disguise > 0) {
 			disguiseSprite->drawBackwardsCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
+		}
+	}
+	else {
+		playerSprite->drawCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
+		if(disguise > 0) {
+			disguiseSprite->drawCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
 		}
 	}
 #ifdef _DEBUG
