@@ -11,8 +11,12 @@ public class EditorWindow extends JFrame implements ActionListener {
 	
 	final public static String DEFAULT_SETTINGS_FILE = "settings.ini";
 	final public static String DEFAULT_SPRITESHEET_FILE = "spritesheets.ini";
-	final public static String DEFAULT_MAP_DIRECTORY = "..\\Maps";
-	final public static String DEFAULT_SPRITE_DIRECTORY = "..\\Sprites";
+	final public static String DEFAULT_MAP_DIRECTORY = "../Maps";
+	final public static String DEFAULT_SPRITE_DIRECTORY = "../Sprites";
+	final public static String ALTERNATE_SETTINGS_FILE = "../settings.ini";
+	final public static String ALTERNATE_SPRITESHEET_FILE = "../spritesheets.ini";
+	final public static String ALTERNATE_MAP_DIRECTORY = "../../Maps";
+	final public static String ALTERNATE_SPRITE_DIRECTORY = "../../Sprites";
 	private int DEFAULT_EDITOR_WIDTH = 1024;
 	private int DEFAULT_EDITOR_HEIGHT = 768;
 	private int DEFAULT_XPOS = 0;
@@ -26,6 +30,9 @@ public class EditorWindow extends JFrame implements ActionListener {
 	private Dimension initialEditorSize;
 	private Point initialEditorPosition;
 	
+	public Sprite activeSprite;
+	public SpriteSheets spriteSheets; 
+	
 	public World world;
 	
 	final public static int DEFAULT_WIDTH = 15;
@@ -37,6 +44,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	private JMenuItem menuFileOpenMap;
 	private JMenuItem menuFileSaveMap;
 	private JMenuItem menuFileSaveSettings;
+	private JMenuItem menuFileResetSettings;
 	private JMenuItem menuFileExit;
 	private JMenu menuView;
 	private JMenuItem menuViewPalette;
@@ -63,12 +71,9 @@ public class EditorWindow extends JFrame implements ActionListener {
 		super("2D Cartesian Level Editor");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		if(!loadSettings(settingsFileName)) {
-			mapDirectory = DEFAULT_MAP_DIRECTORY;
-			spriteDirectory = DEFAULT_SPRITE_DIRECTORY;
-			initialEditorPosition = new Point(DEFAULT_XPOS, DEFAULT_YPOS);
-			initialEditorSize = new Dimension(DEFAULT_EDITOR_WIDTH, DEFAULT_EDITOR_HEIGHT);
-		}
+		loadSettings(settingsFileName);
+		
+		loadImages();
 		
 		setSize(initialEditorSize.width, initialEditorSize.height);
 		setLocation(initialEditorPosition.x, initialEditorPosition.y);
@@ -78,7 +83,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		
 		createMenu();
 		
-		editorPanel = new EditorPanel(spriteDirectory, spriteSheetFileName, settings);
+		editorPanel = new EditorPanel(this, settings);
 		editorPanelScrollPane = new JScrollPane(editorPanel);
 		add(editorPanelScrollPane);
 		
@@ -90,11 +95,20 @@ public class EditorWindow extends JFrame implements ActionListener {
 		update();
 	}
 	
-	private boolean loadSettings(String fileName) {
-		this.settingsFileName = fileName;
-		if(this.settingsFileName == null || this.settingsFileName.trim().length() == 0) {
-			this.settingsFileName = DEFAULT_SETTINGS_FILE;
+	public void loadImages() {
+		try {
+			spriteSheets = SpriteSheets.parseFrom(spriteSheetFileName, spriteDirectory);
+			if(spriteSheets == null) {
+				System.out.println("ERROR: Unable to parse sprite sheet(s) from specified data file.");
+				System.exit(1);
+			}
+			activeSprite = null;
 		}
+		catch(Exception e) { }
+	}
+	
+	private boolean loadSettings(String fileName) {
+		this.settingsFileName = Utilities.getValidFile(fileName, DEFAULT_SETTINGS_FILE, ALTERNATE_SETTINGS_FILE);
 		
 		settings = new Variables();
 		if(!settings.parseFrom(this.settingsFileName)) {
@@ -102,32 +116,9 @@ public class EditorWindow extends JFrame implements ActionListener {
 			return false;
 		}
 		
-		this.spriteSheetFileName = settings.getValue("SpriteSheet File");
-		if(this.spriteSheetFileName != null) {
-			File spriteSheetFile = new File(spriteSheetFileName);
-			if(!spriteSheetFile.exists() || !spriteSheetFile.isFile()) {
-				this.spriteSheetFileName = null;
-			}
-		}
-		if(this.spriteSheetFileName == null) {
-			this.spriteSheetFileName = DEFAULT_SPRITESHEET_FILE;
-		}
-		
-		
-		mapDirectory = settings.getValue("Map Directory");
-		if(mapDirectory == null) {
-			mapDirectory = DEFAULT_MAP_DIRECTORY;
-		}
-		spriteDirectory = settings.getValue("Sprite Directory");
-		if(spriteDirectory != null) {
-			File temp = new File(spriteDirectory);
-			if(!temp.exists() || !temp.isDirectory()) {
-				spriteDirectory = DEFAULT_SPRITE_DIRECTORY;
-			}
-		}
-		else {
-			spriteDirectory = DEFAULT_SPRITE_DIRECTORY;
-		}
+		this.spriteSheetFileName = Utilities.getValidFile(settings.getValue("SpriteSheet File"), DEFAULT_SPRITESHEET_FILE, ALTERNATE_SPRITESHEET_FILE);
+		this.mapDirectory = Utilities.getValidDirectory(settings.getValue("Map Directory"), DEFAULT_MAP_DIRECTORY, ALTERNATE_MAP_DIRECTORY);
+		this.spriteDirectory = Utilities.getValidDirectory(settings.getValue("Sprite Directory"), DEFAULT_SPRITE_DIRECTORY, ALTERNATE_SPRITE_DIRECTORY);
 		
 		initialEditorPosition = Utilities.parsePoint(settings.getValue("Editor Window Position"));
 		if(initialEditorPosition == null) { initialEditorPosition = new Point(DEFAULT_XPOS, DEFAULT_YPOS); }
@@ -158,6 +149,20 @@ public class EditorWindow extends JFrame implements ActionListener {
 		catch(IOException e) { }
 	}
 	
+	private void resetSettings() {
+		this.mapDirectory = DEFAULT_MAP_DIRECTORY;
+		this.spriteDirectory = DEFAULT_SPRITE_DIRECTORY;
+		this.spriteSheetFileName = DEFAULT_SPRITESHEET_FILE;
+		this.setLocation(DEFAULT_XPOS, DEFAULT_YPOS);
+		this.setSize(DEFAULT_EDITOR_WIDTH, DEFAULT_EDITOR_HEIGHT);
+		this.paletteWindow.setLocation(this.getX() + this.getWidth(), this.getY());
+		this.paletteWindow.setSize(PaletteWindow.DEFAULT_PALETTE_WIDTH, PaletteWindow.DEFAULT_PALETTE_HEIGHT);
+		this.editorPanel.gridColour = EditorPanel.DEFAULT_GRID_COLOUR;
+		this.editorPanel.lineColour = EditorPanel.DEFAULT_LINE_COLOUR;
+		this.editorPanel.vertexColour = EditorPanel.DEFAULT_VERTEX_COLOUR;
+		this.editorPanel.selectedColour = EditorPanel.DEFAULT_SELECTED_COLOUR;
+	}
+	
 	private void createMenu() {
 		menu = new JMenuBar();
 		
@@ -166,6 +171,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuFileOpenMap = new JMenuItem("Open Map");
 		menuFileSaveMap = new JMenuItem("Save Map");
 		menuFileSaveSettings = new JMenuItem("Save Settings");
+		menuFileResetSettings = new JMenuItem("Reset Settings");
 		menuFileExit = new JMenuItem("Exit");
 		menuView = new JMenu("View");
 		menuViewPalette = new JMenuItem("Palette");
@@ -185,6 +191,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuFileOpenMap.addActionListener(this);
 		menuFileSaveMap.addActionListener(this);
 		menuFileSaveSettings.addActionListener(this);
+		menuFileResetSettings.addActionListener(this);
 		menuFileExit.addActionListener(this);
 		menuViewPalette.addActionListener(this);
 		menuViewDimensions.addActionListener(this);
@@ -203,6 +210,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuFile.add(menuFileSaveMap);
 		menuFile.addSeparator();
 		menuFile.add(menuFileSaveSettings);
+		menuFile.add(menuFileResetSettings);
 		menuFile.add(menuFileExit);
 		menuView.add(menuViewPalette);
 		menuView.add(menuViewDimensions);
@@ -241,6 +249,11 @@ public class EditorWindow extends JFrame implements ActionListener {
 		}
 		else if(e.getSource() == menuFileSaveSettings) {
 			saveSettings();
+		}
+		else if(e.getSource() == menuFileResetSettings) {
+			resetSettings();
+			saveSettings();
+			update();
 		}
 		else if(e.getSource() == menuFileExit) {
 			System.exit(0);
@@ -291,7 +304,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	}
 	
 	public void setMapDimensions(World world) {
-		String data = JOptionPane.showInputDialog(this, "Please enter new map dimensions (ie. 8x8).", "Map Dimensions", JOptionPane.QUESTION_MESSAGE);
+		String data = JOptionPane.showInputDialog(this, "Please enter new map dimensions (ie. 15x10).", "Map Dimensions", JOptionPane.QUESTION_MESSAGE);
 		if(data != null) {
 			StringTokenizer st = new StringTokenizer(data.trim(), ",x");
 			int newWidth = 0, newHeight = 0;
@@ -326,6 +339,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	}
 	
 	public void update() {
+		editorPanelScrollPane.revalidate();
 		this.repaint();
 		editorPanelScrollPane.repaint();
 		editorPanel.update();

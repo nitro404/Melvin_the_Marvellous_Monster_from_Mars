@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.File;
 import java.util.StringTokenizer;
 
 public class Utilities {
@@ -44,6 +45,36 @@ public class Utilities {
 			}
 		}
 		return null;
+	}
+	
+	public static boolean isValidFile(String fileName) {
+		if(fileName == null || fileName.trim().length() == 0) { return false; }
+		File file = new File(fileName.trim());
+		if(!file.exists() || !file.isFile()) { return false; }
+		return true;
+	}
+	
+	public static boolean isValidDirectory(String fileName) {
+		if(fileName == null || fileName.trim().length() == 0) { return false; }
+		File file = new File(fileName.trim());
+		if(!file.exists() || !file.isDirectory()) { return false; }
+		return true;
+	}
+	
+	public static String getValidFile(String initialFileName, String defaultFileName, String alternateFileName) {
+		String fileName = Utilities.isValidFile(initialFileName) ? initialFileName : null;
+		if(fileName == null) { fileName = Utilities.isValidFile(defaultFileName) ? defaultFileName : null; }
+		if(fileName == null) { fileName = Utilities.isValidFile(alternateFileName) ? alternateFileName : null; }
+		if(fileName == null) { fileName = defaultFileName; }
+		return fileName;
+	}
+	
+	public static String getValidDirectory(String initialFileName, String defaultFileName, String alternateFileName) {
+		String fileName = Utilities.isValidDirectory(initialFileName) ? initialFileName : null;
+		if(fileName == null) { fileName = Utilities.isValidDirectory(defaultFileName) ? defaultFileName : null; }
+		if(fileName == null) { fileName = Utilities.isValidDirectory(alternateFileName) ? alternateFileName : null; }
+		if(fileName == null) { fileName = defaultFileName; }
+		return fileName;
 	}
 	
 }

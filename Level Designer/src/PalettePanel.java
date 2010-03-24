@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
+
 import java.util.Vector;
 
 public class PalettePanel extends JPanel implements Scrollable, ActionListener {
@@ -9,57 +11,67 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 	
 	private EditorWindow editorWindow;
 	
-	private Sprite activeSprite;
+	private Vector<JButton> spriteButtons;
+	private Vector<Point> spriteLocations;
 	
-	private Vector<JRadioButton> paletteSelections;
+	private Dimension panelSize; 
 	
 	public PalettePanel(EditorWindow editorWindow) {
 		this.editorWindow = editorWindow;
+		if(editorWindow == null) {
+			System.out.println("ERROR: Editor Window cannot be null.");
+			System.exit(1);
+		}
 		
-		createPaletteChooser();
+		this.setLayout(null);
 		
-//		this.activeSprite = EditorPanel.ALIEN;
-		EditorPanel.ALIEN = EditorPanel.PLACEHOLDER;
-		this.activeSprite = EditorPanel.ALIEN;
-		this.editorWindow.editorPanel.activeSprite = this.activeSprite;
+		createPalette();
 		
 		update();
 	}
 	
-	public void createPaletteChooser() {
-		int numberOfSprites = 1;
-		paletteSelections = new Vector<JRadioButton>();
-		ButtonGroup paletteSelectionGroup = new ButtonGroup();
-		JRadioButton paletteSelection;
-		for(int i=0;i<numberOfSprites;i++) {
-			paletteSelection = new JRadioButton();
-			paletteSelection.addActionListener(this);
-			paletteSelectionGroup.add(paletteSelection);
-			paletteSelection.setVisible(true);
-			paletteSelections.add(paletteSelection);
-			this.add(paletteSelection);
+	private void createPalette() {
+		spriteButtons = new Vector<JButton>(30);
+		spriteLocations = new Vector<Point>(30);
+		int yPos = 5;
+		int maxWidth = 5;
+		for(int i=0;i<editorWindow.spriteSheets.size();i++) {
+			for(int j=0;j<editorWindow.spriteSheets.elementAt(i).size();j++) {
+				Sprite r = editorWindow.spriteSheets.elementAt(i).elementAt(j);
+				if(r.getType() == Sprite.TYPE_TILE ||
+				   r.getType() == Sprite.TYPE_OBJECT ||
+				   r.getType() == Sprite.TYPE_AI) {
+					
+					Image s = r.getImage();
+					ImageIcon c = new ImageIcon();
+					c.setImage(s);
+					JButton b = new JButton(c);
+					b.addActionListener(this);
+					b.setBackground(new Color(255, 255, 255));
+					b.setSize(new Dimension(r.getDimensions()));
+					b.setBorder(null);
+					b.setBorderPainted(false);
+					this.add(b);
+					b.setLocation(5, yPos);
+					yPos += r.getHeight();
+					spriteButtons.add(b);
+					spriteLocations.add(new Point(i, j));
+					if(r.getWidth() + 10 > maxWidth) { maxWidth = r.getWidth() + 10; }
+				}
+			}
 		}
-		paletteSelections.elementAt(0).setSelected(true);
+//		WHY DOESNT THIS WORK
+		panelSize = new Dimension(maxWidth, yPos);
+		int xPos = this.getSize().width;
+		this.setSize(new Dimension(xPos, yPos));
+		this.revalidate();
 	}
 	
-	public void drawSprites(Graphics g) {
-		/*Graphics2D g2 = (Graphics2D) g;
-		int yPos = 20;
-		int xPos = 30;
-		int inc = 40;
-		g2.drawImage(EditorPanel.SHEEP, null, xPos + 30, yPos += inc);
-		g2.drawImage(EditorPanel.LANDMINE, null, xPos + 10, yPos += inc);
-		g2.drawImage(EditorPanel.ROCK, null, xPos, yPos += inc);
-		yPos += 75;
-		g2.drawImage(EditorPanel.FENCE, null, xPos, yPos += inc);
-		
-		xPos = 0;
-		yPos = 20;
-		for(int i=0;i<paletteSelections.size();i++) {
-			if(i==2) { yPos += 35; }
-			else if(i==3) { yPos += 75; }
-			paletteSelections.elementAt(i).setLocation(xPos + 5, yPos += inc);
-		}*/
+	public void setScrollPaneHeight(JScrollPane palettePanelScrollPane) {
+		palettePanelScrollPane.setPreferredSize(panelSize);
+		this.setPreferredSize(new Dimension(100, 4000));
+		this.revalidate();
+		palettePanelScrollPane.revalidate();
 	}
 	
 	public Dimension getPreferredSize() {
@@ -111,26 +123,24 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		for(int i=0;i<paletteSelections.size();i++) {
-			if(e.getSource() == paletteSelections.elementAt(i)) {
-				if(i == 0) {
-					this.activeSprite =  EditorPanel.ALIEN;
-				}
-				this.editorWindow.editorPanel.activeSprite = this.activeSprite;
+		for(int i=0;i<spriteButtons.size();i++) {
+			if(e.getSource() == spriteButtons.elementAt(i)) {
+				editorWindow.activeSprite = editorWindow.spriteSheets.elementAt(spriteLocations.elementAt(i).x).elementAt(spriteLocations.elementAt(i).y);
+				break;
 			}
 		}
 		this.update();
+		editorWindow.update();
 	}
 		
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
 		g.clearRect(0, 0, this.getWidth(), this.getHeight());
-		
-		drawSprites(g);
 	}
 	
 	public void update() {
 		this.repaint();
 	}
+	
 }

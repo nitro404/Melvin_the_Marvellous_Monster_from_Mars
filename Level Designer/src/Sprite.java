@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -14,18 +15,23 @@ public class Sprite {
 	private int index;
 	private int type;
 	
+	public static int TYPE_UNKNOWN = -1;
 	public static int TYPE_SHEET = 0;
 	public static int TYPE_TILE = 1;
 	public static int TYPE_OBJECT = 2;
 	public static int TYPE_PLAYER = 3;
 	public static int TYPE_DISGUISE = 4;
-	public static int TYPE_DEFAULT = TYPE_TILE;
+	public static int TYPE_AI = 5;
 	
 	public Sprite(String fileName, String spriteDirectory) {
+		this(fileName, spriteDirectory, -1);
+	}
+	
+	public Sprite(String fileName, String spriteDirectory, int index) {
 		this.name = null;
 		this.parentName = null;
-		this.index = -1;
-		this.type = TYPE_DEFAULT;
+		this.index = index;
+		this.type = TYPE_UNKNOWN;
 		
 		String imagePath = spriteDirectory;
 		if(imagePath.charAt(imagePath.length() - 1) != '\\' && imagePath.charAt(imagePath.length() - 1) != '/') {
@@ -50,10 +56,14 @@ public class Sprite {
 	}
 	
 	public Sprite(String fileName, String spriteDirectory, int x, int y, int width, int height) {
+		this(fileName, spriteDirectory, -1, x, y, width, height);
+	}
+	
+	public Sprite(String fileName, String spriteDirectory, int index, int x, int y, int width, int height) {
 		this.name = null;
 		this.parentName = null;
-		this.index = -1;
-		this.type = TYPE_DEFAULT;
+		this.index = index;
+		this.type = TYPE_UNKNOWN;
 		
 		String imagePath = spriteDirectory;
 		if(imagePath.charAt(imagePath.length() - 1) != '\\' && imagePath.charAt(imagePath.length() - 1) != '/') {
@@ -78,10 +88,14 @@ public class Sprite {
 	}
 	
 	public Sprite(BufferedImage image) {
+		this(image, -1);
+	}
+	
+	public Sprite(BufferedImage image, int index) {
 		this.name = null;
 		this.parentName = null;
-		this.index = -1;
-		this.type = TYPE_DEFAULT;
+		this.index = index;
+		this.type = TYPE_UNKNOWN;
 		
 		if(image == null) {
 			System.out.println("ERROR: Sprite cannot be created from null image.");
@@ -91,11 +105,11 @@ public class Sprite {
 		this.image = image;
 	}
 	
-	public Sprite(BufferedImage image, int x, int y, int width, int height) {
+	public Sprite(BufferedImage image, int index, int x, int y, int width, int height) {
 		this.name = null;
 		this.parentName = null;
-		this.index = -1;
-		this.type = TYPE_DEFAULT;
+		this.index = index;
+		this.type = TYPE_UNKNOWN;
 		
 		if(image == null) {
 			System.out.println("ERROR: Sprite cannot be created from null image.");
@@ -107,6 +121,8 @@ public class Sprite {
 	
 	public int getWidth() { return this.image.getWidth(); }
 	public int getHeight() { return this.image.getHeight(); }
+	
+	public Dimension getDimensions() { return new Dimension(this.image.getWidth(), this.image.getHeight()); }
 	
 	public String getName() { return this.name; }
 	public String getParentName() { return this.parentName; }
@@ -121,7 +137,7 @@ public class Sprite {
 	public BufferedImage getImage() { return this.image; }
 	
 	public static int parseType(String data) {
-		if(data == null || data.trim().length() == 0) { return TYPE_DEFAULT; }
+		if(data == null || data.trim().length() == 0) { return TYPE_UNKNOWN; }
 		String typeString = data.trim();
 		
 		if(typeString.equalsIgnoreCase("SpriteSheet")) {
@@ -139,8 +155,11 @@ public class Sprite {
 		else if(typeString.equalsIgnoreCase("Disguise")) {
 			return TYPE_DISGUISE;
 		}
+		else if(typeString.equalsIgnoreCase("AI")) {
+			return TYPE_AI;
+		}
 		else {
-			return TYPE_DEFAULT;
+			return TYPE_UNKNOWN;
 		}
 	}
 	

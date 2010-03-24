@@ -28,6 +28,7 @@ public class PaletteWindow extends JFrame implements ActionListener {
 		palettePanel = new PalettePanel(editorWindow);
 		palettePanelScrollPane = new JScrollPane(palettePanel);
 		add(palettePanelScrollPane);
+		palettePanel.setScrollPaneHeight(palettePanelScrollPane);
 		
 		update();
 	}

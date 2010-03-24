@@ -12,6 +12,20 @@ public class SpriteSheets {
 		this.spriteSheets = new Vector<SpriteSheet>(5);
 	}
 	
+	public int size() {
+		return this.spriteSheets.size();
+	}
+	
+	public SpriteSheet elementAt(int index) {
+		return this.getSpriteSheet(index);
+	}
+	
+	public SpriteSheet getSpriteSheet(int index) {
+		if(index < 0 || index >= this.spriteSheets.size()) { return null; }
+		
+		return this.spriteSheets.elementAt(index);
+	}
+
 	public SpriteSheet getSpriteSheet(String name) {
 		if(name == null || name.trim().length() == 0) { return null; }
 		String temp = name.trim();
@@ -23,12 +37,6 @@ public class SpriteSheets {
 			}
 		}
 		return null;
-	}
-	
-	public SpriteSheet elementAt(int index) {
-		if(index < 0 || index >= this.spriteSheets.size()) { return null; }
-		
-		return this.spriteSheets.elementAt(index);
 	}
 	
 	public boolean add(SpriteSheet spriteSheet) {
@@ -46,6 +54,7 @@ public class SpriteSheets {
 			System.out.println("ERROR: Cannot parse sprite sheet collection from null parameter(s).");
 			return null;
 		}
+		
 		File file = new File(fileName);
 		File dir = new File(spriteDirectory);
 		if(!file.exists() || !file.isFile() || !dir.exists() || !dir.isDirectory()) {

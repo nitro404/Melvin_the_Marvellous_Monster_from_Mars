@@ -26,7 +26,7 @@ public class SpriteSheet {
 		for(int i=0;i<offsets.size();i++) {
 			o = offsets.elementAt(i);
 			if(o != null) {
-				sprites.add(new Sprite(image.getSubimage(o.x, o.y, o.width, o.height)));
+				sprites.add(new Sprite(image.getSubimage(o.x, o.y, o.width, o.height), i));
 			}
 		}
 	}
@@ -51,7 +51,7 @@ public class SpriteSheet {
 			sprites.add(new Sprite(image.getSubimage(xOffset + (xIncrement * i),
 													 yOffset + (yIncrement * i),
 													 width,
-													 height)));
+													 height), i));
 		}
 	}
 	
@@ -76,9 +76,10 @@ public class SpriteSheet {
 		
 		int xPos = xOffset;
 		int yPos = yOffset;
+		int k = 0;
 		for(int i=0;i<numberOfRows;i++) {
 			for(int j=0;j<numberOfColumns;j++) {
-				sprites.add(new Sprite(image.getSubimage(xPos, yPos, width, height)));
+				sprites.add(new Sprite(image.getSubimage(xPos, yPos, width, height), k++));
 				if(horizontal) { xPos += xIncrement; }
 				else { yPos += yIncrement; }
 			}
@@ -97,6 +98,14 @@ public class SpriteSheet {
 	
 	public SpriteSheet(Sprite image, String name, int xOffset, int yOffset, int width, int height, int xIncrement, int yIncrement, boolean horizontal, int numberOfRows, int numberOfColumns) {
 		this(image.getImage(), xOffset, yOffset, width, height, xIncrement, yIncrement, horizontal, numberOfRows, numberOfColumns);
+	}
+	
+	int size() {
+		return this.sprites.size();
+	}
+	
+	Sprite elementAt(int index) {
+		return this.getSprite(index);
 	}
 	
 	Sprite getSprite(int index) {
@@ -164,7 +173,7 @@ public class SpriteSheet {
 						properties.add(v);
 					}
 					
-					if(v.getID().equalsIgnoreCase("Attributes")) {
+					if(v != null && v.getID().equalsIgnoreCase("Attributes")) {
 						spriteSheetName = properties.getValue("SpriteSheet Name");
 						if(spriteSheetName == null) {
 							System.out.println("ERROR: Sprite sheet must have a name.");
@@ -191,6 +200,7 @@ public class SpriteSheet {
 							return null;
 						}
 						spriteSheetImage = new Sprite(spriteSheetFileName, spriteDirectory);
+						spriteSheetImage.setType(Sprite.TYPE_SHEET);
 						
 						try { numberOfAttributes = Integer.parseInt(v.getValue()); }
 						catch(NumberFormatException e) {
@@ -286,6 +296,8 @@ public class SpriteSheet {
 							spriteSheet.sprites.elementAt(spriteIndex).setName(spriteName);
 							spriteSheet.sprites.elementAt(spriteIndex).setParentName(spriteSheetName);
 							spriteSheet.sprites.elementAt(spriteIndex).setType(Sprite.parseType(spriteType));
+							
+							spriteAttributes.clear();
 						}
 						
 						return spriteSheet;
@@ -298,6 +310,7 @@ public class SpriteSheet {
 			return null;
 		}
 		catch(Exception e) {
+			e.printStackTrace();
 			System.out.println("ERROR: Unknown exception encountered parsing sprite sheet file.");
 			return null;
 		}

@@ -8,8 +8,8 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	private static final long serialVersionUID = 1L;
 	
 	private World world;
-	private String spriteDirectory;
-	private String spriteSheetFileName;
+	
+	private EditorWindow editorWindow;
 	
 	private Vertex selectedPoint;
 	private Vertex selectedVertex;
@@ -20,21 +20,18 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	private JMenuItem popupMenuDeleteVertex;
 	private JMenuItem popupMenuCancel;
 	
-	public Sprite activeSprite;
-	public static Sprite ALIEN_SPRITESHEET_IMAGE;
-	public static SpriteSheet ALIEN_SPRITESHEET;
-	public static Sprite ALIEN;
-	public static Sprite PLACEHOLDER_SPRITESHEET_IMAGE;
-	public static SpriteSheet PLACEHOLDER_SPRITESHEET;
-	public static Sprite PLACEHOLDER;
-	public static SpriteSheet PLACEHOLDER_SPRITESHEET2;
-	
 	private Point selectedGridBlock;
 	public int mode;
 	public boolean gridEnabled;
 	final public static int MODE_TILING = 0;
 	final public static int MODE_DRAWING = 1;
 	final private static int DEFAULT_SELECTION_RADIUS = 6;
+	
+	public static Color DEFAULT_GRID_COLOUR = new Color(64, 64, 64);
+	public static Color DEFAULT_LINE_COLOUR = new Color(0, 0, 0);
+	public static Color DEFAULT_VERTEX_COLOUR = new Color(0, 0, 0);
+	public static Color DEFAULT_SELECTED_COLOUR = new Color(255, 0, 0);
+	
 	public Color selectedColour;
 	public Color gridColour;
 	public Color lineColour;
@@ -43,21 +40,23 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	final private int doubleClickSpeed = 200;
 	private long lastMouseDown = 0;
 	
-	public EditorPanel(String spriteDirectory, String spriteSheetFileName, Variables settings) {
+	public EditorPanel(EditorWindow editorWindow, Variables settings) {
 		world = null;
 		setLayout(null);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		
-		this.spriteDirectory = spriteDirectory;
-		this.spriteSheetFileName = spriteSheetFileName;
+		this.editorWindow = editorWindow;
+		if(editorWindow == null) {
+			System.out.println("ERROR: Editor Window cannot be null.");
+			System.exit(1);
+		}
 		
 		createPopupMenu();
 		
 		mode = MODE_TILING;
 		gridEnabled = true;
 		selectedGridBlock = null;
-		activeSprite = null;
 		
 		selectedPoint = null;
 		selectedVertex = null;
@@ -65,16 +64,14 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 		loadSettings(settings);
 		
-		loadImages();
-		
 		update();
 	}
 	
 	private void loadSettings(Variables settings) {
-		gridColour = new Color(64, 64, 64);
-		lineColour = new Color(0, 0, 0);
-		vertexColour = new Color(0, 0, 0);
-		selectedColour = new Color(255, 0, 0);
+		gridColour = DEFAULT_GRID_COLOUR;
+		lineColour = DEFAULT_LINE_COLOUR;
+		vertexColour = DEFAULT_VERTEX_COLOUR;
+		selectedColour = DEFAULT_SELECTED_COLOUR;
 		if(settings != null) {
 			Color temp;
 			if((temp = Utilities.parseColour(settings.getValue("Grid Colour"))) != null) {
@@ -105,28 +102,6 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		popupMenu.add(popupMenuDeleteVertex);
 		popupMenu.addSeparator();
 		popupMenu.add(popupMenuCancel);
-	}
-	
-	public void loadImages() {
-		try {
-			SpriteSheets spriteSheets = SpriteSheets.parseFrom(spriteSheetFileName, spriteDirectory);
-			ALIEN_SPRITESHEET = spriteSheets.getSpriteSheet("Alien");
-			PLACEHOLDER_SPRITESHEET = spriteSheets.getSpriteSheet("Placeholder 1");  
-			PLACEHOLDER_SPRITESHEET2 = spriteSheets.getSpriteSheet("Placeholder 2");
-			/*
-			ALIEN_SPRITESHEET_IMAGE = new Sprite("Alien.png", spriteDirectory);
-			ALIEN_SPRITESHEET = new SpriteSheet(ALIEN_SPRITESHEET_IMAGE, "Alien", 1, 1, 126, 126, 128, 128, true, 8, 8);
-			ALIEN = ALIEN_SPRITESHEET.getSprite(0);
-			PLACEHOLDER_SPRITESHEET_IMAGE = new Sprite("Placeholder1.png", spriteDirectory);
-			PLACEHOLDER_SPRITESHEET = new SpriteSheet(PLACEHOLDER_SPRITESHEET_IMAGE, "Placeholder 1", 1, 1, 64, 64, 66, 66, true, 1, 2);
-			PLACEHOLDER = PLACEHOLDER_SPRITESHEET.getSprite(0);
-			*/
-			ALIEN = ALIEN_SPRITESHEET.getSprite(0);
-			PLACEHOLDER = PLACEHOLDER_SPRITESHEET.getSprite(0);
-			
-			PLACEHOLDER = PLACEHOLDER_SPRITESHEET2.getSprite("Christmas Tree");
-		}
-		catch(Exception e) { }
 	}
 	
 	public void setWorld(World world) {
@@ -193,11 +168,11 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	public void mousePressed(MouseEvent e) {
 		vertexToMove = null;
 		if(e.getButton() == MouseEvent.BUTTON1) {
-			if(e.getWhen() - lastMouseDown < doubleClickSpeed) {
+			if(mode == MODE_DRAWING && e.getWhen() - lastMouseDown < doubleClickSpeed) {
 				world.addVertex(new Vertex(e.getPoint()));
 			}
 		}
-		else if(e.getButton() == MouseEvent.BUTTON2) {
+		else if(mode == MODE_DRAWING && e.getButton() == MouseEvent.BUTTON2) {
 			Vertex previousVertex = selectedVertex;
 			Vertex previousPoint = selectedPoint;
 			
@@ -244,7 +219,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		}
 		else if(mode == MODE_TILING) {
 			if(e.getButton() == MouseEvent.BUTTON1) {
-				if(selectedGridBlock != null && activeSprite == ALIEN) {
+				if(selectedGridBlock != null) {
 					world.objects.add(new Entity(new Vertex(selectedGridBlock.x, selectedGridBlock.y), 0, 0));
 				}
 			}
@@ -320,8 +295,8 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		
 		drawGrid(g);
 		
-		if(mode == MODE_TILING && selectedGridBlock != null && activeSprite != null) {
-			activeSprite.paintOn(g, selectedGridBlock.x * World.GRID_SIZE, selectedGridBlock.y * World.GRID_SIZE);
+		if(mode == MODE_TILING && selectedGridBlock != null && editorWindow.activeSprite != null) {
+			editorWindow.activeSprite.paintOn(g, selectedGridBlock.x * World.GRID_SIZE, selectedGridBlock.y * World.GRID_SIZE);
 		}
 	}
 	
@@ -374,7 +349,9 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 	public void drawObjects(Graphics g) {
 		for(int i=0;i<world.objects.size();i++) {
-			activeSprite.paintOn(g, world.objects.elementAt(i).location.x * World.GRID_SIZE, world.objects.elementAt(i).location.y * World.GRID_SIZE); 
+			if(editorWindow.activeSprite != null) {
+				editorWindow.activeSprite.paintOn(g, world.objects.elementAt(i).location.x * World.GRID_SIZE, world.objects.elementAt(i).location.y * World.GRID_SIZE);
+			}
 		}
 	}
 	
