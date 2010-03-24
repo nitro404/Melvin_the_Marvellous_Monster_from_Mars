@@ -19,5 +19,3 @@ CD bin
 ECHO Running Level Designer...
 java LevelDesigner -../settings.ini
 CD "../../"
-
-pause
