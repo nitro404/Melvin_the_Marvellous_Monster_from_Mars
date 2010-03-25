@@ -252,7 +252,6 @@ public class EditorWindow extends JFrame implements ActionListener {
 		}
 		else if(e.getSource() == menuFileResetSettings) {
 			resetSettings();
-			saveSettings();
 			update();
 		}
 		else if(e.getSource() == menuFileExit) {
