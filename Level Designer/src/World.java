@@ -8,6 +8,7 @@ public class World {
 	public Dimension dimensions;
 	public Graph edges;
 	public Vector<Entity> objects;
+	public Vector<Entity> tiles;
 	public Vector<String> textureNames;
 	
 	final public static String WORLD_TYPE = "2D Cartesian World";
@@ -18,6 +19,7 @@ public class World {
 	public World() {
 		this.edges = new Graph();
 		this.objects = new Vector<Entity>();
+		this.tiles = new Vector<Entity>();
 		this.textureNames = new Vector<String>();
 	}
 	
@@ -46,13 +48,13 @@ public class World {
 		edges.edges.remove(e);
 	}
 	
-	public static World parseFrom(String fileName) {
+	public static World parseFrom(String fileName, SpriteSheets spriteSheets) {
 		if(fileName == null || fileName.trim().length() == 0) {
 			return null;
 		}
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(fileName.trim()));
-			World world = parseFrom(in);
+			World world = parseFrom(in, spriteSheets);
 			if(in != null) {
 				in.close();
 			}
@@ -73,7 +75,7 @@ public class World {
 		return null;
 	}
 	
-	public static World parseFrom(BufferedReader in) throws IOException {
+	public static World parseFrom(BufferedReader in, SpriteSheets spriteSheets) throws IOException {
 		if(in == null) {
 			return null;
 		}
@@ -160,7 +162,7 @@ public class World {
 		Entity newObject;
 		for(int i=0;i<numberOfObjects;i++) {
 			input = in.readLine().trim();
-			newObject = Entity.parseFrom(input);
+			newObject = Entity.parseFrom(input, spriteSheets);
 			if(!world.objects.contains(newObject)) {
 				world.objects.add(newObject);
 			}

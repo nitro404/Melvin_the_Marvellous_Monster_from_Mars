@@ -124,9 +124,13 @@ public class Sprite {
 	
 	public Dimension getDimensions() { return new Dimension(this.image.getWidth(), this.image.getHeight()); }
 	
+	public boolean isTiled() {
+		return this.type == TYPE_TILE;
+	}
+	
 	public String getName() { return this.name; }
 	public String getParentName() { return this.parentName; }
-	public int getIndezx() { return this.index; }
+	public int getIndex() { return this.index; }
 	public int getType() { return this.type; }
 	
 	public void setName(String name) { this.name = name; }

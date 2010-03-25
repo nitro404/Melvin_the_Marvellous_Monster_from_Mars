@@ -53,29 +53,25 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 					b.setBorderPainted(false);
 					this.add(b);
 					b.setLocation(5, yPos);
-					yPos += r.getHeight();
+					yPos += r.getHeight() + 5;
 					spriteButtons.add(b);
 					spriteLocations.add(new Point(i, j));
-					if(r.getWidth() + 10 > maxWidth) { maxWidth = r.getWidth() + 10; }
+					if(r.getWidth() + 20 > maxWidth) { maxWidth = r.getWidth() + 20; }
 				}
 			}
 		}
-//		WHY DOESNT THIS WORK
 		panelSize = new Dimension(maxWidth, yPos);
 		int xPos = this.getSize().width;
 		this.setSize(new Dimension(xPos, yPos));
-		this.revalidate();
-	}
-	
-	public void setScrollPaneHeight(JScrollPane palettePanelScrollPane) {
-		palettePanelScrollPane.setPreferredSize(panelSize);
-		this.setPreferredSize(new Dimension(100, 4000));
-		this.revalidate();
-		palettePanelScrollPane.revalidate();
 	}
 	
 	public Dimension getPreferredSize() {
-		return new Dimension(160, 728);
+		if(panelSize != null) {
+			return panelSize;
+		}
+		else {
+			return new Dimension(160, 728);
+		}
 	}
 	
 	public Dimension getPreferredScrollableViewportSize() {

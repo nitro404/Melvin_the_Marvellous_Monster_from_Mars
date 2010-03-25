@@ -238,7 +238,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		}
 		else if(e.getSource() == menuFileOpenMap) {
 			if(fileChooser.showDialog(this, "Open Map") == JFileChooser.APPROVE_OPTION) {
-				world = World.parseFrom(fileChooser.getSelectedFile().getAbsolutePath());
+				world = World.parseFrom(fileChooser.getSelectedFile().getAbsolutePath(), spriteSheets);
 				editorPanel.setWorld(world);
 			}
 		}
@@ -340,9 +340,10 @@ public class EditorWindow extends JFrame implements ActionListener {
 	
 	public void update() {
 		editorPanelScrollPane.revalidate();
-		this.repaint();
 		editorPanelScrollPane.repaint();
 		editorPanel.update();
+		paletteWindow.update();
+		this.repaint();
 	}
 	
 }

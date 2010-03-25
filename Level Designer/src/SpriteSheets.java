@@ -39,6 +39,19 @@ public class SpriteSheets {
 		return null;
 	}
 	
+	public int getSpriteSheetIndex(String name) {
+		if(name == null || name.trim().length() == 0) { return -1; }
+		String temp = name.trim();
+		
+		for(int i=0;i<this.spriteSheets.size();i++) {
+			if(this.spriteSheets.elementAt(i).getName() != null &&
+			   this.spriteSheets.elementAt(i).getName().equalsIgnoreCase(temp)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public boolean add(SpriteSheet spriteSheet) {
 		if(spriteSheet == null) { return false; }
 		

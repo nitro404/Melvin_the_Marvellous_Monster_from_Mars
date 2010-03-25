@@ -4,20 +4,32 @@ import java.util.StringTokenizer;
 public class Entity {
 
 	public Vertex location;
-	public int textureIndex;
-	public int spriteIndex;
+	public Sprite sprite;
+	public int spriteSheetIndex;
 	
-	public Entity(Vertex location, int textureIndex, int spriteIndex) {
+	public Entity(Vertex location, Sprite sprite) {
 		this.location = location;
-		this.textureIndex = textureIndex;
-		this.spriteIndex = spriteIndex;
+		this.sprite = sprite;
+		this.spriteSheetIndex = -1;
 	}
 	
 	public Vertex getPosition() {
 		return this.location;
 	}
 	
-	public static Entity parseFrom(String input) {
+	public int getSpriteIndex() {
+		return (this.sprite == null) ? -1 : this.sprite.getIndex();
+	}
+	
+	public boolean isTiled() {
+		return (this.sprite == null) ? false : this.sprite.isTiled();
+	}
+	
+	public Sprite getSprite() {
+		return this.sprite;
+	}
+	
+	public static Entity parseFrom(String input, SpriteSheets spriteSheets) {
 		if(input == null || input.trim().length() == 0) {
 			return null;
 		}
@@ -26,15 +38,22 @@ public class Entity {
 		
 		StringTokenizer st = new StringTokenizer(data, ", ", false);
 		Vertex v = new Vertex(Integer.valueOf(st.nextToken()), Integer.valueOf(st.nextToken()));
-		int textureIndex = Integer.valueOf(st.nextToken());
-		int spriteIndex = Integer.valueOf(st.nextToken());
-		
-		return new Entity(v, textureIndex, spriteIndex);
+		if(st.countTokens() == 2) {
+			String spriteSheetName = st.nextToken();
+			String spriteName = st.nextToken();
+			
+			return new Entity(v, spriteSheets.getSpriteSheet(spriteSheetName).getSprite(spriteName));
+		}
+		else {
+			return new Entity(v, null);
+		}
 	}
 	
 	public void writeTo(PrintWriter out) {
 		this.location.writeTo(out);
-		out.print(", " + textureIndex + ", " + spriteIndex);
+		if(sprite != null) {
+			out.print(", " + sprite.getParentName() + ", " + sprite.getName());
+		}
 	}
 	
 	public boolean equals(Object o) {
@@ -44,9 +63,13 @@ public class Entity {
 		
 		Entity e = (Entity) o;
 		
-		return this.textureIndex == e.textureIndex &&
-			   this.spriteIndex == e.spriteIndex &&
-			   this.location.equals(e.location);
+		if((this.sprite == null && e.sprite != null) ||
+		   (this.sprite != null && e.sprite == null) ||
+		   (this.sprite != null && e.sprite != null && !this.sprite.equals(e.sprite))) {
+			return false;
+		}
+		
+		return this.location.equals(e.location);
 	}
 	
 	public String toString() {
