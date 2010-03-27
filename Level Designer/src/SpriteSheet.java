@@ -174,7 +174,7 @@ public class SpriteSheet {
 					}
 					
 					if(v != null && v.getID().equalsIgnoreCase("Attributes")) {
-						spriteSheetName = properties.getValue("SpriteSheet Name");
+						spriteSheetName = properties.getValue("SpriteSheet Name").replace(",", "");
 						if(spriteSheetName == null) {
 							System.out.println("ERROR: Sprite sheet must have a name.");
 							return null;
@@ -287,7 +287,7 @@ public class SpriteSheet {
 								System.out.println("ERROR: Sprite attribute index out of range.");
 								return null;
 							}
-							spriteName = spriteAttributes.getValue("Name");
+							spriteName = spriteAttributes.getValue("Name").replace(",", "");;
 							spriteType = spriteAttributes.getValue("Type");
 							if(spriteName == null || spriteType == null) {
 								System.out.println("ERROR: Sprite name or type missing.");

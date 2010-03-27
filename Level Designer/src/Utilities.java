@@ -77,4 +77,27 @@ public class Utilities {
 		return fileName;
 	}
 	
+	public static String getExtension(String fileName) {
+		if(fileName.lastIndexOf('.') != -1) {
+			return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+		}
+		else {
+			return null;
+		}
+	}
+	
+	public static boolean hasExtension(String fileName, String fileExtension) {
+		String actualFileExtension = getExtension(fileName);
+		return actualFileExtension != null && actualFileExtension.equalsIgnoreCase(fileExtension);
+	}
+	
+	public static String removeExtension(String fileName) {
+		if(fileName.lastIndexOf('.') != -1) {
+			return fileName.substring(0, fileName.lastIndexOf('.'));
+		}
+		else {
+			return fileName;
+		}
+	}
+	
 }

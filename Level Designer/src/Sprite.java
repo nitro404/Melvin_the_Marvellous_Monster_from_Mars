@@ -21,7 +21,8 @@ public class Sprite {
 	public static int TYPE_OBJECT = 2;
 	public static int TYPE_PLAYER = 3;
 	public static int TYPE_DISGUISE = 4;
-	public static int TYPE_AI = 5;
+	public static int TYPE_PET = 5;
+	public static int TYPE_AI = 6;
 	
 	public Sprite(String fileName, String spriteDirectory) {
 		this(fileName, spriteDirectory, -1);
@@ -158,6 +159,9 @@ public class Sprite {
 		}
 		else if(typeString.equalsIgnoreCase("Disguise")) {
 			return TYPE_DISGUISE;
+		}
+		else if(typeString.equalsIgnoreCase("Pet")) {
+			return TYPE_PET;
 		}
 		else if(typeString.equalsIgnoreCase("AI")) {
 			return TYPE_AI;

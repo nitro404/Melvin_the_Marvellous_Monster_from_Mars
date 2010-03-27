@@ -6,10 +6,12 @@ public class World {
 	
 	public Vertex gridSize;
 	public Dimension dimensions;
-	public Graph edges;
-	public Vector<Entity> objects;
-	public Vector<Entity> tiles;
-	public Vector<String> textureNames;
+	private Graph graph;
+	private Entity player;
+	private Entity pet;
+	private Vector<Entity> objects;
+	private Vector<Entity> tiles;
+	private Vector<Entity> ai;
 	
 	final public static String WORLD_TYPE = "2D Cartesian World";
 	final public static double WORLD_VERSION = 1.0;
@@ -17,35 +19,239 @@ public class World {
 	final public static int GRID_SIZE = 64;
 	
 	public World() {
-		this.edges = new Graph();
+		this.graph = new Graph();
+		this.player = null;
+		this.pet = null;
 		this.objects = new Vector<Entity>();
 		this.tiles = new Vector<Entity>();
-		this.textureNames = new Vector<String>();
+		this.ai = new Vector<Entity>();
 	}
 	
 	public void addEdge(Edge e) {
-		this.edges.addEdge(e);
+		this.graph.addEdge(e);
 	}
 
 	public void addVertex(Vertex v) {
-		this.edges.addVertex(v);
+		this.graph.addVertex(v);
 	}
 	
-	public void removeVertex(Vertex v) {
-		edges.vertices.remove(v);
+	public int numberOfVertices() {
+		return this.graph.vertices.size();
+	}
+	
+	public int numberOfEdges() {
+		return this.graph.edges.size();
+	}
+	
+	public boolean containsVertex(Vertex v) {
+		return this.graph.containsVertex(v);
+	}
+	
+	public boolean containsEdge(Edge e) {
+		return this.graph.containsEdge(e);
+	}
+
+	public Vertex getVertex(int index) {
+		if(index < 0 || index >= this.graph.vertices.size()) { return null; }
+		
+		return this.graph.vertices.elementAt(index);
+	}
+
+	public Edge getEdge(int index) {
+		if(index < 0 || index >= this.graph.edges.size()) { return null; }
+		
+		return this.graph.edges.elementAt(index);
+	}
+	
+	public boolean removeVertex(Vertex v) {
+		boolean removed = graph.vertices.remove(v);
 		Vector<Edge> edgesToRemove = new Vector<Edge>();
-		for(int i=0;i<edges.size();i++) {
-			if(this.edges.edges.elementAt(i).a.equals(v) || this.edges.edges.elementAt(i).b.equals(v)) {
-				edgesToRemove.add(this.edges.edges.elementAt(i));
+		for(int i=0;i<graph.size();i++) {
+			if(this.graph.edges.elementAt(i).a.equals(v) || this.graph.edges.elementAt(i).b.equals(v)) {
+				edgesToRemove.add(this.graph.edges.elementAt(i));
 			}
 		}
 		for(int i=0;i<edgesToRemove.size();i++) {
-			this.edges.edges.remove(edgesToRemove.elementAt(i));
+			this.graph.edges.remove(edgesToRemove.elementAt(i));
+		}
+		return removed;
+	}
+	
+	public boolean removeEdge(Edge e) {
+		return graph.edges.remove(e);
+	}
+	
+	public void addObject(Entity e) {
+		if(e == null ||
+		   e.getSprite() == null ||
+		   e.isTiled() ||
+		   e.getSprite().getType() == Sprite.TYPE_PLAYER ||
+		   e.getSprite().getType() == Sprite.TYPE_PET ||
+		   e.getSprite().getType() == Sprite.TYPE_AI) { return; }
+		
+		if(!this.objects.contains(e)) {
+			this.objects.add(e);
 		}
 	}
 	
-	public void removeEdge(Edge e) {
-		edges.edges.remove(e);
+	public void addTile(Entity e) {
+		if(e == null ||
+		   e.getSprite() == null ||
+		   !e.isTiled() ||
+		   e.getSprite().getType() == Sprite.TYPE_PLAYER ||
+		   e.getSprite().getType() == Sprite.TYPE_PET ||
+		   e.getSprite().getType() == Sprite.TYPE_AI) { return; }
+		
+		if(!this.tiles.contains(e)) {
+			this.tiles.add(e);
+		}
+	}
+	
+	public void addAI(Entity e) {
+		if(e == null || e.getSprite() == null || !(e.getSprite().getType() == Sprite.TYPE_AI)) { return; }
+		
+		if(!this.ai.contains(e)) {
+			this.ai.add(e);
+		}
+	}
+	
+	public int numberOfObjects() {
+		return this.objects.size();
+	}
+	
+	public int numberOfTiles() {
+		return this.tiles.size();
+	}
+	
+	public int numberOfAI() {
+		return this.ai.size();
+	}
+	
+	public boolean containsObject(Entity e) {
+		if(e == null) { return false; }
+		
+		return this.objects.contains(e);
+	}
+	
+	public boolean containsTile(Entity e) {
+		if(e == null) { return false; }
+		
+		return this.tiles.contains(e);
+	}
+	
+	public boolean containsAI(Entity e) {
+		if(e == null) { return false; }
+		
+		return this.ai.contains(e);
+	}
+	
+	public boolean removeObject(Entity e) {
+		if(e == null) { return false; }
+		
+		return this.objects.remove(e);
+	}
+	
+	public boolean removeTile(Entity e) {
+		if(e == null) { return false; }
+		
+		return this.tiles.remove(e);
+	}
+	
+	public boolean removeAI(Entity e) {
+		if(e == null) { return false; }
+		
+		return this.ai.remove(e);
+	}
+	
+	public boolean removeObject(int index) {
+		if(index < 0 || index >= this.objects.size()) { return false; }
+		
+		return this.objects.remove(index) != null;
+	}
+	
+	public boolean removeTile(int index) {
+		if(index < 0 || index >= this.tiles.size()) { return false; }
+		
+		return this.tiles.remove(index) != null;
+	}
+	
+	public boolean removeAI(int index) {
+		if(index < 0 || index >= this.ai.size()) { return false; }
+		
+		return this.ai.remove(index) != null;
+	}
+	
+	public Entity getObject(int index) {
+		if(index < 0 || index >= this.objects.size()) { return null; }
+		
+		return this.objects.elementAt(index);
+	}
+	
+	public Entity getTile(int index) {
+		if(index < 0 || index >= this.tiles.size()) { return null; }
+		
+		return this.tiles.elementAt(index);
+	}
+	
+	public Entity getAI(int index) {
+		if(index < 0 || index >= this.ai.size()) { return null; }
+		
+		return this.ai.elementAt(index);
+	}
+	
+	public void bringSpriteToFront(Entity e) {
+		if(e == null) { return; }
+		
+		if(this.objects.remove(e)) {
+			this.objects.add(e);
+		}
+		else if(this.tiles.remove(e)) {
+			this.tiles.add(e);
+		}
+	}
+	
+	public void sendSpriteToBack(Entity e) {
+		if(e == null) { return; }
+		
+		if(this.objects.remove(e)) {
+			this.objects.insertElementAt(e, 0);
+		}
+		else if(this.tiles.remove(e)) {
+			this.tiles.insertElementAt(e, 0);
+		}
+	}
+	
+	public void deleteSprite(Entity e) {
+		this.removeObject(e);
+		this.removeTile(e);
+	}
+	
+	public Entity getPlayer() {
+		return this.player;
+	}
+	
+	public boolean hasPlayer() {
+		return this.player != null;
+	}
+	
+	public void setPlayer(Entity e) {
+		if(e == null || e.getSprite() == null || !(e.getSprite().getType() == Sprite.TYPE_PLAYER)) { return; }
+		
+		this.player = e;
+	}
+	
+	public Entity getPet() {
+		return this.pet;
+	}
+	
+	public boolean hasPet() {
+		return this.pet != null;
+	}
+	
+	public void setPet(Entity e) {
+		if(e == null || e.getSprite() == null || !(e.getSprite().getType() == Sprite.TYPE_PET)) { return; }
+		
+		this.pet = e;
 	}
 	
 	public static World parseFrom(String fileName, SpriteSheets spriteSheets) {
@@ -86,7 +292,7 @@ public class World {
 		// input the world header
 		input = in.readLine();
 		String worldType = input.substring(0, input.indexOf(':', 0)).trim();
-		if(!WORLD_TYPE.equals(worldType)) {
+		if(!WORLD_TYPE.equalsIgnoreCase(worldType)) {
 			System.out.println("ERROR: Incompatible world type (" + worldType + "). Current editor only supports worlds of type " + WORLD_TYPE + ".");
 			return null;
 		}
@@ -99,7 +305,7 @@ public class World {
 		// read in the grid size
 		input = in.readLine();
 		String gridSizeHeader = input.substring(0, input.indexOf(':', 0)).trim();
-		if(!gridSizeHeader.equals("Grid Size")) {
+		if(!gridSizeHeader.equalsIgnoreCase("Grid Size")) {
 			System.out.println("ERROR: Corrupted world file. Expected header \"Grid Size\", found \"" + gridSizeHeader + "\".");
 			return null;
 		}
@@ -112,7 +318,7 @@ public class World {
 		// read in the map dimensions
 		input = in.readLine();
 		String dimensionsHeader = input.substring(0, input.indexOf(':', 0)).trim();
-		if(!dimensionsHeader.equals("Dimensions")) {
+		if(!dimensionsHeader.equalsIgnoreCase("Dimensions")) {
 			System.out.println("ERROR: Corrupted world file. Expected header \"Dimensions\", found \"" + dimensionsHeader + "\".");
 			return null;
 		}
@@ -121,27 +327,10 @@ public class World {
 		world.gridSize = new Vertex(mapWidth, mapHeight);
 		world.dimensions = new Dimension(mapWidth * GRID_SIZE, mapHeight * GRID_SIZE);
 		
-		// read in the texture names
-		input = in.readLine();
-		String texturesHeader = input.substring(0, input.indexOf(':', 0)).trim();
-		if(!texturesHeader.equals("Textures")) {
-			System.out.println("ERROR: Corrupted world file. Expected header \"Textures\", found \"" + texturesHeader + "\".");
-			return null;
-		}
-		int numberOfTextures = Integer.valueOf(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim());
-		for(int i=0;i<numberOfTextures;i++) {
-			input = in.readLine().trim();
-			if(input != null && input.length() != 0) {
-				if(!world.textureNames.contains(input)) {
-					world.textureNames.add(input);
-				}
-			}
-		}
-		
 		// read in the corresponding edges for each barrier
 		input = in.readLine();
 		String edgesHeader = input.substring(0, input.indexOf(':', 0)).trim();
-		if(!edgesHeader.equals("Edges")) {
+		if(!edgesHeader.equalsIgnoreCase("Edges")) {
 			System.out.println("ERROR: Corrupted world file. Expected header \"Edges\", found \"" + edgesHeader + "\".");
 			return null;
 		}
@@ -150,11 +339,32 @@ public class World {
 			input = in.readLine().trim();
 			world.addEdge(Edge.parseFrom(input));
 		}
+
+		// read in the player spawn position
+		input = in.readLine();
+		String playerHeader = input.substring(0, input.indexOf(':', 0)).trim();
+		if(!playerHeader.equalsIgnoreCase("Player")) {
+			System.out.println("ERROR: Corrupted world file. Expected header \"Player\", found \"" + playerHeader + "\".");
+			return null;
+		}
+		world.setPlayer(Entity.parseFrom(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim(), spriteSheets));
+		
+		// read in the pet spawn position
+		input = in.readLine();
+		String petHeader = input.substring(0, input.indexOf(':', 0)).trim();
+		if(!petHeader.equalsIgnoreCase("Pet")) {
+			System.out.println("ERROR: Corrupted world file. Expected header \"Pet\", found \"" + petHeader + "\".");
+			return null;
+		}
+		String petData = input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim();
+		if(!petData.equalsIgnoreCase("None")) {
+			world.setPet(Entity.parseFrom(petData, spriteSheets));
+		}
 		
 		// read in the objects
 		input = in.readLine();
 		String objectsHeader = input.substring(0, input.indexOf(':', 0)).trim();
-		if(!objectsHeader.equals("Objects")) {
+		if(!objectsHeader.equalsIgnoreCase("Objects")) {
 			System.out.println("ERROR: Corrupted world file. Expected header \"Objects\", found \"" + objectsHeader + "\".");
 			return null;
 		}
@@ -163,9 +373,37 @@ public class World {
 		for(int i=0;i<numberOfObjects;i++) {
 			input = in.readLine().trim();
 			newObject = Entity.parseFrom(input, spriteSheets);
-			if(!world.objects.contains(newObject)) {
-				world.objects.add(newObject);
-			}
+			world.addObject(newObject);
+		}
+		
+		// read in the tiles
+		input = in.readLine();
+		String tilesHeader = input.substring(0, input.indexOf(':', 0)).trim();
+		if(!tilesHeader.equalsIgnoreCase("Tiles")) {
+			System.out.println("ERROR: Corrupted world file. Expected header \"Tiles\", found \"" + tilesHeader + "\".");
+			return null;
+		}
+		int numberOfTiles = Integer.valueOf(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim());
+		Entity newTile;
+		for(int i=0;i<numberOfTiles;i++) {
+			input = in.readLine().trim();
+			newTile = Entity.parseFrom(input, spriteSheets);
+			world.addTile(newTile);
+		}
+		
+		// read in the ai
+		input = in.readLine();
+		String aiHeader = input.substring(0, input.indexOf(':', 0)).trim();
+		if(!aiHeader.equalsIgnoreCase("AI")) {
+			System.out.println("ERROR: Corrupted world file. Expected header \"AI\", found \"" + aiHeader + "\".");
+			return null;
+		}
+		int numberOfAI = Integer.valueOf(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim());
+		Entity newAI;
+		for(int i=0;i<numberOfAI;i++) {
+			input = in.readLine().trim();
+			newAI = Entity.parseFrom(input, spriteSheets);
+			world.addTile(newAI);
 		}
 		
 		return world;
@@ -208,15 +446,24 @@ public class World {
 		gridSize.writeTo(out);
 		out.println();
 		
-		// write the textures
-		out.println("Textures: " + this.textureNames.size());
-		for(int i=0;i<this.textureNames.size();i++) {
-			out.println("\t" + this.textureNames.elementAt(i));
-		}
-		
 		// write the edges
-		out.println("Edges: " + this.edges.size());
-		this.edges.writeTo(out);
+		out.println("Edges: " + this.graph.size());
+		this.graph.writeTo(out);
+		
+		// write the player position
+		out.print("Player: ");
+		this.player.writeTo(out);
+		out.println();
+		
+		// write the pet position
+		out.print("Pet: ");
+		if(this.hasPet()) {
+			this.pet.writeTo(out);
+			out.println();
+		}
+		else {
+			out.println("None");
+		}
 		
 		// write the objects
 		out.println("Objects: " + this.objects.size());
@@ -225,10 +472,26 @@ public class World {
 			this.objects.elementAt(i).writeTo(out);
 			out.println();
 		}
+		
+		// write the tiles
+		out.println("Tiles: " + this.tiles.size());
+		for(int i=0;i<this.tiles.size();i++) {
+			out.print("\t");
+			this.tiles.elementAt(i).writeTo(out);
+			out.println();
+		}
+		
+		// write the ai
+		out.println("AI: " + this.ai.size());
+		for(int i=0;i<this.ai.size();i++) {
+			out.print("\t");
+			this.ai.elementAt(i).writeTo(out);
+			out.println();
+		}
 	}
 
 	public void paintOn(Graphics g, Color lineColour, Color vertexColour) {
-		edges.paintOn(g, lineColour, vertexColour);
+		graph.paintOn(g, lineColour, vertexColour);
 	}
 	
 	public boolean equals(Object o) {
@@ -247,7 +510,7 @@ public class World {
 			}
 		}
 		
-		return this.edges.equals(w.edges);
+		return this.graph.equals(w.graph);
 	}
 	
 	public String toString() {

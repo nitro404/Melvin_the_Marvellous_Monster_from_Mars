@@ -252,3 +252,79 @@ protected:
 
 
 
+
+//	public Vector<String> textureNames;
+	
+
+//		this.textureNames = new Vector<String>();
+
+		
+		/*
+		// read in the texture names
+		input = in.readLine();
+		String texturesHeader = input.substring(0, input.indexOf(':', 0)).trim();
+		if(!texturesHeader.equals("Textures")) {
+			System.out.println("ERROR: Corrupted world file. Expected header \"Textures\", found \"" + texturesHeader + "\".");
+			return null;
+		}
+		int numberOfTextures = Integer.valueOf(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim());
+		for(int i=0;i<numberOfTextures;i++) {
+			input = in.readLine().trim();
+			if(input != null && input.length() != 0) {
+				if(!world.textureNames.contains(input)) {
+					world.textureNames.add(input);
+				}
+			}
+		}
+		*/
+
+
+		
+		/*
+		// write the textures
+		out.println("Textures: " + this.textureNames.size());
+		for(int i=0;i<this.textureNames.size();i++) {
+			out.println("\t" + this.textureNames.elementAt(i));
+		}
+		*/
+
+
+
+
+		/*Entity e;
+		Sprite s;
+		int index;*/
+		
+
+			/*
+			e = world.getTile(i);
+			index = e.spriteSheetIndex;
+			if(index < 0) { editorWindow.spriteSheets.getSpriteSheetIndex(e.getSprite().getParentName()); }
+			if(index >= 0) {
+				s = editorWindow.spriteSheets.getSpriteSheet(index).getSprite(e.getSpriteIndex());
+				if(s != null) {
+					s.paintOn(g, e.location.x * World.GRID_SIZE, e.location.y * World.GRID_SIZE);
+				}
+			}*/
+
+
+			/*
+			e = world.getObject(i);
+			index = e.spriteSheetIndex;
+			if(index < 0) { editorWindow.spriteSheets.getSpriteSheetIndex(e.getSprite().getParentName()); }
+			if(index >= 0) {
+				s = editorWindow.spriteSheets.getSpriteSheet(index).getSprite(e.getSpriteIndex());
+				if(s != null) {
+					s.paintOn(g, e.location.x, e.location.y);
+				}
+			}*/
+
+
+//			world.getPlayer().getSprite().paintOn(g, world.getPlayer().location.x, world.getPlayer().location.y);
+
+
+
+
+//			world.getPlayer().getSprite().paintOn(g, world.getPlayer().location.x, world.getPlayer().location.y);
+
+

@@ -11,18 +11,26 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	
 	private EditorWindow editorWindow;
 	
-	private Vertex selectedPoint;
+	private Point selectedPoint;
 	private Vertex selectedVertex;
 	private Vertex vertexToMove;
 	private Vertex lastSelectedVertex;
+	private Entity selectedSprite;
+	private Entity spriteToMove;
 	
-	private JPopupMenu popupMenu;
-	private JMenuItem popupMenuNewVertex;
-	private JMenuItem popupMenuDeleteVertex;
-	private JCheckBox popupMenuConnectVertices;
-	private JMenuItem popupMenuTileMode;
-	private JMenuItem popupMenuDrawMode;
-	private JMenuItem popupMenuCancel;
+	private JPopupMenu drawingPopupMenu;
+	private JMenuItem drawingPopupMenuNewVertex;
+	private JMenuItem drawingPopupMenuDeleteVertex;
+	private JCheckBox drawingPopupMenuConnectVertices;
+	private JMenuItem drawingPopupMenuTileMode;
+	private JMenuItem drawingPopupMenuCancel;
+	
+	private JPopupMenu tilingPopupMenu;
+	private JMenuItem tilingPopupMenuBringSpriteToFront;
+	private JMenuItem tilingPopupMenuSendSpriteToBack;
+	private JMenuItem tilingPopupMenuDeleteSprite;
+	private JMenuItem tilingPopupMenuDrawMode;
+	private JMenuItem tilingPopupMenuCancel;
 	
 	private Point selectedGridBlock;
 	public int mode;
@@ -58,7 +66,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 			System.exit(1);
 		}
 		
-		createPopupMenu();
+		createPopupMenus();
 		
 		mode = MODE_TILING;
 		gridEnabled = true;
@@ -69,10 +77,12 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		selectedVertex = null;
 		vertexToMove = null;
 		lastSelectedVertex = null;
+		selectedSprite = null;
+		spriteToMove = null;
 	
 		loadSettings(settings);
 		
-		update();
+		this.update();
 	}
 	
 	private void loadSettings(Variables settings) {
@@ -97,29 +107,47 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		}
 	}
 	
-	private void createPopupMenu() {
-		popupMenu = new JPopupMenu();
-		popupMenuNewVertex = new JMenuItem("Create Vertex");
-		popupMenuDeleteVertex = new JMenuItem("Delete Vertex");
-		popupMenuConnectVertices = new JCheckBox("Auto-Connect Points");
-		popupMenuTileMode = new JMenuItem("Texture Tiling Mode");
-		popupMenuDrawMode = new JMenuItem("Boundary Drawing Mode");
-		popupMenuCancel = new JMenuItem("Cancel");
+	private void createPopupMenus() {
+		drawingPopupMenu = new JPopupMenu();
+		tilingPopupMenu = new JPopupMenu();
 		
-		popupMenuNewVertex.addActionListener(this);
-		popupMenuDeleteVertex.addActionListener(this);
-		popupMenuConnectVertices.addActionListener(this);
-		popupMenuTileMode.addActionListener(this);
-		popupMenuDrawMode.addActionListener(this);
+		drawingPopupMenuNewVertex = new JMenuItem("Create Vertex");
+		drawingPopupMenuDeleteVertex = new JMenuItem("Delete Vertex");
+		drawingPopupMenuConnectVertices = new JCheckBox("Auto-Connect Points");
+		drawingPopupMenuTileMode = new JMenuItem("Texture Tiling Mode");
+		drawingPopupMenuCancel = new JMenuItem("Cancel");
 		
-		popupMenu.add(popupMenuNewVertex);
-		popupMenu.add(popupMenuDeleteVertex);
-		popupMenu.add(popupMenuConnectVertices);
-		popupMenu.addSeparator();
-		popupMenu.add(popupMenuTileMode);
-		popupMenu.add(popupMenuDrawMode);
-		popupMenu.addSeparator();
-		popupMenu.add(popupMenuCancel);
+		tilingPopupMenuBringSpriteToFront = new JMenuItem("Bring Sprite to Front");
+		tilingPopupMenuSendSpriteToBack = new JMenuItem("Send Sprite to Back");
+		tilingPopupMenuDeleteSprite = new JMenuItem("Delete Sprite");
+		tilingPopupMenuDrawMode = new JMenuItem("Boundary Drawing Mode");
+		tilingPopupMenuCancel = new JMenuItem("Cancel");
+		
+		drawingPopupMenuConnectVertices.setSelected(true);
+		
+		drawingPopupMenuNewVertex.addActionListener(this);
+		drawingPopupMenuDeleteVertex.addActionListener(this);
+		drawingPopupMenuConnectVertices.addActionListener(this);
+		drawingPopupMenuTileMode.addActionListener(this);
+		
+		tilingPopupMenuBringSpriteToFront.addActionListener(this);
+		tilingPopupMenuSendSpriteToBack.addActionListener(this);
+		tilingPopupMenuDeleteSprite.addActionListener(this);
+		tilingPopupMenuDrawMode.addActionListener(this);
+		
+		drawingPopupMenu.add(drawingPopupMenuNewVertex);
+		drawingPopupMenu.add(drawingPopupMenuDeleteVertex);
+		drawingPopupMenu.add(drawingPopupMenuConnectVertices);
+		drawingPopupMenu.addSeparator();
+		drawingPopupMenu.add(drawingPopupMenuTileMode);
+		drawingPopupMenu.add(drawingPopupMenuCancel);
+		
+		tilingPopupMenu.add(tilingPopupMenuBringSpriteToFront);
+		tilingPopupMenu.add(tilingPopupMenuSendSpriteToBack);
+		tilingPopupMenu.add(tilingPopupMenuDeleteSprite);
+		tilingPopupMenu.addSeparator();
+		tilingPopupMenu.add(tilingPopupMenuDrawMode);
+		tilingPopupMenu.add(tilingPopupMenuCancel);
 	}
 	
 	public void setWorld(World world) {
@@ -193,45 +221,67 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				}
 			}
 		}
-		else if(mode == MODE_DRAWING && e.getButton() == MouseEvent.BUTTON2) {
-			vertexToMove = null;
-			Vertex previousVertex = selectedVertex;
-			Vertex previousPoint = selectedPoint;
-			
-			selectedPoint = new Vertex(e.getPoint());
-			selectVertex(e.getPoint(), DEFAULT_SELECTION_RADIUS);
-			vertexToMove = selectedVertex; 
-			
-			selectedVertex = previousVertex;
-			lastSelectedVertex = selectedVertex;
-			previousVertex = previousPoint;
+		else if(e.getButton() == MouseEvent.BUTTON2) {
+			if(mode == MODE_DRAWING) {
+				vertexToMove = null;
+				Vertex previousVertex = selectedVertex;
+				
+				selectedPoint = e.getPoint();
+				selectVertex(e.getPoint(), DEFAULT_SELECTION_RADIUS);
+				vertexToMove = selectedVertex;
+				
+				selectedVertex = previousVertex;
+				lastSelectedVertex = selectedVertex;
+			}
+			else if(mode == MODE_TILING) {
+				editorWindow.activeSprite = null;
+				vertexToMove = null;
+				
+				selectSprite(e.getPoint());
+				spriteToMove = selectedSprite;
+			}
 		}
+		
 		lastMouseDown = e.getWhen();
+		this.update();
 	}
 	
 	public void mouseReleased(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON3) {
 			if(mode == MODE_DRAWING) {
-				selectedPoint = new Vertex(e.getPoint());
+				selectedPoint = e.getPoint();
 				selectVertex(e.getPoint(), DEFAULT_SELECTION_RADIUS);
+				drawingPopupMenuDeleteVertex.setEnabled(selectedVertex != null);
+				autoConnectVertices = drawingPopupMenuConnectVertices.isSelected();
+				drawingPopupMenu.show(this, e.getX(), e.getY());
 			}
-			popupMenuDeleteVertex.setEnabled(selectedVertex != null && mode == MODE_DRAWING);
-			popupMenu.show(this, e.getX(), e.getY());
+			else if(mode == MODE_TILING) {
+				selectedPoint = e.getPoint();
+				selectSprite(e.getPoint());
+				tilingPopupMenuBringSpriteToFront.setEnabled(selectedSprite != null);
+				tilingPopupMenuSendSpriteToBack.setEnabled(selectedSprite != null);
+				tilingPopupMenuDeleteSprite.setEnabled(selectedSprite != null);
+				tilingPopupMenu.show(this, e.getX(), e.getY());
+			}
 		}
-		if(mode == MODE_DRAWING) {
-			if(e.getButton() == MouseEvent.BUTTON1) {
+		else if(e.getButton() == MouseEvent.BUTTON2) {
+			vertexToMove = null;
+			spriteToMove = null;
+		}
+		else if(e.getButton() == MouseEvent.BUTTON1) {
+			if(mode == MODE_DRAWING) {
 				Vertex previousVertex = null;
 				if(selectedVertex != null) {
 					previousVertex = selectedVertex; 
 				}
-				selectedPoint = new Vertex(e.getPoint());
+				selectedPoint = e.getPoint();
 				selectVertex(e.getPoint(), DEFAULT_SELECTION_RADIUS);
 				
 				if(previousVertex != null && selectedVertex != null && !previousVertex.equals(selectedVertex)) {
 					Edge newEdge = new Edge(previousVertex, selectedVertex);
 					
-					if(this.world.edges.containsEdge(newEdge) ||
-					   this.world.edges.containsEdge(new Edge(selectedVertex, previousVertex))) {
+					if(this.world.containsEdge(newEdge) ||
+					   this.world.containsEdge(new Edge(selectedVertex, previousVertex))) {
 						return;
 					}
 					
@@ -241,33 +291,53 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 					}
 				}
 			}
-		}
-		else if(mode == MODE_TILING) {
-			if(e.getButton() == MouseEvent.BUTTON1) {
+			else if(mode == MODE_TILING) {
 				if(selectedGridBlock != null && editorWindow.activeSprite != null) {
-					Vertex v = new Vertex((editorWindow.activeSprite.isTiled()) ? selectedGridBlock.x : e.getPoint().x,
-							 			  (editorWindow.activeSprite.isTiled()) ? selectedGridBlock.y : e.getPoint().y);
+					Vertex v = new Vertex((editorWindow.activeSprite.isTiled()) ? selectedGridBlock.x : (int) (e.getX() - (editorWindow.activeSprite.getWidth() / 2.0f)),
+							 			  (editorWindow.activeSprite.isTiled()) ? selectedGridBlock.y : (int) (e.getY() - (editorWindow.activeSprite.getHeight() / 2.0f)));
 					Entity newEntity = new Entity(v, editorWindow.activeSprite);
 					newEntity.spriteSheetIndex = editorWindow.spriteSheets.getSpriteSheetIndex(editorWindow.activeSprite.getParentName());
-					if(newEntity.isTiled()) {
-						world.tiles.add(newEntity);
+					if(newEntity.getSprite().getType() == Sprite.TYPE_PLAYER) {
+						world.setPlayer(newEntity);
+					}
+					else if(newEntity.getType() == Sprite.TYPE_PET) {
+						world.setPet(newEntity);
+					}
+					else if(newEntity.getType() == Sprite.TYPE_AI) {
+						world.addAI(newEntity);
 					}
 					else {
-						world.objects.add(newEntity);
+						if(newEntity.isTiled()) {
+							world.addTile(newEntity);
+						}
+						else {
+							world.addObject(newEntity);
+						}
 					}
 				}
 			}
 		}
 		this.update();
 	}
+	
 	public void mouseDragged(MouseEvent e) {
+		mousePosition = e.getPoint();
+		if(mode == MODE_TILING) {
+			getSelectedGridBlock(e.getPoint());
+		}
 		if(mode == MODE_DRAWING) {
 			if(vertexToMove != null) {
-				vertexToMove.x = e.getPoint().x;
-				vertexToMove.y = e.getPoint().y;
+				vertexToMove.x = e.getX();
+				vertexToMove.y = e.getY();
 			}
 		}
-		this.repaint();
+		else if(mode == MODE_TILING) {
+			if(spriteToMove != null) {
+				spriteToMove.location.x = spriteToMove.isTiled() ? selectedGridBlock.x : (int) (e.getX() - (spriteToMove.getWidth() / 2.0f));
+				spriteToMove.location.y = spriteToMove.isTiled() ? selectedGridBlock.y : (int) (e.getY() - (spriteToMove.getHeight() / 2.0f));
+			}
+		}
+		this.update();
 	}
 	
 	public void mouseMoved(MouseEvent e) {
@@ -275,13 +345,14 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		if(mode == MODE_TILING) {
 			getSelectedGridBlock(e.getPoint());
 		}
-		this.repaint();
+		this.update();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if(world == null) { return; }
+		
 		if(mode == MODE_DRAWING) {
-			if(e.getSource() == popupMenuNewVertex) {
+			if(e.getSource() == drawingPopupMenuNewVertex) {
 				Vertex newVertex = new Vertex(selectedPoint.x, selectedPoint.y);
 				world.addVertex(newVertex);
 				if(autoConnectVertices && lastSelectedVertex != null) {
@@ -289,16 +360,27 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				}
 				selectedVertex = null;
 			}
-			else if(e.getSource() == popupMenuDeleteVertex) {
+			else if(e.getSource() == drawingPopupMenuDeleteVertex) {
 				world.removeVertex(selectedVertex);
 				selectedVertex = null;
 			}
+			else if(e.getSource() == drawingPopupMenuTileMode) {
+				mode = MODE_TILING;
+			}
 		}
-		if(e.getSource() == popupMenuTileMode) {
-			mode = MODE_TILING;
-		}
-		else if(e.getSource() == popupMenuDrawMode) {
-			mode = MODE_DRAWING;
+		else if(mode == MODE_TILING) {
+			if(e.getSource() == tilingPopupMenuBringSpriteToFront) {
+				world.bringSpriteToFront(selectedSprite);
+			}
+			else if(e.getSource() == tilingPopupMenuSendSpriteToBack) {
+				world.sendSpriteToBack(selectedSprite);
+			}
+			else if(e.getSource() == tilingPopupMenuDeleteSprite) {
+				world.deleteSprite(selectedSprite);
+			}
+			else if(e.getSource() == tilingPopupMenuDrawMode) {
+				mode = MODE_DRAWING;
+			}
 		}
 		this.update();
 	}
@@ -308,15 +390,68 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		if(r < 0) { r = 6; }
 		selectedVertex = null;
 		if(world != null) {
-			for(int i=0;i<world.edges.vertices.size();i++) {
-				Vertex v = world.edges.vertices.elementAt(i);
+			for(int i=0;i<world.numberOfVertices();i++) {
+				Vertex v = world.getVertex(i);
 				if(Math.sqrt( Math.pow( (selectedPoint.x - v.x) , 2) + Math.pow( (selectedPoint.y - v.y) , 2) ) <= r) {
 					selectedVertex = v;
 					lastSelectedVertex = selectedVertex;
 				}
 			}
 		}
-		update();
+	}
+	
+	public void selectSprite(Point p) {
+		if(p == null) { return; }
+		selectedSprite = null;
+		if(world != null) {
+			if(p.x >= world.getPet().location.x &&
+			   p.y >= world.getPet().location.y &&
+			   p.x <= world.getPet().location.x + world.getPet().getWidth() &&
+			   p.y <= world.getPet().location.y + world.getPet().getHeight()) {
+				selectedSprite = world.getPet();
+			}
+			if(selectedSprite == null) {
+				if(p.x >= world.getPlayer().location.x &&
+				   p.y >= world.getPlayer().location.y &&
+				   p.x <= world.getPlayer().location.x + world.getPlayer().getWidth() &&
+				   p.y <= world.getPlayer().location.y + world.getPlayer().getHeight()) {
+					selectedSprite = world.getPlayer();
+				}
+			}
+			if(selectedSprite == null) {
+				for(int i=0;i<world.numberOfAI();i++) {
+					Entity e = world.getAI(i);
+					if(p.x >= e.location.x &&
+					   p.y >= e.location.y &&
+					   p.x <= e.location.x + e.getWidth() &&
+					   p.y <= e.location.y + e.getHeight()) {
+						selectedSprite = e;
+					}
+				}
+			}
+			if(selectedSprite == null) {
+				for(int i=0;i<world.numberOfObjects();i++) {
+					Entity e = world.getObject(i);
+					if(p.x >= e.location.x &&
+					   p.y >= e.location.y &&
+					   p.x <= e.location.x + e.getWidth() &&
+					   p.y <= e.location.y + e.getHeight()) {
+						selectedSprite = e;
+					}
+				}
+			}
+			if(selectedSprite == null) {
+				for(int i=0;i<world.numberOfTiles();i++) {
+					Entity e = world.getTile(i);
+					if(selectedGridBlock.x >= e.location.x &&
+					   selectedGridBlock.y >= e.location.y &&
+					   selectedGridBlock.x <= e.location.x + (e.getWidth() / World.GRID_SIZE) - 1 &&
+					   selectedGridBlock.y <= e.location.y + (e.getHeight() / World.GRID_SIZE) - 1) {
+						selectedSprite = e;
+					}
+				}
+			}
+		}
 	}
 	
 	public void getSelectedGridBlock(Point p) {
@@ -343,8 +478,8 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		drawGrid(g);
 		
 		if(mode == MODE_TILING && selectedGridBlock != null && editorWindow.activeSprite != null) {
-			int xPos = editorWindow.activeSprite.isTiled() ? selectedGridBlock.x * World.GRID_SIZE : (mousePosition == null) ? 0 : mousePosition.x;
-			int yPos = editorWindow.activeSprite.isTiled() ? selectedGridBlock.y * World.GRID_SIZE : (mousePosition == null) ? 0 : mousePosition.y;
+			int xPos = editorWindow.activeSprite.isTiled() ? selectedGridBlock.x * World.GRID_SIZE : (mousePosition == null) ? 0 : (int) (mousePosition.x - (editorWindow.activeSprite.getWidth() / 2.0f));
+			int yPos = editorWindow.activeSprite.isTiled() ? selectedGridBlock.y * World.GRID_SIZE : (mousePosition == null) ? 0 : (int) (mousePosition.y - (editorWindow.activeSprite.getHeight() / 2.0f));
 			editorWindow.activeSprite.paintOn(g, xPos, yPos);
 		}
 	}
@@ -362,22 +497,33 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 					g.drawLine(0, j * World.GRID_SIZE, world.gridSize.x * World.GRID_SIZE, j * World.GRID_SIZE);
 				}
 				
-				if(mode == MODE_TILING && selectedGridBlock != null &&
-				   editorWindow.activeSprite != null && editorWindow.activeSprite.isTiled()) {
-					Graphics2D g2 = (Graphics2D) g;
-					Stroke s = g2.getStroke();
-					g2.setStroke(new BasicStroke(2));
-					g2.setColor(selectedColour);
-					int d = World.GRID_SIZE;
-					int w = editorWindow.activeSprite.getWidth();
-					int h = editorWindow.activeSprite.getHeight();
-					int x = selectedGridBlock.x;
-					int y = selectedGridBlock.y;
-					g2.drawLine( x*d,     y*d,   (x*d)+w,  y*d);
-					g2.drawLine((x*d)+w,  y*d,   (x*d)+w, (y*d)+h);
-					g2.drawLine((x*d)+w, (y*d)+h, x*d,    (y*d)+h);
-					g2.drawLine( x*d,    (y*d)+h, x*d,     y*d);
-					g2.setStroke(s);
+				if(mode == MODE_TILING && selectedGridBlock != null) {
+					Sprite sprite = null;
+					int x = 0, y = 0;
+					if(editorWindow.activeSprite != null && editorWindow.activeSprite.isTiled()) {
+						sprite = editorWindow.activeSprite;
+						x = selectedGridBlock.x;
+						y = selectedGridBlock.y;
+					}
+					else if(spriteToMove != null && spriteToMove.isTiled()) {
+						sprite = spriteToMove.getSprite();
+						x = spriteToMove.location.x;
+						y = spriteToMove.location.y;
+					}
+					if(sprite != null) {
+						Graphics2D g2 = (Graphics2D) g;
+						Stroke s = g2.getStroke();
+						g2.setStroke(new BasicStroke(2));
+						g2.setColor(selectedColour);
+						int d = World.GRID_SIZE;
+						int w = sprite.getWidth();
+						int h = sprite.getHeight();
+						g2.drawLine( x*d,     y*d,   (x*d)+w,  y*d);
+						g2.drawLine((x*d)+w,  y*d,   (x*d)+w, (y*d)+h);
+						g2.drawLine((x*d)+w, (y*d)+h, x*d,    (y*d)+h);
+						g2.drawLine( x*d,    (y*d)+h, x*d,     y*d);
+						g2.setStroke(s);
+					}
 				}
 			}
 			else {
@@ -400,43 +546,28 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	}
 	
 	public void drawObjects(Graphics g) {
-		Entity e;
-		Sprite s;
-		int index;
-		
-		for(int i=0;i<world.tiles.size();i++) {
-			e = world.tiles.elementAt(i);
-			index = e.spriteSheetIndex;
-			if(index < 0) { editorWindow.spriteSheets.getSpriteSheetIndex(e.getSprite().getParentName()); }
-			if(index >= 0) {
-				s = editorWindow.spriteSheets.getSpriteSheet(index).getSprite(e.getSpriteIndex());
-				if(s != null) {
-					s.paintOn(g, e.location.x * World.GRID_SIZE, e.location.y * World.GRID_SIZE);
-				}
-			}
+		for(int i=0;i<world.numberOfTiles();i++) {
+			world.getTile(i).paintOn(g);
 		}
 		
-		for(int i=0;i<world.objects.size();i++) {
-			e = world.objects.elementAt(i);
-			index = e.spriteSheetIndex;
-			if(index < 0) { editorWindow.spriteSheets.getSpriteSheetIndex(e.getSprite().getParentName()); }
-			if(index >= 0) {
-				s = editorWindow.spriteSheets.getSpriteSheet(index).getSprite(e.getSpriteIndex());
-				if(s != null) {
-					s.paintOn(g, e.location.x, e.location.y);
-				}
-			}
+		for(int i=0;i<world.numberOfObjects();i++) {
+			world.getObject(i).paintOn(g);
+		}
+		
+		for(int i=0;i<world.numberOfAI();i++) {
+			world.getAI(i).paintOn(g);
+		}
+		
+		if(world.hasPlayer()) {
+			world.getPlayer().paintOn(g);
+		}
+		
+		if(world.hasPet()) {
+			world.getPet().paintOn(g);
 		}
 	}
 	
 	public void update() {
-		this.autoConnectVertices = popupMenuConnectVertices.isSelected();
-		
-		popupMenuNewVertex.setEnabled(mode == MODE_DRAWING);
-		popupMenuConnectVertices.setEnabled(mode == MODE_DRAWING);
-		popupMenuTileMode.setEnabled(mode == MODE_DRAWING);
-		popupMenuDrawMode.setEnabled(mode == MODE_TILING);
-		
 		this.repaint();
 	}
 }

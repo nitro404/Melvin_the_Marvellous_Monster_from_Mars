@@ -31,6 +31,19 @@ public class Graph {
 		}
 	}
 	
+	public boolean containsVertex(Vertex v) {
+		if(v == null) {
+			return false;
+		}
+		
+		for(int i=0;i<this.vertices.size();i++) {
+			if(this.vertices.elementAt(i).equals(v)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean containsEdge(Edge e) {
 		if(e == null) {
 			return false;

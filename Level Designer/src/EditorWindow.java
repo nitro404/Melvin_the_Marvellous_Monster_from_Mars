@@ -17,7 +17,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	final public static String ALTERNATE_SPRITESHEET_FILE = "../spritesheets.ini";
 	final public static String ALTERNATE_MAP_DIRECTORY = "../../Maps";
 	final public static String ALTERNATE_SPRITE_DIRECTORY = "../../Sprites";
-	private int DEFAULT_EDITOR_WIDTH = 1024;
+	private int DEFAULT_EDITOR_WIDTH = 1080;
 	private int DEFAULT_EDITOR_HEIGHT = 768;
 	private int DEFAULT_XPOS = 0;
 	private int DEFAULT_YPOS = 0;
@@ -35,7 +35,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	
 	public World world;
 	
-	final public static int DEFAULT_WIDTH = 15;
+	final public static int DEFAULT_WIDTH = 16;
 	final public static int DEFAULT_HEIGHT = 10;
 	
 	private JMenuBar menu;
@@ -97,6 +97,10 @@ public class EditorWindow extends JFrame implements ActionListener {
 	
 	public void loadImages() {
 		try {
+			if(spriteSheetFileName == null || spriteDirectory == null) {
+				System.out.println("ERROR: Sprite directory or sprite sheet file not specified.");
+				System.exit(1);
+			}
 			spriteSheets = SpriteSheets.parseFrom(spriteSheetFileName, spriteDirectory);
 			if(spriteSheets == null) {
 				System.out.println("ERROR: Unable to parse sprite sheet(s) from specified data file.");
@@ -111,10 +115,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		this.settingsFileName = Utilities.getValidFile(fileName, DEFAULT_SETTINGS_FILE, ALTERNATE_SETTINGS_FILE);
 		
 		settings = new Variables();
-		if(!settings.parseFrom(this.settingsFileName)) {
-			settings = null;
-			return false;
-		}
+		boolean settingsLoaded = settings.parseFrom(this.settingsFileName);
 		
 		this.spriteSheetFileName = Utilities.getValidFile(settings.getValue("SpriteSheet File"), DEFAULT_SPRITESHEET_FILE, ALTERNATE_SPRITESHEET_FILE);
 		this.mapDirectory = Utilities.getValidDirectory(settings.getValue("Map Directory"), DEFAULT_MAP_DIRECTORY, ALTERNATE_MAP_DIRECTORY);
@@ -125,6 +126,11 @@ public class EditorWindow extends JFrame implements ActionListener {
 		
 		initialEditorSize = Utilities.parseDimension(settings.getValue("Editor Window Size"));
 		if(initialEditorSize == null) { initialEditorSize = new Dimension(DEFAULT_EDITOR_WIDTH, DEFAULT_EDITOR_HEIGHT); }
+		
+		if(!settingsLoaded) {
+			settings = null;
+			return false;
+		}
 		
 		return true;
 	}
@@ -243,8 +249,16 @@ public class EditorWindow extends JFrame implements ActionListener {
 			}
 		}
 		else if(e.getSource() == menuFileSaveMap) {
+			if(!world.hasPlayer()) {
+				JOptionPane.showMessageDialog(this, "Cannot save map, player spawn missing!", "Missing Player Spawn", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
 			if(fileChooser.showDialog(this, "Save Map") == JFileChooser.APPROVE_OPTION) {
-				world.writeTo(fileChooser.getSelectedFile().getAbsolutePath());
+				String fileName = fileChooser.getSelectedFile().getAbsolutePath();
+				if(!Utilities.hasExtension(fileName, "2d")) {
+					fileName += ".2d";
+				}
+				world.writeTo(fileName);
 			}
 		}
 		else if(e.getSource() == menuFileSaveSettings) {
@@ -252,7 +266,6 @@ public class EditorWindow extends JFrame implements ActionListener {
 		}
 		else if(e.getSource() == menuFileResetSettings) {
 			resetSettings();
-			update();
 		}
 		else if(e.getSource() == menuFileExit) {
 			System.exit(0);
@@ -265,23 +278,18 @@ public class EditorWindow extends JFrame implements ActionListener {
 		}
 		else if(e.getSource() == menuViewGridToggle) {
 			editorPanel.gridEnabled = !editorPanel.gridEnabled;
-			update();
 		}
 		else if(e.getSource() == menuViewGridColour) {
 			editorPanel.gridColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.gridColour);
-			update();
 		}
 		else if(e.getSource() == menuViewLineColour) {
 			editorPanel.lineColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.lineColour);
-			update();
 		}
 		else if(e.getSource() == menuViewVertexColour) {
 			editorPanel.vertexColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.vertexColour);
-			update();
 		}
 		else if(e.getSource() == menuViewSelectedColour) {
 			editorPanel.selectedColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.selectedColour);
-			update();
 		}
 		else if(e.getSource() == menuModeTile) {
 			editorPanel.mode = EditorPanel.MODE_TILING;
@@ -293,7 +301,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 			JOptionPane.showMessageDialog(this, "2D Level Designer created by Kevin Scroggins.", "2D Level Designer", JOptionPane.INFORMATION_MESSAGE);
 		}
 		
-		update();
+		this.update();
 	}
 	
 	public void createNewMap() {
@@ -303,7 +311,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	}
 	
 	public void setMapDimensions(World world) {
-		String data = JOptionPane.showInputDialog(this, "Please enter new map dimensions (ie. 15x10).", "Map Dimensions", JOptionPane.QUESTION_MESSAGE);
+		String data = JOptionPane.showInputDialog(this, "Please enter new map dimensions (ie. " + DEFAULT_WIDTH + "x" + DEFAULT_HEIGHT + ").", "Map Dimensions", JOptionPane.QUESTION_MESSAGE);
 		if(data != null) {
 			StringTokenizer st = new StringTokenizer(data.trim(), ",x");
 			int newWidth = 0, newHeight = 0;

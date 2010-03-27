@@ -35,12 +35,16 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 		spriteLocations = new Vector<Point>(30);
 		int yPos = 5;
 		int maxWidth = 5;
+		boolean addSprite;
 		for(int i=0;i<editorWindow.spriteSheets.size();i++) {
+			addSprite = true;
 			for(int j=0;j<editorWindow.spriteSheets.elementAt(i).size();j++) {
-				Sprite r = editorWindow.spriteSheets.elementAt(i).elementAt(j);
-				if(r.getType() == Sprite.TYPE_TILE ||
-				   r.getType() == Sprite.TYPE_OBJECT ||
-				   r.getType() == Sprite.TYPE_AI) {
+				Sprite r = editorWindow.spriteSheets.elementAt(i).elementAt(j); 
+				if((r.getType() == Sprite.TYPE_PLAYER && addSprite) ||
+				   (r.getType() == Sprite.TYPE_PET && addSprite) ||
+				    r.getType() == Sprite.TYPE_TILE ||
+				    r.getType() == Sprite.TYPE_OBJECT ||
+				   (r.getType() == Sprite.TYPE_AI && addSprite)) {
 					
 					Image s = r.getImage();
 					ImageIcon c = new ImageIcon();
@@ -57,6 +61,12 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 					spriteButtons.add(b);
 					spriteLocations.add(new Point(i, j));
 					if(r.getWidth() + 20 > maxWidth) { maxWidth = r.getWidth() + 20; }
+					
+					if(r.getType() == Sprite.TYPE_PLAYER ||
+					   r.getType() == Sprite.TYPE_PET || 
+					   r.getType() == Sprite.TYPE_AI) {
+						addSprite = false;
+					}
 				}
 			}
 		}

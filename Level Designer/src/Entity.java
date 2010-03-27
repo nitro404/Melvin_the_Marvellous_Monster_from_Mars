@@ -1,3 +1,4 @@
+import java.awt.Graphics;
 import java.io.*;
 import java.util.StringTokenizer;
 
@@ -29,6 +30,27 @@ public class Entity {
 		return this.sprite;
 	}
 	
+	public int getType() {
+		return (this.sprite == null) ? Sprite.TYPE_UNKNOWN : this.sprite.getType();
+	}
+	
+	public int getWidth() {
+		return (this.sprite == null) ? -1 : this.sprite.getWidth();
+	}
+	
+	public int getHeight() {
+		return (this.sprite == null) ? -1 : this.sprite.getWidth();
+	}
+	
+	public void paintOn(Graphics g) {
+		if(sprite.isTiled()) {
+			sprite.paintOn(g, location.x * World.GRID_SIZE, location.y * World.GRID_SIZE);
+		}
+		else {
+			sprite.paintOn(g, location.x, location.y);
+		}
+	}
+	
 	public static Entity parseFrom(String input, SpriteSheets spriteSheets) {
 		if(input == null || input.trim().length() == 0) {
 			return null;
@@ -36,17 +58,21 @@ public class Entity {
 		
 		String data = input.trim();
 		
-		StringTokenizer st = new StringTokenizer(data, ", ", false);
-		Vertex v = new Vertex(Integer.valueOf(st.nextToken()), Integer.valueOf(st.nextToken()));
+		StringTokenizer st = new StringTokenizer(data, ",", false);
+		if(st.countTokens() < 2 || st.countTokens() > 4) { return null; }
+		Vertex v = new Vertex(Integer.valueOf(st.nextToken().trim()), Integer.valueOf(st.nextToken().trim()));
+		Entity newEntity = null;
 		if(st.countTokens() == 2) {
-			String spriteSheetName = st.nextToken();
-			String spriteName = st.nextToken();
+			String spriteSheetName = st.nextToken().trim();
+			String spriteName = st.nextToken().trim();
 			
-			return new Entity(v, spriteSheets.getSpriteSheet(spriteSheetName).getSprite(spriteName));
+			newEntity = new Entity(v, spriteSheets.getSpriteSheet(spriteSheetName).getSprite(spriteName));
+			newEntity.spriteSheetIndex = spriteSheets.getSpriteSheetIndex(spriteSheetName);
 		}
 		else {
-			return new Entity(v, null);
+			newEntity = new Entity(v, null);
 		}
+		return newEntity;
 	}
 	
 	public void writeTo(PrintWriter out) {

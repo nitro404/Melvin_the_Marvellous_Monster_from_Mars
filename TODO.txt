@@ -1,3 +1,6 @@
 LEVEL DESIGNER
  + Snap to grid (move only)
  + Draw triggers
+
+GAME ENGINE
+ + Spritesheet file importer
