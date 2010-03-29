@@ -14,6 +14,8 @@ using namespace std;
 
 #include "DirectX.h"
 
+char * strtrimcpy(const char * data);
+bool isTrue(const char * str);
 void quit(const char * title, const char * message, ...);
 void prompt(const char * message, ...);
 

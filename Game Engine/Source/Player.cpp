@@ -17,7 +17,7 @@ Player::Player(float xPos,
 	this->windowWidth = windowWidth;
 	this->settings = settings;
 	
-	this->playerSpriteSheetImage = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
+	Sprite * playerSpriteSheetImage = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
 	this->playerSpriteSheet = new SpriteSheet(playerSpriteSheetImage, 1, 1, 126, 126, 128, 128, true, 8, 8);
 	this->playerSprite = playerSpriteSheet->getSprite(0);
 	this->disguiseSprite = playerSpriteSheet->getSprite(3);
@@ -32,7 +32,6 @@ Player::Player(float xPos,
 
 Player::~Player() {
 	delete playerSpriteSheet;
-	delete playerSpriteSheetImage;
 }
 
 void Player::tick() {

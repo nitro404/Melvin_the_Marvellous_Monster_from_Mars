@@ -137,7 +137,20 @@ public class Sprite {
 	public void setName(String name) { this.name = name; }
 	public void setParentName(String parentName) { this.parentName = parentName; }
 	public void setIndex(int index) { this.index = index; }
-	public void setType(int type) { this.type = type; }
+	public void setType(int type) {
+		if(type == TYPE_SHEET ||
+		   type == TYPE_TILE ||
+		   type == TYPE_OBJECT ||
+		   type == TYPE_PLAYER ||
+		   type == TYPE_DISGUISE ||
+		   type == TYPE_PET ||
+		   type == TYPE_AI) {
+			this.type = type;
+		}
+		else {
+			this.type = TYPE_UNKNOWN;
+		}
+	}
 	
 	public BufferedImage getImage() { return this.image; }
 	

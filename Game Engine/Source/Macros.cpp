@@ -1,5 +1,52 @@
 #include "Includes.h"
 
+char * strtrimcpy(const char * data) {
+	if(data == NULL) { return NULL; }
+	char * newData;
+	int length = strlen(data);
+	if(length == 0) {
+		newData = new char[1];
+		*newData = '\0';
+		return newData;
+	}
+
+	const char * head = data;
+	const char * tail = data + (sizeof(char) * length) - 1;
+	int startPos = 0, endPos = length - 1;
+	while((*head == ' ' || *head == '\t') && startPos <= endPos) {
+		head += sizeof(char);
+		startPos++;
+	}
+	while((*tail == ' ' || *tail == '\t') && startPos <= endPos) {
+		tail -= sizeof(char);
+		endPos--;
+	}
+	if(startPos > endPos) {
+		newData = new char[1];
+		*newData = '\0';
+		return newData;
+	}
+
+	newData = new char[endPos - startPos + 2];
+	char * temp = newData;
+	for(int i=startPos;i<=endPos;i++) {
+		*temp = data[i];
+		temp += sizeof(char);
+	}
+	*temp = '\0';
+	return newData;
+}
+
+bool isTrue(const char * str) {
+	return	(str != NULL && strlen(str) > 0) &&
+			(str[0] == '1' ||
+			 str[0] == 'y' ||
+			 str[0] == 'Y' ||
+			 str[0] == 't' ||
+			 str[0] == 'T' ||
+			 (strlen(str) > 1 && _stricmp(str, "on") == 0));
+}
+
 void quit(const char * title, const char * message, ...) {
 	if(message != NULL) {
 		char buffer[256];

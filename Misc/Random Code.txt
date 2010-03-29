@@ -328,3 +328,31 @@ protected:
 //			world.getPlayer().getSprite().paintOn(g, world.getPlayer().location.x, world.getPlayer().location.y);
 
 
+
+
+
+ofstream out("test.txt");
+	SpriteSheets * spriteSheets = SpriteSheets::parseFrom(settings->getValue("SpriteSheet File"), settings->getValue("Sprite Directory"), d3dDevice);
+	out << "SIZE: " << spriteSheets->size() << endl << endl;
+	for(int i=0;i<spriteSheets->size();i++) {
+		out << i << ": " << spriteSheets->elementAt(i)->size();
+		if(spriteSheets->elementAt(i)->getName() == NULL) {
+			out << " - NULL" << endl;
+		}
+		else {
+			out << " - " << spriteSheets->elementAt(i)->getName() << endl;
+		}
+		for(int j=0;j<spriteSheets->elementAt(i)->size();j++) {
+			out << j;
+			if(spriteSheets->elementAt(i)->elementAt(j)->getName() == NULL) {
+				out << ": NULL" << endl;
+			}
+			else {
+				out << ": \"" << spriteSheets->elementAt(i)->elementAt(j)->getName() << "\"" << endl;
+			}
+		}
+		out << endl;
+		out << endl;
+	}
+	out.close();
+

@@ -24,7 +24,6 @@ public:
 private:
 	Sprite * playerSprite;
 	Sprite * disguiseSprite;
-	Sprite * playerSpriteSheetImage;
 	SpriteSheet * playerSpriteSheet;
 
 	Variables * settings;

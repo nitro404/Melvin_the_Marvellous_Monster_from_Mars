@@ -49,11 +49,19 @@ Game::Game(Variables * settings,
 	for(unsigned int i=0;i<helpItemMessages.size();i++) {
 		helpItemText.push_back(new Text("System", 42, Text::BOLD, false, Text::CENTER, Text::CENTER, (int) (windowWidth / 2.0f),  helpItemOffset + (i * helpItemIncrement), D3DCOLOR_RGBA(0, 170, 0, 255), d3dDevice));
 	}
+
+	spriteSheets = SpriteSheets::parseFrom(settings->getValue("SpriteSheet File"), settings->getValue("Sprite Directory"), d3dDevice);
 }
 
 Game::~Game() {
 	delete settings;
+	if(spriteSheets != NULL) { delete spriteSheets; }
 	delete player;
+	delete mainMenu;
+	delete helpTitleText;
+	for(unsigned int i=0;i<helpItemText.size();i++) {
+		delete helpItemText.at(i);
+	}
 	if(keyboard != NULL) {
 		keyboard->Unacquire();
 		keyboard->Release();

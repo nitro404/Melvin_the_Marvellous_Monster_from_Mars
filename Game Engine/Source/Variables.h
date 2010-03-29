@@ -1,14 +1,11 @@
 //Created: January 15, 2009
 //Revised: February 27, 2010
 
-#ifndef _VARIABLES_H
-#define _VARIABLES_H
+#pragma once
 
 #include "Variable.h"
 
 using namespace std;
-
-#pragma warning(disable: 4786)
 
 class Variables {
 public:
@@ -17,15 +14,17 @@ public:
 	Variables & operator = (const Variables & x);
 	~Variables(void);
 	
-	bool add(const Variable * x);
+	bool add(Variable * x);
+	bool addCopy(const Variable * x);
 	bool remove(int _index);
 	bool remove(const Variable * x);
-	void clear();
+	void clear(bool deleteItems);
 	
 	int size() const;
 	bool contains(const Variable * x) const;
 	int indexOf(const Variable * x) const;
 	Variable * elementAt(int _index) const;
+	Variable * getVariable(char * _name) const;
 	char * getValue(const char * _variableName);
 	bool hasValue(const char * _variableName);
 
@@ -41,5 +40,3 @@ private:
 };
 
 ostream & operator << (ostream & o, const Variables & x);
-
-#endif

@@ -1,5 +1,5 @@
 //Created: January 15, 2009
-//Revised: February 27, 2010
+//Revised: March 28, 2010
 
 #include "Variables.h"
 
@@ -15,6 +15,9 @@ Variables::Variables(const Variables & x) {
 }
 
 Variables & Variables::operator = (const Variables & x) {
+	for(unsigned int i=0;i<this->_variables->size();i++) {
+		delete this->_variables->at(i);
+	}
 	delete this->_variables;
 
 	this->_variables = new vector<Variable *>;
@@ -32,8 +35,17 @@ Variables::~Variables(void) {
 	delete this->_variables;
 }
 
+bool Variables::add(Variable * x) {
+	if(x == NULL || this->contains(x)) {
+		return false;
+	}
+	
+	this->_variables->push_back(x);
+	
+	return true;
+}
 
-bool Variables::add(const Variable * x) {
+bool Variables::addCopy(const Variable * x) {
 	if(x == NULL || this->contains(x)) {
 		return false;
 	}
@@ -68,7 +80,12 @@ bool Variables::remove(const Variable * x) {
 	return true;
 }
 
-void Variables::clear() {
+void Variables::clear(bool deleteItems) {
+	if(deleteItems) {
+		for(unsigned int i=0;i<this->_variables->size();i++) {
+			delete this->_variables->at(i);
+		}
+	}
 	this->_variables->clear();
 }
 
@@ -77,9 +94,7 @@ int Variables::size() const {
 }
 
 bool Variables::contains(const Variable * x) const {
-	if(x == NULL) {
-		return false;
-	}
+	if(x == NULL) { return false; }
 
 	for(int i=0;i<size();i++) {
 		if( *(this->elementAt(i)) == *(x) ) {
@@ -108,6 +123,17 @@ Variable * Variables::elementAt(int _index) const {
 	}
 
 	return this->_variables->at(_index);
+}
+
+Variable * Variables::getVariable(char * _name) const {
+	if(_name == NULL || strlen(_name) == 0) { return NULL; }
+
+	for(int i=0;i<size();i++) {
+		if( _stricmp(this->elementAt(i)->id(), _name) == 0 ) {
+			return this->elementAt(i);
+		}
+	}
+	return NULL;
 }
 
 char * Variables::getValue(const char * _variableName) {

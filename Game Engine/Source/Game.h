@@ -4,6 +4,8 @@
 #include "DirectX.h"
 #include "Variables.h"
 #include "Sprite.h"
+#include "SpriteSheet.h"
+#include "SpriteSheets.h"
 #include "Menu.h"
 #include "Object.h"
 #include "Player.h"
@@ -33,14 +35,13 @@ private:
 	bool verifySettings(Variables * settings);
 
 private:
-	int windowPosX, windowPosY;
-	int windowWidth, windowHeight;
+	Player * player;
+	SpriteSheets * spriteSheets;
 
 	Variables * settings;
 
-//private:
-//	Sprite * playerSprite;
-	Player * player;
+	int windowPosX, windowPosY;
+	int windowWidth, windowHeight;
 
 	Menu * mainMenu;
 	bool mainMenuActive;
@@ -51,8 +52,6 @@ private:
 	int helpItemIncrement;
 	bool helpScreenActive;
 
-//	bool leftMouseButtonPressed;
-//	bool rightMouseButtonPressed;
 	bool spaceBarPressed;
 	bool enterKeyPressed;
 	bool menuUpKeyPressed;

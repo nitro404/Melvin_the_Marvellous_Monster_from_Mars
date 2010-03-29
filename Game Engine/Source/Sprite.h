@@ -6,35 +6,47 @@
 class Sprite {
 public:
 	Sprite(char * fileName, char * directory, LPDIRECT3DDEVICE9 d3dDevice);
-	Sprite::Sprite(int x,
-				   int y,
-				   int spriteWidth,
-				   int spriteHeight,
-				   LPDIRECT3DTEXTURE9 externalTexture,
-				   LPD3DXSPRITE externalSprite)
-					: xOffset(x),
-					  yOffset(y),
-					  width(spriteWidth),
-					  height(spriteHeight),
-					  texture(externalTexture),
-					  sprite(externalSprite),
-					  ownsSprite(false) { D3DXMatrixScaling(&flipMatrix, -1, 1, 1); }
+	Sprite(int x, int y, int spriteWidth, int spriteHeight, LPDIRECT3DTEXTURE9 externalTexture, LPD3DXSPRITE externalSprite);
 	~Sprite();
 
-	int getOffsetX() { return xOffset; }
-	int getOffsetY() { return yOffset; }
+	int getOffsetX();
+	int getOffsetY();
 
-	int getWidth() { return width; }
-	int getHeight() { return height; }
+	int getWidth();
+	int getHeight();
+
+	bool isTiled();
+
+	char * getName();
+	char * getParentName();
+	int getIndex();
+	int getType();
+
+	void setName(char * name);
+	void setParentName(char * parentName);
+	void setIndex(int index);
+	void setType(int type);
 
 	LPDIRECT3DTEXTURE9 getTexture() { return texture; }
 	LPD3DXSPRITE getSprite() { return sprite; }
+
+	static int parseType(const char * data);
 
 	void draw(D3DXMATRIX & transformation, LPDIRECT3DDEVICE9 d3dDevice);
 	void draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
 	void drawCentered(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
 	void drawBackwards(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
 	void drawBackwardsCentered(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
+
+public:
+	static int TYPE_UNKNOWN;
+	static int TYPE_SHEET;
+	static int TYPE_TILE;
+	static int TYPE_OBJECT;
+	static int TYPE_PLAYER;
+	static int TYPE_DISGUISE;
+	static int TYPE_PET;
+	static int TYPE_AI;
 
 private:
 	LPDIRECT3DTEXTURE9 texture;
@@ -44,6 +56,11 @@ private:
 	D3DXMATRIX transformationMatrix;
 	D3DXMATRIX flipMatrix;
 	D3DXMATRIX flippedTransformationMatrix;
+
+	char * name;
+	char * parentName;
+	int index;
+	int type;
 
 	int xOffset;
 	int yOffset;

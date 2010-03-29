@@ -283,7 +283,7 @@ public class SpriteSheet {
 								System.out.println("ERROR: Invalid sprite attribute index.");
 								return null;
 							}
-							if(spriteIndex < 0 || spriteIndex >= spriteSheet.sprites.size()) {
+							if(spriteIndex < 0 || spriteIndex >= spriteSheet.size()) {
 								System.out.println("ERROR: Sprite attribute index out of range.");
 								return null;
 							}

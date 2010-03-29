@@ -52,6 +52,21 @@ public class SpriteSheets {
 		return -1;
 	}
 	
+	public Sprite getSprite(String name) {
+		if(name == null || name.trim().length() == 0) { return null; }
+		String temp = name.trim();
+		
+		for(int i=0;i<this.spriteSheets.size();i++) {
+			for(int j=0;j<this.spriteSheets.elementAt(i).size();j++) {
+				if(this.spriteSheets.elementAt(i).elementAt(j).getName() != null &&
+				   temp.equalsIgnoreCase(this.spriteSheets.elementAt(i).elementAt(j).getName())) {
+					return this.spriteSheets.elementAt(i).elementAt(j);
+				}
+			}
+		}
+		return null;
+	}
+	
 	public boolean add(SpriteSheet spriteSheet) {
 		if(spriteSheet == null) { return false; }
 		

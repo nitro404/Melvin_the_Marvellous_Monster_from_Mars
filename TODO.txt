@@ -3,4 +3,4 @@ LEVEL DESIGNER
  + Draw triggers
 
 GAME ENGINE
- + Spritesheet file importer
+ + Spritesheet file importer - done, but ',' is not replaced in name / parentname
