@@ -22,15 +22,6 @@ public:
 				int height,
 				int xIncrement,
 				int yIncrement,
-				int numberOfSprites);
-
-	SpriteSheet(Sprite * externalSpriteSheet,
-				int xOffset,
-				int yOffset,
-				int width,
-				int height,
-				int xIncrement,
-				int yIncrement,
 				bool horizontal,
 				int numberOfRows,
 				int numOfColumns);

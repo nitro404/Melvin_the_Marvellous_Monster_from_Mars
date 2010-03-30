@@ -404,13 +404,15 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		if(p == null) { return; }
 		selectedSprite = null;
 		if(world != null) {
-			if(p.x >= world.getPet().location.x &&
-			   p.y >= world.getPet().location.y &&
-			   p.x <= world.getPet().location.x + world.getPet().getWidth() &&
-			   p.y <= world.getPet().location.y + world.getPet().getHeight()) {
-				selectedSprite = world.getPet();
+			if(world.hasPet()) {
+				if(p.x >= world.getPet().location.x &&
+				   p.y >= world.getPet().location.y &&
+				   p.x <= world.getPet().location.x + world.getPet().getWidth() &&
+				   p.y <= world.getPet().location.y + world.getPet().getHeight()) {
+					selectedSprite = world.getPet();
+				}
 			}
-			if(selectedSprite == null) {
+			if(selectedSprite == null && world.hasPlayer()) {
 				if(p.x >= world.getPlayer().location.x &&
 				   p.y >= world.getPlayer().location.y &&
 				   p.x <= world.getPlayer().location.x + world.getPlayer().getWidth() &&

@@ -356,3 +356,68 @@ ofstream out("test.txt");
 	}
 	out.close();
 
+
+	
+	
+	public SpriteSheet(BufferedImage image,
+					   int xOffset,
+					   int yOffset,
+					   int width,
+					   int height,
+					   int xIncrement,
+					   int yIncrement,
+					   int numberOfSprites) {
+		this.name = null;
+		sprites = new Vector<Sprite>((numberOfSprites <= 1) ? 10 : numberOfSprites);
+		
+		if(image == null) {
+			System.out.println("ERROR: SpriteSheet cannot be parsed from null image.");
+			System.exit(1);
+		}
+		
+		for(int i=0;i<numberOfSprites;i++) {
+			sprites.add(new Sprite(image.getSubimage(xOffset + (xIncrement * i),
+													 yOffset + (yIncrement * i),
+													 width,
+													 height), i));
+		}
+	}
+
+	public SpriteSheet(Sprite image, String name, int xOffset, int yOffset, int width, int height, int xIncrement, int yIncrement, int numberOfSprites) {
+		this(image.getImage(), xOffset, yOffset, width, height, xIncrement, yIncrement, numberOfSprites);
+	}
+
+
+	SpriteSheet(Sprite * externalSpriteSheet,
+				int xOffset,
+				int yOffset,
+				int width,
+				int height,
+				int xIncrement,
+				int yIncrement,
+				int numberOfSprites);
+
+
+SpriteSheet::SpriteSheet(Sprite * externalSpriteSheet,
+						 int xOffset,
+						 int yOffset,
+						 int width,
+						 int height,
+						 int xIncrement,
+						 int yIncrement,
+						 int numberOfSprites)
+							: name(NULL),
+							  spriteSheet(externalSpriteSheet) {
+	for(int i=0;i<numberOfSprites;i++) {
+		sprites.push_back(new Sprite(xOffset + (xIncrement * i),
+									 yOffset + (yIncrement * i),
+									 width,
+									 height,
+									 spriteSheet->getTexture(),
+									 spriteSheet->getSprite()));
+	}
+}
+
+
+
+

@@ -22,26 +22,6 @@ SpriteSheet::SpriteSheet(Sprite * externalSpriteSheet,
 						 int height,
 						 int xIncrement,
 						 int yIncrement,
-						 int numberOfSprites)
-							: name(NULL),
-							  spriteSheet(externalSpriteSheet) {
-	for(int i=0;i<numberOfSprites;i++) {
-		sprites.push_back(new Sprite(xOffset + (xIncrement * i),
-									 yOffset + (yIncrement * i),
-									 width,
-									 height,
-									 spriteSheet->getTexture(),
-									 spriteSheet->getSprite()));
-	}
-}
-
-SpriteSheet::SpriteSheet(Sprite * externalSpriteSheet,
-						 int xOffset,
-						 int yOffset,
-						 int width,
-						 int height,
-						 int xIncrement,
-						 int yIncrement,
 						 bool horizontal,
 						 int numberOfRows,
 						 int numberOfColumns)
@@ -162,6 +142,7 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 			}
 
 			v = properties.getVariable("Attributes");
+			if(v == NULL) { v = properties.getVariable("Number of Sprites"); }
 
 			if(v != NULL) {
 				spriteSheetName = strtrimcpy(properties.getValue("SpriteSheet Name"));
@@ -173,7 +154,6 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 				spriteSheetType = atoi(properties.getValue("SpriteSheet Type"));
 
 				spriteSheetFileName = strtrimcpy(properties.getValue("File Name"));
-
 				if(spriteSheetFileName == NULL) {
 					delete [] spriteSheetName;
 					printf("ERROR: Sprite sheet must have a name.\n");
@@ -183,8 +163,6 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 				spriteSheetImage = new Sprite(spriteSheetFileName, spriteDirectory, d3dDevice);
 				spriteSheetImage->setType(Sprite::TYPE_SHEET);
 
-				numberOfAttributes = atoi(v->value());
-
 				if(spriteSheetType == 1) {
 					delete [] spriteSheetName;
 					delete [] spriteSheetFileName;
@@ -192,14 +170,10 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 					printf("ERROR: Sprite sheet type 1 not implemented yet.\n");
 					return NULL;
 				}
-				else if(spriteSheetType == 2) {
-					delete [] spriteSheetName;
-					delete [] spriteSheetFileName;
-					delete spriteSheetImage;
-					printf("ERROR: Sprite sheet type 1 not implemented yet.\n");
-					return NULL;
-				}
+// RE - ORGANIZE ME:
 				else if(spriteSheetType == 3) {
+					numberOfAttributes = atoi(v->value());
+
 					char * offsetValue = strtrimcpy(properties.getValue("Offset"));
 					char * sizeValue = strtrimcpy(properties.getValue("Size"));
 					char * incrementValue = strtrimcpy(properties.getValue("Increment"));
