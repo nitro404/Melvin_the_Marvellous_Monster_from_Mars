@@ -106,19 +106,11 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 	char input[256];
 	char * data;
 
-	Variable * v;
 	Variables properties;
-	Variables spriteAttributes;
 	char * spriteSheetName;
 	int spriteSheetType;
 	char * spriteSheetFileName;
 	Sprite * spriteSheetImage;
-	int numberOfAttributes;
-	int xOffset, yOffset;
-	int width, height;
-	int xIncrement, yIncrement;
-	bool horizontal;
-	int numberOfRows, numberOfColumns;
 	SpriteSheet * spriteSheet;
 	while(!in.eof()) {
 		in.getline(input, 256);
@@ -129,7 +121,7 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 			continue;
 		}
 		else {
-			v = new Variable;
+			Variable * v = new Variable;
 			if(v->parseFrom(data)) {
 				delete [] data;
 				properties.addCopy(v);
@@ -162,16 +154,193 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 
 				spriteSheetImage = new Sprite(spriteSheetFileName, spriteDirectory, d3dDevice);
 				spriteSheetImage->setType(Sprite::TYPE_SHEET);
+				delete [] spriteSheetFileName;
 
 				if(spriteSheetType == 1) {
+					int numberOfSprites;
+					
+					if(v->value() == NULL) {
+						printf("ERROR: Number of sprites specification is missing from current sprite sheet.\n");
+						delete [] spriteSheetName;
+						delete spriteSheetImage;
+						return NULL;
+					}
+					numberOfSprites = atoi(v->value());
+					if(numberOfSprites <= 0) {
+						printf("ERROR: Must parse at least 1 sprite from sprite sheet.\n");
+						delete [] spriteSheetName;
+						delete spriteSheetImage;
+						return NULL;
+					}
+
+					int spriteIndex;
+					char * spriteName;
+					int spriteType;
+					int xOffset;
+					int yOffset;
+					int width;
+					int height;
+					SpriteSheetOffset * offsets = new SpriteSheetOffset[numberOfSprites];
+					char ** spriteNames = new char*[numberOfSprites];
+					int * spriteTypes = new int[numberOfSprites];
+					Variables spriteAttributes;
+					for(int i=0;i<numberOfSprites;i++) {
+						spriteNames[i] = NULL;
+						spriteTypes[i] = Sprite::TYPE_UNKNOWN;
+						offsets[i].x = 0;
+						offsets[i].y = 0;
+						offsets[i].w = 0;
+						offsets[i].h = 0;
+					}
+					for(int i=0;i<numberOfSprites;i++) {
+						Variable * newVariable;
+						for(int j=0;j<5;j++) {
+							newVariable = new Variable;
+							in.getline(input, 256);
+							char * tempData = strtrimcpy(input);
+							if(newVariable->parseFrom(tempData)) {
+								spriteAttributes.add(newVariable);
+							}
+							else {
+								delete newVariable;
+							}
+							delete [] tempData;
+						}
+						
+						if(spriteAttributes.getValue("Sprite") == NULL) {
+							printf("ERROR: Sprite index specification is missing from current sprite.\n");
+							delete [] spriteSheetName;
+							delete spriteSheetImage;
+							delete [] spriteNames;
+							delete [] spriteTypes;
+							return NULL;
+						}
+						spriteIndex = atoi(spriteAttributes.getValue("Sprite"));
+						if(spriteIndex < 0 || spriteIndex >= numberOfSprites) {
+							printf("ERROR: Current sprite index out of bounds.");
+							delete [] spriteSheetName;
+							delete spriteSheetImage;
+							delete [] spriteNames;
+							delete [] spriteTypes;
+							return NULL;
+						}
+
+						spriteName = strtrimcpy(spriteAttributes.getValue("Name"));
+						if(spriteName == NULL) {
+							printf("ERROR: Name missing from current sprite.");
+							delete [] spriteSheetName;
+							delete spriteSheetImage;
+							for(int j=0;j<numberOfSprites;j++) {
+								if(spriteNames[j] != NULL) {
+									delete [] spriteNames[j];
+								}
+							}
+							delete [] spriteNames;
+							delete [] spriteName;
+							delete [] spriteTypes;
+							return NULL;
+						}
+
+						if(spriteAttributes.getValue("Type") == NULL) {
+							printf("ERROR: Type missing from current sprite.");
+							delete [] spriteSheetName;
+							delete spriteSheetImage;
+							for(int j=0;j<numberOfSprites;j++) {
+								if(spriteNames[j] != NULL) {
+									delete [] spriteNames[j];
+								}
+							}
+							delete [] spriteNames;
+							delete [] spriteName;
+							delete [] spriteTypes;
+							return NULL;
+						}
+						spriteType = Sprite::parseType(spriteAttributes.getValue("Type"));
+
+						char * offsetValue = strtrimcpy(spriteAttributes.getValue("Offset"));
+						if(offsetValue == NULL) {
+							printf("ERROR: Offset missing from current sprite.");
+							delete [] spriteSheetName;
+							delete spriteSheetImage;
+							for(int j=0;j<numberOfSprites;j++) {
+								if(spriteNames[j] != NULL) {
+									delete [] spriteNames[j];
+								}
+							}
+							delete [] spriteNames;
+							delete [] spriteName;
+							delete [] spriteTypes;
+							delete [] offsetValue;
+							return NULL;
+						}
+						char * offsetCenter = strchr(offsetValue, ',');
+
+						char * sizeValue = strtrimcpy(spriteAttributes.getValue("Size"));
+						if(sizeValue == NULL) {
+							printf("ERROR: Size missing from current sprite.");
+							delete [] spriteSheetName;
+							delete spriteSheetImage;
+							for(int j=0;j<numberOfSprites;j++) {
+								if(spriteNames[j] != NULL) {
+									delete [] spriteNames[j];
+								}
+							}
+							delete [] spriteNames;
+							delete [] spriteTypes;
+							delete [] spriteName;
+							delete [] offsetValue;
+							delete [] sizeValue;
+							return NULL;
+						}
+						char * sizeCenter = strchr(sizeValue, ',');
+
+						*offsetCenter = '\0';
+						*sizeCenter = '\0';
+						xOffset = atoi(offsetValue);
+						yOffset = atoi(offsetCenter + sizeof(char));
+						width = atoi(sizeValue);
+						height = atoi(sizeCenter + sizeof(char));
+
+						delete [] offsetValue;
+						delete [] sizeValue;
+
+						spriteNames[spriteIndex] = spriteName;
+						spriteTypes[spriteIndex] = spriteType;
+						offsets[spriteIndex].x = xOffset;
+						offsets[spriteIndex].y = yOffset;
+						offsets[spriteIndex].w = width;
+						offsets[spriteIndex].h = height;
+
+						spriteAttributes.clear(true);
+					}
+
+					spriteSheet = new SpriteSheet(spriteSheetImage, offsets, numberOfSprites);
+					spriteSheet->setName(spriteSheetName);
 					delete [] spriteSheetName;
-					delete [] spriteSheetFileName;
-					delete spriteSheetImage;
-					printf("ERROR: Sprite sheet type 1 not implemented yet.\n");
-					return NULL;
+
+					for(int i=0;i<numberOfSprites;i++) {
+						spriteSheet->getSprite(i)->setIndex(i);
+						spriteSheet->getSprite(i)->setName(spriteNames[i]);
+						spriteSheet->getSprite(i)->setType(spriteTypes[i]);
+					}
+
+					for(int i=0;i<numberOfSprites;i++) {
+						if(spriteNames[i] != NULL) {
+							delete [] spriteNames[i];
+						}
+					}
+					delete [] spriteNames;
+					delete [] spriteTypes;
+					delete [] offsets;
 				}
-// RE - ORGANIZE ME:
 				else if(spriteSheetType == 3) {
+					int numberOfAttributes;
+					int xOffset, yOffset;
+					int width, height;
+					int xIncrement, yIncrement;
+					bool horizontal;
+					int numberOfRows, numberOfColumns;
+
 					numberOfAttributes = atoi(v->value());
 
 					char * offsetValue = strtrimcpy(properties.getValue("Offset"));
@@ -245,8 +414,51 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 												  numberOfColumns);
 					spriteSheet->setName(spriteSheetName);
 
-					delete [] spriteSheetFileName;
 					delete [] spriteSheetName;
+
+					int spriteIndex;
+					char * spriteName;
+					int spriteType;
+					Variables spriteAttributes;
+					for(int i=0;i<numberOfAttributes;i++) {
+						for(int j=0;j<3;j++) {
+							in.getline(input, 256);
+							Variable * newVariable = new Variable;
+							if(newVariable->parseFrom(input)) {
+								spriteAttributes.add(newVariable);
+							}
+						}
+
+						char * spriteIndexValue = spriteAttributes.getValue("Sprite");
+						if(spriteIndexValue == NULL) {
+							printf("WARNING: Sprite index attribute missing.\n");
+							return spriteSheet;
+						}
+						spriteIndex = atoi(spriteIndexValue);
+						if(spriteIndex < 0 || spriteIndex >= spriteSheet->size()) {
+							printf("WARNING: Sprite index attribute out of range.\n");
+							return spriteSheet;
+						}
+
+						spriteName = spriteAttributes.getValue("Name");
+						if(spriteName == NULL) {
+							printf("WARNING: Sprite name attribute missing.\n");
+							return spriteSheet;
+						}
+
+						char * spriteTypeValue = spriteAttributes.getValue("Type");
+						if(spriteTypeValue == NULL) {
+							printf("WARNING: Sprite type attribute missing.\n");
+							return spriteSheet;
+						}
+						spriteType = Sprite::parseType(spriteTypeValue);
+
+						spriteSheet->sprites.at(spriteIndex)->setName(spriteName);
+						spriteSheet->sprites.at(spriteIndex)->setParentName(spriteSheetName);
+						spriteSheet->sprites.at(spriteIndex)->setType(spriteType);
+
+						spriteAttributes.clear(true);
+					}
 				}
 				else {
 					printf("ERROR: Invalid sprite sheet type specified.\n");
@@ -254,49 +466,6 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 					delete [] spriteSheetFileName;
 					delete spriteSheetImage;
 					return NULL;
-				}
-
-				int spriteIndex;
-				char * spriteName;
-				int spriteType;
-				spriteAttributes.clear(true);
-				for(int i=0;i<numberOfAttributes;i++) {
-					for(int j=0;j<3;j++) {
-						in.getline(input, 256);
-						Variable * v = new Variable;
-						v->parseFrom(input);
-						spriteAttributes.add(v);
-					}
-
-					char * spriteIndexValue = spriteAttributes.getValue("Sprite");
-					if(spriteIndexValue == NULL) {
-						printf("WARNING: Sprite index attribute missing.\n");
-						return spriteSheet;
-					}
-					spriteIndex = atoi(spriteIndexValue);
-					if(spriteIndex < 0 || spriteIndex >= spriteSheet->size()) {
-						printf("WARNING: Sprite index attribute out of range.\n");
-						return spriteSheet;
-					}
-
-					spriteName = spriteAttributes.getValue("Name");
-					if(spriteName == NULL) {
-						printf("WARNING: Sprite name attribute missing.\n");
-						return spriteSheet;
-					}
-
-					char * spriteTypeValue = spriteAttributes.getValue("Type");
-					if(spriteTypeValue == NULL) {
-						printf("WARNING: Sprite type attribute missing.\n");
-						return spriteSheet;
-					}
-					spriteType = Sprite::parseType(spriteTypeValue);
-
-					spriteSheet->sprites.at(spriteIndex)->setName(spriteName);
-					spriteSheet->sprites.at(spriteIndex)->setParentName(spriteSheetName);
-					spriteSheet->sprites.at(spriteIndex)->setType(spriteType);
-
-					spriteAttributes.clear(true);
 				}
 
 				return spriteSheet;

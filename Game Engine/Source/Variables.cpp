@@ -81,7 +81,7 @@ bool Variables::remove(const Variable * x) {
 }
 
 void Variables::clear(bool deleteItems) {
-	if(deleteItems) {
+	if(deleteItems && this->_variables->size() > 0) {
 		for(unsigned int i=0;i<this->_variables->size();i++) {
 			delete this->_variables->at(i);
 		}

@@ -29,6 +29,25 @@ public class SpriteSheet {
 			}
 		}
 	}
+
+	public SpriteSheet(Sprite sprite,
+					   Rectangle[] offsets) {
+		this.name = null;
+		sprites = new Vector<Sprite>((offsets.length <= 1) ? 10 : offsets.length);
+		
+		if(sprite == null || sprite.getImage() == null) {
+			System.out.println("ERROR: SpriteSheet cannot be parsed from null image.");
+			System.exit(1);
+		}
+		
+		Rectangle o = null;
+		for(int i=0;i<offsets.length;i++) {
+			o = offsets[i];
+			if(o != null) {
+				sprites.add(new Sprite(sprite.getImage().getSubimage(o.x, o.y, o.width, o.height), i));
+			}
+		}
+	}
 	
 	public SpriteSheet(Sprite sprite,
 					   int xOffset,
@@ -179,12 +198,16 @@ public class SpriteSheet {
 							Point spriteOffset;
 							Dimension spriteSize;
 							spriteAttributes = new Variables();
-							Vector<Rectangle> offsets = new Vector<Rectangle>(numberOfSprites);
+							Rectangle offsets[] = new Rectangle[numberOfSprites];
 							String spriteNames[] = new String[numberOfSprites];
 							int spriteTypes[] = new int[numberOfSprites];
 							for(int i=0;i<numberOfSprites;i++) {
 								spriteNames[i] = null;
 								spriteTypes[i] = Sprite.TYPE_UNKNOWN;
+								offsets[i].x = 0;
+								offsets[i].y = 0;
+								offsets[i].width = 0;
+								offsets[i].height = 0;
 							}
 							for(int i=0;i<numberOfSprites;i++) {
 								spriteAttributes.clear();
@@ -228,7 +251,7 @@ public class SpriteSheet {
 								
 								spriteNames[spriteIndex] = spriteName;
 								spriteTypes[spriteIndex] = Sprite.parseType(spriteType);
-								offsets.add(new Rectangle(spriteOffset.x, spriteOffset.y, spriteSize.width, spriteSize.height));
+								offsets[spriteIndex] = new Rectangle(spriteOffset.x, spriteOffset.y, spriteSize.width, spriteSize.height);
 							}
 							
 							spriteSheet = new SpriteSheet(spriteSheetImage, offsets);
