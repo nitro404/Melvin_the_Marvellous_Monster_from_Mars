@@ -1,25 +1,40 @@
 2D Cartesian World: Version 1.0
 Grid Size: 64
 Dimensions: 16, 10
-Edges: 0
+Edges: 5
+	1021, 637; 763, 638
+	763, 638; 252, 638
+	252, 638; 6, 636
+	6, 636; 6, 426
+	1021, 637; 1023, 425
 Player: 893, 493, Alien, Walking 1
 Pet: 811, 514, Fluffy, Idle 1
-Objects: 6
+Objects: 22
 	508, 557, Rocks, Rock 1
 	623, 559, Rocks, Rock 2
 	440, 551, Rocks, Rock 3
 	374, 558, Rocks, Rock 4
-	658, 485, Placeholder 2, Fake Tree
-	13, 487, Placeholder 2, Fake Christmas Tree
-Tiles: 8
-	0, 8, Placeholder 2, Fake Grass
-	2, 8, Placeholder 2, Fake Grass
-	4, 8, Placeholder 2, Fake Grass
-	6, 8, Placeholder 2, Fake Grass
-	8, 8, Placeholder 2, Fake Grass
-	10, 8, Placeholder 2, Fake Grass
-	12, 8, Placeholder 2, Fake Grass
-	14, 8, Placeholder 2, Fake Grass
-AI: 2
-	143, 546, Rat, Rat Walk 1
-	269, 319, FBI Agent, Stand
+	64, 47, Items, Magnet
+	183, 39, Items, Pylon
+	275, 43, Items, Bottle
+	376, 50, Items, Box
+	503, 43, Items, Wig
+	638, 37, Items, Christmas Tree
+	742, 53, Items, Basket
+	849, 48, Items, Radioactive Rod
+	892, 150, Items, Spray Cheese
+	825, 153, Items, Poison
+	758, 151, Items, Red Can
+	696, 153, Items, Green Can
+	638, 188, Items, Banana
+	583, 190, Items, Peach
+	534, 192, Items, Pear
+	485, 199, Items, Red Apple
+	428, 196, Items, Green Apple
+	376, 200, Items, Orange
+Tiles: 0
+AI: 4
+	267, 322, FBI Agent, Stand
+	903, 411, White Rat, White Rat Walk 1
+	908, 327, Brown Rat, Brown Rat Walk 1
+	904, 248, Gray Rat, Gray Rat Walk 1

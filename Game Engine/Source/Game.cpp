@@ -1,26 +1,24 @@
 #include "Game.h"
 
+float Game::gravity = 0.98f;
+
 Game::Game(Variables * settings,
 		   HINSTANCE hInstance,
 		   WNDPROC WndProc,
 		   LPCTSTR winClassName,
-		   LPCTSTR title,
 		   int nCmdShow)
-		   : mainMenu(NULL),
-			 mainMenuActive(true),
-			 helpItemOffset(250),
-			 helpItemIncrement(55),
-			 helpScreenActive(false),
-			 spaceBarPressed(false),
+		   : menu(NULL),
+			 menuSelectKeyPressed(false),
+			 menuBackKeyPressed(false),
 			 menuUpKeyPressed(false),
 			 menuDownKeyPressed(false),
-			 menuSelectKeyPressed(false),
-			 escapeKeyPressed(false),
+			 level(NULL),
 			 directInput(NULL),
 			 keyboard(NULL),
 			 mouse(NULL),
 			 d3d(NULL),
-			 d3dDevice(NULL) {
+			 d3dDevice(NULL),
+			 timeElapsed(0) {
 	this->settings = settings;
 	if(!verifySettings(settings)) {
 		quit("Error", "Settings file is invalid.");
@@ -31,37 +29,23 @@ Game::Game(Variables * settings,
 	this->windowWidth = atoi(settings->getValue("Window Width"));
 	this->windowHeight = atoi(settings->getValue("Window Height"));
 	
-	if(!init(hInstance, WndProc, winClassName, title, nCmdShow)) {
+	if(!init(hInstance, WndProc, winClassName, "Melvin the Marvellous Monster from Mars", nCmdShow)) {
 		quit("Error", "Error initializing game.");
 	}
 
-	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, settings, d3dDevice);
-
-	// create the main menu
-	mainMenu = new Menu("Melvin the Marvellous Monster from Mars", windowWidth, windowHeight, D3DCOLOR_RGBA(0, 255, 0, 255), D3DCOLOR_RGBA(0, 255, 0, 255), D3DCOLOR_RGBA(0, 170, 0, 255), d3dDevice);
-	mainMenu->addMenuItem("New Game", d3dDevice);
-	mainMenu->addMenuItem("Load Game", d3dDevice);
-	mainMenu->addMenuItem("Help", d3dDevice);
-	mainMenu->addMenuItem("Quit", d3dDevice);
-
-	// create the help screen
-	helpTitleText = new Text("System", 58, Text::BOLD, false, Text::CENTER, Text::CENTER, (int) (windowWidth / 2.0f), 100, D3DCOLOR_RGBA(0, 255, 0, 255), d3dDevice);
-	for(unsigned int i=0;i<helpItemMessages.size();i++) {
-		helpItemText.push_back(new Text("System", 42, Text::BOLD, false, Text::CENTER, Text::CENTER, (int) (windowWidth / 2.0f),  helpItemOffset + (i * helpItemIncrement), D3DCOLOR_RGBA(0, 170, 0, 255), d3dDevice));
-	}
-
 	spriteSheets = SpriteSheets::parseFrom(settings->getValue("SpriteSheet File"), settings->getValue("Sprite Directory"), d3dDevice);
+
+	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, timeElapsed, settings, spriteSheets, d3dDevice);
+
+	menu = new Menu(windowWidth, windowHeight, this, settings, d3dDevice);
 }
 
 Game::~Game() {
 	delete settings;
 	if(spriteSheets != NULL) { delete spriteSheets; }
 	delete player;
-	delete mainMenu;
-	delete helpTitleText;
-	for(unsigned int i=0;i<helpItemText.size();i++) {
-		delete helpItemText.at(i);
-	}
+	if(level != NULL) { delete level; }
+	delete menu;
 	if(keyboard != NULL) {
 		keyboard->Unacquire();
 		keyboard->Release();
@@ -81,7 +65,36 @@ Game::~Game() {
 	}
 }
 
+void Game::computeTimeElapsed() {
+	//Returns how much time has elapsed since the first call of this function... Accurate to a microsecond...
+	static INT64 countsPerSecond;
+	static INT64 oldTime;
+	static bool firstTime = true;
+	if(firstTime) {
+		firstTime = false;
+		QueryPerformanceCounter((LARGE_INTEGER *) & oldTime);
+		QueryPerformanceFrequency((LARGE_INTEGER *) & countsPerSecond);
+	}
+	
+	INT64 newTime;
+	QueryPerformanceCounter((LARGE_INTEGER *) & newTime);
+	INT64 elapsedCounts = newTime - oldTime; 
+	
+	double seconds = (double) elapsedCounts / (double) countsPerSecond; //count / (counts / second) = seconds
+	
+	//Compute elapsed time needed for controlling frame rate independent effects.
+	//If running slower than 5 frames per second, pretend it's 5 frames/sec.
+	//Note: 30 frames per second means 1/30 seconds per frame = 0.03333... seconds per frame.
+	static double lastTimeInSeconds = seconds; //Pretend we are running 30 frames per second on the first tick.
+	double timeInSeconds = seconds;
+	timeElapsed = timeInSeconds - lastTimeInSeconds;
+	if(timeElapsed > 0.2) timeElapsed = 0.2; //5 frames/sec means 1 frame in 1/5 (= 0.2) seconds.
+	lastTimeInSeconds = timeInSeconds;
+}
+
 void Game::tick() {
+	computeTimeElapsed();
+
 	processKeyboardInput();
 	processMouseInput();
 	
@@ -100,25 +113,11 @@ void Game::draw() {
 	d3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
-void Game::drawHelp() {
-	d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
-	
-	d3dDevice->BeginScene();
-
-	// display help title
-	helpTitleText->draw("Help");
-
-	// display help items
-	for(unsigned int i=0;i<helpItemText.size();i++) {
-		helpItemText.at(i)->draw(helpItemMessages.at(i));
+void Game::reset() {
+	if(level != NULL) {
+		
 	}
-
-	d3dDevice->EndScene();
-	
-	d3dDevice->Present(NULL, NULL, NULL, NULL);
 }
-
-void Game::reset() { }
 
 int Game::run() {
     MSG msg;
@@ -134,18 +133,11 @@ int Game::run() {
             DispatchMessage(&msg);
         }
 		
-		if(mainMenuActive) {
+		if(menu->isActive()) {
 			processKeyboardInput();
 
-			if(helpScreenActive) {
-				drawHelp();
-			}
-			else {
-				mainMenu->draw(d3dDevice);
-			}
-			
+			menu->draw(d3dDevice);
 		}
-		// otherwise, render the game
 		else {
 			tick();
 
@@ -162,20 +154,17 @@ int Game::run() {
     return msg.wParam;
 }
 
-bool loadMap(char * fileName) {
-	if(fileName == NULL || strlen(fileName) == 0) { return false; }
+void Game::closeLevel() {
+	if(level != NULL) {
+		delete level;
+		level = NULL;
+	}
+}
 
-	ifstream in(fileName);
-	if(in.bad()) { return false; }
-
-	const int MAX_STRING_LENGTH = 1024;
-	char input[MAX_STRING_LENGTH];
-	
-	in.getline(input, MAX_STRING_LENGTH);
-	
-	if(in.is_open()) { in.close(); }
-
-	return true;
+void Game::loadLevel(const char * fileName) {
+	closeLevel();
+	level = new Level(fileName, spriteSheets);
+	reset();
 }
 
 bool Game::verifySettings(Variables * settings) {
@@ -274,87 +263,55 @@ void Game::processKeyboardInput() {
 		}
 	}
 
-	if(keyboardState[DIK_ESCAPE] & 0x80) {
-		if(!escapeKeyPressed) {
-			if(helpScreenActive) {
-				helpScreenActive = false;
-			}
-			else if(!mainMenuActive) {
-				mainMenuActive = true;
-			}
-			else {
-				PostQuitMessage(0);
-			}
-		}
-		escapeKeyPressed = true;
-	}
-	else {
-		escapeKeyPressed = false;
-	}
-
-	processMainMenuInput();
+	processMenuInput();
 
 	processPlayerInput();
 }
 
-void Game::processMainMenuInput() {
-	if(helpScreenActive || !mainMenuActive) { return; }
+void Game::processMenuInput() {
+	// go back in the menu (or quit the game / open the menu, depending)
+	if(keyboardState[DIK_ESCAPE] & 0x80) {
+		if(!menuBackKeyPressed) { menu->back(); }
+		menuBackKeyPressed = true;
+	}
+	else { menuBackKeyPressed = false; }
 
+	if(!menu->isActive()) { return; }
+
+	// select the current item in the menu
 	if(keyboardState[DIK_RETURN] & 0x80 || keyboardState[DIK_SPACE] & 0x80) {
-		if(!menuSelectKeyPressed) {
-			switch(mainMenu->getIndex()) {
-				// start game in single player mode
-				case 0:
-					mainMenuActive = false;
-					break;
-				// start game in 2 player mode
-				case 1:
-					mainMenuActive = false;
-					break;
-				// display help screen
-				case 2:
-					helpScreenActive = true;
-					break;
-				// quit the game
-				case 3:
-					PostQuitMessage(0);
-					break;
-			}
-		}
+		if(!menuSelectKeyPressed) { menu->select(); }
 		menuSelectKeyPressed = true;
 	}
 	else { menuSelectKeyPressed = false; }
 
 	// move menu selection up
 	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {
-		if(!menuUpKeyPressed) {
-			mainMenu->moveUp();
-		}
+		if(!menuUpKeyPressed) { menu->moveUp(); }
 		menuUpKeyPressed = true;
 	}
 	else { menuUpKeyPressed = false; }
 
 	// move menu selection down
 	if(keyboardState[DIK_DOWN] & 0x80 || keyboardState[DIK_S] & 0x80) {
-		if(!menuDownKeyPressed) {
-			mainMenu->moveDown();
-		}
+		if(!menuDownKeyPressed) { menu->moveDown(); }
 		menuDownKeyPressed = true;
 	}
 	else { menuDownKeyPressed = false; }
 }
 
 void Game::processPlayerInput() {
-	if(mainMenuActive || helpScreenActive) { return; }
+	if(menu->isActive()) { return; }
 
+	player->isMoving = false;
 	if(keyboardState[DIK_LEFT] & 0x80 || keyboardState[DIK_A] & 0x80) {
 		player->moveLeft();
-		player->isMoving = -1;
+		player->isMoving = true;
 	}
 	
 	if(keyboardState[DIK_RIGHT] & 0x80 || keyboardState[DIK_D] & 0x80) {
 		player->moveRight();
-		player->isMoving = 1;
+		player->isMoving = true;
 	}
 	
 	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {
@@ -383,7 +340,7 @@ void Game::processMouseInput() {
 		}
 	}
 
-	POINT pt;
+	/*POINT pt;
 	RECT wRec;
 
 	if(mouseState.rgbButtons[0] & 0x80) {
@@ -392,7 +349,7 @@ void Game::processMouseInput() {
 		GetWindowRect(hWnd, &wRec); 
 
 		if(pt.x >= wRec.left && pt.x <= wRec.right && pt.y >= wRec.top && pt.y <= wRec.bottom) {
-//			this->rocket->setNewHeading(pt.x, pt.y);
+
 		}
-	}
+	}*/
 }

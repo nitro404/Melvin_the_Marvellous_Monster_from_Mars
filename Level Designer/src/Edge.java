@@ -28,7 +28,7 @@ public class Edge {
 	}
 
 	public double getDeltaY() {
-		return this.b.x - this.a.x;
+		return this.b.y - this.a.y;
 	}
 	
 	public static Edge parseFrom(String input) {
@@ -38,7 +38,7 @@ public class Edge {
 		
 		String data = input.trim();
 		
-		StringTokenizer st = new StringTokenizer(data, ", ", false);
+		StringTokenizer st = new StringTokenizer(data, ";, ", false);
 		Vertex a = Vertex.parseFrom(st.nextToken() + ", " + st.nextToken());
 		Vertex b = Vertex.parseFrom(st.nextToken() + ", " + st.nextToken());
 		
@@ -47,7 +47,7 @@ public class Edge {
 	
 	public void writeTo(PrintWriter out) throws IOException {
 		a.writeTo(out);
-		out.print(", ");
+		out.print("; ");
 		b.writeTo(out);
 	}
 	

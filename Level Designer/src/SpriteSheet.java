@@ -204,10 +204,7 @@ public class SpriteSheet {
 							for(int i=0;i<numberOfSprites;i++) {
 								spriteNames[i] = null;
 								spriteTypes[i] = Sprite.TYPE_UNKNOWN;
-								offsets[i].x = 0;
-								offsets[i].y = 0;
-								offsets[i].width = 0;
-								offsets[i].height = 0;
+								offsets[i] = new Rectangle(0, 0, 0, 0);
 							}
 							for(int i=0;i<numberOfSprites;i++) {
 								spriteAttributes.clear();
@@ -258,8 +255,9 @@ public class SpriteSheet {
 							spriteSheet.setName(spriteSheetName);
 							
 							for(int i=0;i<numberOfSprites;i++) {
-								spriteSheet.getSprite(i).setIndex(i);
 								spriteSheet.getSprite(i).setName(spriteNames[i]);
+								spriteSheet.getSprite(i).setIndex(i);
+								spriteSheet.getSprite(i).setParentName(spriteSheetName);
 								spriteSheet.getSprite(i).setType(spriteTypes[i]);
 							}
 						}
@@ -348,6 +346,7 @@ public class SpriteSheet {
 									return null;
 								}
 								spriteSheet.sprites.elementAt(spriteIndex).setName(spriteName);
+								spriteSheet.sprites.elementAt(spriteIndex).setIndex(spriteIndex);
 								spriteSheet.sprites.elementAt(spriteIndex).setParentName(spriteSheetName);
 								spriteSheet.sprites.elementAt(spriteIndex).setType(Sprite.parseType(spriteType));
 								

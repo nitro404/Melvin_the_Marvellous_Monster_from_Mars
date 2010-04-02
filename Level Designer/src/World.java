@@ -403,7 +403,7 @@ public class World {
 		for(int i=0;i<numberOfAI;i++) {
 			input = in.readLine().trim();
 			newAI = Entity.parseFrom(input, spriteSheets);
-			world.addTile(newAI);
+			world.addAI(newAI);
 		}
 		
 		return world;

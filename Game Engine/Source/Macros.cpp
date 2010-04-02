@@ -72,14 +72,14 @@ void prompt(const char * message, ...) {
 
 #if _DEBUG
 
-	struct testDrawPointVertex {
+	struct TestDrawPointVertex {
 		float x, y, z, rhw;
 		DWORD colour;
 	};
 
 	void testDrawPoint(LPDIRECT3DDEVICE9 d3dDevice, float x, float y) {
 		float r = 2;
-		testDrawPointVertex vertex[] = {
+		TestDrawPointVertex vertex[] = {
 			{x-r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
 			{x+r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
 			{x+r, y+r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
@@ -88,11 +88,22 @@ void prompt(const char * message, ...) {
 		};
 
 		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 4, &vertex, sizeof(testDrawPointVertex));
+		d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
+	}
+
+	void testDrawLine(LPDIRECT3DDEVICE9 d3dDevice, float x1, float y1, float x2, float y2) {
+		float r = 2;
+		TestDrawPointVertex vertex[] = {
+			{x1, y1, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
+			{x2, y2, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)}
+		};
+
+		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 2, &vertex, sizeof(TestDrawPointVertex));
 	}
 
 	void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float r) {
-		testDrawPointVertex vertex[] = {
+		TestDrawPointVertex vertex[] = {
 			{x-r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
 			{x+r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
 			{x+r, y+r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
@@ -101,11 +112,11 @@ void prompt(const char * message, ...) {
 		};
 
 		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &vertex, sizeof(testDrawPointVertex));
+		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
 	}
 
 	void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr) {
-		testDrawPointVertex vertex[] = {
+		TestDrawPointVertex vertex[] = {
 			{x-xr, y-yr, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
 			{x+xr, y-yr, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
 			{x+xr, y+yr, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
@@ -114,14 +125,14 @@ void prompt(const char * message, ...) {
 		};
 
 		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &vertex, sizeof(testDrawPointVertex));
+		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
 	}
 
 	void testDrawEmptyCircle(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr) {
 		float c = 16;
 		float a = 0;
 		float i = 360.0f / c;
-		testDrawPointVertex vertex[] = {
+		TestDrawPointVertex vertex[] = {
 			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
 			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
 			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
@@ -142,7 +153,7 @@ void prompt(const char * message, ...) {
 		};
 
 		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, (unsigned int) (c), &vertex, sizeof(testDrawPointVertex));
+		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, (unsigned int) (c), &vertex, sizeof(TestDrawPointVertex));
 	}
 
 #endif

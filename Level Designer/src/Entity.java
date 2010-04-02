@@ -62,11 +62,23 @@ public class Entity {
 		if(st.countTokens() < 2 || st.countTokens() > 4) { return null; }
 		Vertex v = new Vertex(Integer.valueOf(st.nextToken().trim()), Integer.valueOf(st.nextToken().trim()));
 		Entity newEntity = null;
+		SpriteSheet spriteSheet;
+		Sprite sprite;
 		if(st.countTokens() == 2) {
 			String spriteSheetName = st.nextToken().trim();
 			String spriteName = st.nextToken().trim();
 			
-			newEntity = new Entity(v, spriteSheets.getSpriteSheet(spriteSheetName).getSprite(spriteName));
+			spriteSheet = spriteSheets.getSpriteSheet(spriteSheetName);
+			if(spriteSheet == null) {
+				System.out.println("ERROR: Unable to load entity sprite \"" + spriteName + "\" from sprite sheet \"" + spriteSheetName + "\".");
+				return null;
+			}
+			sprite = spriteSheet.getSprite(spriteName);
+			if(sprite == null) {
+				System.out.println("ERROR: Unable to load entity sprite \"" + spriteName + "\" from sprite sheet \"" + spriteSheetName + "\".");
+				return null;
+			}
+			newEntity = new Entity(v, sprite);
 			newEntity.spriteSheetIndex = spriteSheets.getSpriteSheetIndex(spriteSheetName);
 		}
 		else {

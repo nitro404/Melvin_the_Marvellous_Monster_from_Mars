@@ -3,11 +3,13 @@
 #include "Includes.h"
 #include "DirectX.h"
 #include "Sprite.h"
+#include "SpriteSheet.h"
+#include "SpriteSheets.h"
 
 class Object {
 public:
-	Object() { }
-	virtual ~Object() { }
+	Object() : sprite(NULL) { }
+	virtual ~Object() { if(sprite != NULL) { delete sprite; } }
 
 	virtual void tick() { }
 	virtual void draw(LPDIRECT3DDEVICE9 d3dDevice) { }
@@ -31,7 +33,33 @@ public:
 
 	virtual bool checkCollision(Object & o) { return false; }
 
+	static Object * parseFrom(const char * data, SpriteSheets & spriteSheets) {
+		char * temp = strtrimcpy(data);
+		Object * o = new Object();
+
+		char * xData = temp;
+		char * yData = strchr(xData, ',');
+		*yData = '\0';
+		yData += sizeof(char);
+		char * spriteSheetName = strchr(yData, ',');
+		*spriteSheetName = '\0';
+		spriteSheetName += sizeof(char);
+		char * spriteName = strchr(spriteSheetName, ',');
+		*spriteName = '\0';
+		spriteName += sizeof(char);
+
+		o->position.x = (float) atoi(xData);
+		o->position.y = (float) atoi(yData);
+		// y dis crash:
+		o->sprite = spriteSheets.getSpriteSheet(spriteSheetName)->getSprite(spriteName);
+
+		delete [] temp;
+		return o;
+	}
+
 protected:
+	Sprite * sprite;
+
 	// position, offset
 	D3DXVECTOR2 position;
 	D3DXVECTOR2 offset;

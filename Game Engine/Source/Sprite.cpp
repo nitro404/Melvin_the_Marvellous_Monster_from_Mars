@@ -26,19 +26,21 @@ Sprite::Sprite(char * fileName,
 	if(fileName != NULL) {
 		D3DXCreateSprite(d3dDevice, &sprite);
 
-		USES_CONVERSION;
-		wstring spriteFileName;
+
+
+		string spriteFileName;
 		if(directory != NULL) {
-			spriteFileName.append(wstring(A2W(directory)));
-			if(_stricmp(W2A(spriteFileName.substr(spriteFileName.length() - 1, spriteFileName.length()).c_str()), ("\\")) != 0 &&
-			   _stricmp(W2A(spriteFileName.substr(spriteFileName.length() - 1, spriteFileName.length()).c_str()), ("/")) != 0) {
-				spriteFileName.append(L"\\");
+			spriteFileName.append(directory);
+			if(_stricmp(spriteFileName.substr(spriteFileName.length() - 1, spriteFileName.length()).c_str(), ("\\")) != 0 &&
+			   _stricmp(spriteFileName.substr(spriteFileName.length() - 1, spriteFileName.length()).c_str(), ("/")) != 0) {
+				spriteFileName.append("\\");
 			}
 		}
-		spriteFileName.append(A2W(fileName));
+		spriteFileName.append(fileName);
+
 
 		if(FAILED(D3DXCreateTextureFromFile(d3dDevice, spriteFileName.c_str(), &texture))) {
-			quit("Error", "Error loading sprite texture \"%s\".", W2A(spriteFileName.c_str()));
+			quit("Error", "Error loading sprite texture \"%s\".", spriteFileName.c_str());
 		}
 
 		D3DSURFACE_DESC description;
@@ -197,10 +199,6 @@ void Sprite::draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotati
 			sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
 
-#ifdef _DEBUG
-		testDrawPoint(d3dDevice, position->x, position->y);
-#endif
-
 		sprite->End();
 	}
 }
@@ -231,8 +229,6 @@ void Sprite::drawBackwards(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, flo
 		D3DXVECTOR2 flippedPosition(position->x + (scalingOffset->x * 2), position->y);
 		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), &flippedPosition);
 		D3DXMatrixMultiply(&flippedTransformationMatrix, &flipMatrix, &transformationMatrix);
-		//D3DXMATRIX flipMatrixTranslation;
-//		D3DXMatrixTransformation2D(&transformationMatrix, NULL, 0, NULL, NULL, 0, );
 
 		sprite->SetTransform(&flippedTransformationMatrix);
 

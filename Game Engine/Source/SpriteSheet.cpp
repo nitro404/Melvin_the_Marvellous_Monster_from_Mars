@@ -316,13 +316,15 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 
 					spriteSheet = new SpriteSheet(spriteSheetImage, offsets, numberOfSprites);
 					spriteSheet->setName(spriteSheetName);
-					delete [] spriteSheetName;
 
 					for(int i=0;i<numberOfSprites;i++) {
 						spriteSheet->getSprite(i)->setIndex(i);
 						spriteSheet->getSprite(i)->setName(spriteNames[i]);
+						spriteSheet->getSprite(i)->setParentName(spriteSheetName);
 						spriteSheet->getSprite(i)->setType(spriteTypes[i]);
 					}
+
+					delete [] spriteSheetName;
 
 					for(int i=0;i<numberOfSprites;i++) {
 						if(spriteNames[i] != NULL) {
@@ -454,6 +456,7 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 						spriteType = Sprite::parseType(spriteTypeValue);
 
 						spriteSheet->sprites.at(spriteIndex)->setName(spriteName);
+						spriteSheet->sprites.at(spriteIndex)->setIndex(spriteIndex);
 						spriteSheet->sprites.at(spriteIndex)->setParentName(spriteSheetName);
 						spriteSheet->sprites.at(spriteIndex)->setType(spriteType);
 

@@ -421,3 +421,104 @@ SpriteSheet::SpriteSheet(Sprite * externalSpriteSheet,
 
 
 
+
+
+		/*
+		USES_CONVERSION;
+		wstring spriteFileName;
+		if(directory != NULL) {
+			spriteFileName.append(wstring(A2W(directory)));
+			if(_stricmp(W2A(spriteFileName.substr(spriteFileName.length() - 1, spriteFileName.length()).c_str()), ("\\")) != 0 &&
+			   _stricmp(W2A(spriteFileName.substr(spriteFileName.length() - 1, spriteFileName.length()).c_str()), ("/")) != 0) {
+				spriteFileName.append(L"\\");
+			}
+		}
+		spriteFileName.append(A2W(fileName));
+		*/
+
+//		if(FAILED(D3DXCreateTextureFromFile(d3dDevice, spriteFileName.c_str(), &texture))) {
+//			quit("Error", "Error loading sprite texture \"%s\".", W2A(spriteFileName.c_str()));
+//		}
+
+
+//	USES_CONVERSION;
+//	D3DXCreateFont(d3dDevice, size, 0, weight, 0, italic, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, A2W(face), &d3dFont);
+
+
+
+//	USES_CONVERSION;
+//	font->getD3DFont()->DrawText(sprite, A2W(buffer), length, &textBox, alignment, colour);
+
+
+	/*if(keyboardState[DIK_ESCAPE] & 0x80) {
+		if(!escapeKeyPressed) {
+			if(helpScreenActive) {
+				helpScreenActive = false;
+			}
+			else if(!mainMenuActive) {
+				mainMenuActive = true;
+			}
+			else {
+				PostQuitMessage(0);
+			}
+		}
+		escapeKeyPressed = true;
+	}
+	else {
+		escapeKeyPressed = false;
+	}
+
+	processMainMenuInput();*/
+
+
+
+
+/*void Game::processMainMenuInput() {
+	if(helpScreenActive || !mainMenuActive) { return; }
+
+	if(keyboardState[DIK_RETURN] & 0x80 || keyboardState[DIK_SPACE] & 0x80) {
+		if(!menuSelectKeyPressed) {
+			switch(mainMenu->getIndex()) {
+				// start game in single player mode
+				case 0:
+					mainMenuActive = false;
+					break;
+				// start game in 2 player mode
+				case 1:
+					mainMenuActive = false;
+					break;
+				// display help screen
+				case 2:
+					helpScreenActive = true;
+					break;
+				// quit the game
+				case 3:
+					PostQuitMessage(0);
+					break;
+			}
+		}
+		menuSelectKeyPressed = true;
+	}
+	else { menuSelectKeyPressed = false; }
+
+	// move menu selection up
+	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {
+		if(!menuUpKeyPressed) {
+			mainMenu->moveUp();
+		}
+		menuUpKeyPressed = true;
+	}
+	else { menuUpKeyPressed = false; }
+
+	// move menu selection down
+	if(keyboardState[DIK_DOWN] & 0x80 || keyboardState[DIK_S] & 0x80) {
+		if(!menuDownKeyPressed) {
+			mainMenu->moveDown();
+		}
+		menuDownKeyPressed = true;
+	}
+	else { menuDownKeyPressed = false; }
+}*/
+
+
+

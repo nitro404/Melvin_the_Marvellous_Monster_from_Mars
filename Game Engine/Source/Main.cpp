@@ -15,7 +15,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 		quit("Error", "Could not find the settings file \"settings.ini\".");
 	}
 	
-	Game game = Game(settings, hInstance, WndProc, L"game", L"Melvin the Marvellous Monster from Mars", nCmdShow);
+	Game game = Game(settings, hInstance, WndProc, "game", nCmdShow);
 	game.run();
 	
 	#if _DEBUG

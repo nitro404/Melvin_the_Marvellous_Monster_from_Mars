@@ -1,47 +1,84 @@
 #include "Text.h"
 
-const int Text::NORMAL = FW_NORMAL;
-const int Text::REGULAR = FW_REGULAR;
-const int Text::BOLD = FW_BOLD;
-
 const int Text::LEFT = DT_LEFT;
 const int Text::CENTER = DT_CENTER;
 const int Text::RIGHT = DT_RIGHT;
 
-Text::Text(const char * fontFace,
-		   int fontSize,
-		   int fontWeight,
-		   bool italic,
+Text::Text(int xPos,
+		   int yPos,
 		   int fontAlignment,
 		   int fontOffset,
-		   int xPos,
-		   int yPos,
 		   D3DCOLOR fontColour,
-		   LPDIRECT3DDEVICE9 d3dDevice)
-			: size(fontSize),
-			  x(xPos),
+		   Font * font,
+		   bool isExternalFont,
+		   LPDIRECT3DDEVICE9 d3dDevice,
+		   char * text, ...)
+			: x(xPos),
 			  y(yPos),
+			  font((isExternalFont) ? font : NULL),
+			  externalFont(isExternalFont),
 			  alignment(fontAlignment),
 			  offset(fontOffset),
 			  colour(fontColour) {
 	D3DXCreateSprite(d3dDevice, &sprite);
+	
+	if(text == NULL) {
+		this->text = new char[1];
+		this->text[0] = '\0';
+	}
+	else {
+		char buffer[256];
+		va_list parameters;
+		va_start(parameters, text);
+		vsprintf_s(buffer, 256, text, parameters);
+		va_end(parameters);
 
-	USES_CONVERSION;
-	D3DXCreateFont(d3dDevice, size, 0, fontWeight, 0, italic, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, A2W(fontFace), &font);
+		this->text = new char[strlen(buffer) + 1];
+		strcpy_s(this->text, strlen(buffer) + 1, buffer);
+	}
+
+	if(font == NULL) {
+		this->font = new Font("Arial", 24, Font::REGULAR, false, d3dDevice);
+		externalFont = false;
+	}
+	if(this->font == NULL) {
+		this->font = new Font(*font);
+		externalFont = false;
+	}
 }
 
 Text::~Text() {
-	if(font != NULL) { font->Release(); }
+	delete [] text;
+	if(!externalFont) { delete font; }
 	if(sprite != NULL) { sprite->Release(); }
 }
 
-void Text::setColour(D3DCOLOR newColour) {
-	colour = newColour;
-}
+int Text::getSize() { return font->getSize(); }
+
+void Text::setColour(D3DCOLOR newColour) { colour = newColour; }
 
 void Text::setPosition(int x, int y) {
 	this->x = x;
 	this->y = y;
+}
+
+char * Text::getText() { return text; }
+
+void Text::setText(const char * text, ...) {
+	delete [] text;
+
+	char buffer[256];
+	va_list parameters;
+	va_start(parameters, text);
+	vsprintf_s(buffer, 256, text, parameters);
+	va_end(parameters);
+
+	this->text = new char[strlen(buffer) + 1];
+	strcpy_s(this->text, strlen(buffer) + 1, buffer);
+}
+
+void Text::draw() {
+	draw(this->text);
 }
 
 void Text::draw(const char * text, ...) {
@@ -51,15 +88,11 @@ void Text::draw(const char * text, ...) {
 	vsprintf_s(buffer, 256, text, parameters);
 	va_end(parameters);
 
-	drawHelper(buffer);
-}
-
-void Text::drawHelper(const char * text) {
-	int length = strlen(text);
-	int width = (int) ((size * length) / 2.0f);
+	int length = strlen(buffer);
+	int width = (int) ((font->getSize() * length) / 2.0f);
 
 	textBox.top = y;
-	textBox.bottom = y + size;
+	textBox.bottom = y + font->getSize();
 	if(offset == LEFT) {
 		textBox.left = x - width;
 		textBox.right = x;
@@ -75,8 +108,7 @@ void Text::drawHelper(const char * text) {
 
 	sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
-	USES_CONVERSION;
-	font->DrawText(sprite, A2W(text), length, &textBox, alignment, colour);
+	font->getD3DFont()->DrawText(sprite, buffer, length, &textBox, alignment, colour);
 
 	sprite->End();
 }

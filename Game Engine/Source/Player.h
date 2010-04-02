@@ -4,11 +4,12 @@
 #include "Variables.h"
 #include "Sprite.h"
 #include "SpriteSheet.h"
+#include "SpriteSheets.h"
 #include "Items.h"
 
 class Player : public Object, public Items {
 public:
-	Player(float xPos, float yPos, int windowWidth, int windowHeight, Variables * settings, LPDIRECT3DDEVICE9 d3dDevice);
+	Player(float xPos, float yPos, int windowWidth, int windowHeight, double & externalTimeElapsed, Variables * settings, SpriteSheets * spriteSheets, LPDIRECT3DDEVICE9 d3dDevice);
 	~Player();
 	
 	void tick();
@@ -17,22 +18,27 @@ public:
 	void moveLeft();
 	void moveRight();
 	void jump();
+	void grab(Object * o);
 
 public:
-	int isMoving;
+	bool isMoving;
 
 private:
 	Sprite * playerSprite;
 	Sprite * disguiseSprite;
 	SpriteSheet * playerSpriteSheet;
 
+	double & timeElapsed;
 	Variables * settings;
 
 	int disguise;
 
+	int movementDirection;
+
 	bool isJumping;
-	float jumpTick;
-	float maxJumpHeight;
+	float jumpVelocity;
+	float jumpCooldown;
+	float jumpTime;
 
 	int movingAnimationSequence;
 	int movingAnimationInterval;

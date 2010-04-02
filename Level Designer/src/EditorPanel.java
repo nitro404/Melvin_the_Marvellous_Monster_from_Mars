@@ -457,6 +457,8 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	}
 	
 	public void getSelectedGridBlock(Point p) {
+		if(world == null) { return; }
+		
 		Point current = p;
 		Point offset = new Point(current.x, current.y);
 		Point location = new Point(offset.x / World.GRID_SIZE,
@@ -548,6 +550,8 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	}
 	
 	public void drawObjects(Graphics g) {
+		if(world == null) { return; }
+		
 		for(int i=0;i<world.numberOfTiles();i++) {
 			world.getTile(i).paintOn(g);
 		}

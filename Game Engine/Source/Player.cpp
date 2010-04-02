@@ -4,21 +4,26 @@ Player::Player(float xPos,
 			   float yPos,
 			   int windowWidth,
 			   int windowHeight,
+			   double & externalTimeElapsed,
 			   Variables * settings,
+			   SpriteSheets * spriteSheets,
 			   LPDIRECT3DDEVICE9 d3dDevice)
-				: maxJumpHeight(27),
+				: timeElapsed(externalTimeElapsed),
 				  isJumping(false),
-				  isMoving(0),
+				  jumpVelocity(32),
+				  jumpCooldown(0.94f),
+				  jumpTime(0),
+				  isMoving(false),
+				  movementDirection(0),
 				  movingAnimationSequence(0),
-				  movingAnimationInterval(12),
+				  movingAnimationInterval(11),
 				  movingAnimationEnd(movingAnimationInterval * 3),
-				  disguise(1) {
+				  disguise(0) {
 	this->windowHeight = windowHeight;
 	this->windowWidth = windowWidth;
 	this->settings = settings;
 	
-	Sprite * playerSpriteSheetImage = new Sprite("Alien.png", settings->getValue("Sprite Directory"), d3dDevice);
-	this->playerSpriteSheet = new SpriteSheet(playerSpriteSheetImage, 1, 1, 126, 126, 128, 128, true, 8, 8);
+	playerSpriteSheet = spriteSheets->getSpriteSheet("Alien");
 	this->playerSprite = playerSpriteSheet->getSprite(0);
 	this->disguiseSprite = playerSpriteSheet->getSprite(3);
 
@@ -27,37 +32,55 @@ Player::Player(float xPos,
 	this->offset = D3DXVECTOR2((playerSprite->getWidth() / 2.0f) * scale.x, (playerSprite->getHeight() / 2.0f) * scale.y);
 	this->position = D3DXVECTOR2(xPos - offset.x, yPos - offset.y);
 	this->velocity = D3DXVECTOR2(0, 0);
-	this->velocityStep = 2.5;
+	this->velocityStep = 2.5f;
 }
 
-Player::~Player() {
-	delete playerSpriteSheet;
-}
+Player::~Player() { }
 
 void Player::tick() {
-	if(isJumping) {
-		position.y = windowHeight - getHeight() - (-(jumpTick * jumpTick)) - maxJumpHeight;
-		jumpTick += 0.3f;
-		if(position.y + getHeight() > windowHeight - getHeight()) {
-			isJumping = false;
-			position.y = windowHeight - getHeight();
-		}
-	}
 	playerColour = D3DCOLOR_RGBA(255, 255, 255, 255);
 
-	if(isMoving != 0) {
-		playerSprite = playerSpriteSheet->getSprite(movingAnimationSequence / movingAnimationInterval);
-		disguiseSprite = playerSpriteSheet->getSprite(3 + (movingAnimationSequence / movingAnimationInterval));
-		
+	if(isJumping) {
+		position.y += (float) (-velocity.y * (timeElapsed * 10));
+	}
+	jumpTime -= (float) timeElapsed;
+	if(jumpTime < 0) { jumpTime = 0; }
+
+	velocity.y -= (float) (Constants::GRAVITY * (timeElapsed * 10));
+	if(position.y + getOffsetY() > windowHeight ) {
+		isJumping = false;
+		position.y = windowHeight - getOffsetY();
+		velocity.y = 0;
+	}
+
+	playerSprite = playerSpriteSheet->getSprite(movingAnimationSequence / movingAnimationInterval);
+	disguiseSprite = playerSpriteSheet->getSprite(3 + (movingAnimationSequence / movingAnimationInterval));
+
+	if(isMoving) {
 		movingAnimationSequence++;
 		if(movingAnimationSequence >= movingAnimationEnd) {
 			movingAnimationSequence = 0;
 		}
 	}
+
+	if(isJumping) {
+		if(velocity.y > 0.5) {
+			playerSprite = playerSpriteSheet->getSprite(24);
+			disguiseSprite = playerSpriteSheet->getSprite(27);
+		}
+		else if(velocity.y <= 0.5 && velocity.y >= -0.5) {
+			playerSprite = playerSpriteSheet->getSprite(25);
+			disguiseSprite = playerSpriteSheet->getSprite(28);
+		}
+		else if(velocity.y < -0.5) {
+			playerSprite = playerSpriteSheet->getSprite(26);
+			disguiseSprite = playerSpriteSheet->getSprite(29);
+		}
+	}
 }
 
 void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
-	if(isMoving >= 0) {
+	if(movementDirection >= 0) {
 		playerSprite->drawBackwardsCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
 		if(disguise > 0) {
 			disguiseSprite->drawBackwardsCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
@@ -69,15 +92,12 @@ void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 			disguiseSprite->drawCentered(&scale, &offset, 0, NULL, &position, d3dDevice);
 		}
 	}
-#ifdef _DEBUG
-	testDrawPoint(d3dDevice, position.x, position.y);
-	testDrawPoint(d3dDevice, getX(), getY());
-#endif
 }
 
 void Player::moveLeft() {
-	if(position.x - velocityStep < 0) {
-		position.x = 0;
+	movementDirection = -1;
+	if(position.x - getOffsetX() - velocityStep < 0) {
+		position.x = getOffsetX();
 	}
 	else {
 		position.x -= velocityStep;
@@ -85,8 +105,9 @@ void Player::moveLeft() {
 }
 
 void Player::moveRight() {
-	if(position.x + getWidth() + velocityStep > windowWidth) {
-		position.x = windowWidth - getWidth();
+	movementDirection = 1;
+	if(position.x + getOffsetX() + velocityStep > windowWidth) {
+		position.x = windowWidth - getOffsetX();
 	}
 	else {
 		position.x += velocityStep;
@@ -94,8 +115,20 @@ void Player::moveRight() {
 }
 
 void Player::jump() {
-	if(!isJumping) {
+	if(!isJumping && jumpTime == 0) {
 		isJumping = true;
-		jumpTick = -5.15f;
+		velocity.y = jumpVelocity;
+		jumpTime = jumpCooldown;
+	}
+}
+
+void Player::grab(Object * o) {
+	if(o == NULL) { return; }
+
+	if(o->getX() < getX()) {
+		
+	}
+	else if(o->getX() >= getX()) {
+		
 	}
 }

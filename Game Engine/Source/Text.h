@@ -1,36 +1,33 @@
 #pragma once
 
 #include "Includes.h"
-#include "DirectX.h"
+#include "Font.h"
 
 class Text {
 public:
-	Text(const char * fontFace, int fontSize, int fontWeight, bool italic, int fontAlignment, int fontOffset, int xPos, int yPos, D3DCOLOR fontColour, LPDIRECT3DDEVICE9 d3dDevice);
+	Text(int xPos, int yPos, int fontAlignment, int fontOffset, D3DCOLOR fontColour, Font * font, bool isExternalFont, LPDIRECT3DDEVICE9 d3dDevice, char * text, ...);
 	~Text();
 
-	void draw(const char * text, ...);
-
+	int getSize();
 	void setColour(D3DCOLOR newColor);
 	void setPosition(int x, int y);
+	char * getText();
+	void setText(const char * text, ...);
 
-	const static int NORMAL;
-	const static int REGULAR;
-	const static int BOLD;
+	void draw();
+	void draw(const char * text, ...);
 
+public:
 	const static int LEFT;
 	const static int CENTER;
 	const static int RIGHT;
 
 private:
-	void drawHelper(const char * text);
-
-private:
 	char * text;
-
-	LPD3DXFONT font;
+	Font * font;
 	LPD3DXSPRITE sprite;
+	bool externalFont;
 
-	int size;
 	int x, y;
 	int alignment;
 	int offset;

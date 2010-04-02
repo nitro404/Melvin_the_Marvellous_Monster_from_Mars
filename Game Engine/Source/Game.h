@@ -9,55 +9,54 @@
 #include "Menu.h"
 #include "Object.h"
 #include "Player.h"
+#include "Level.h"
 
 class Game {
 public:
-	Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow);
+	Game(Variables * settings, HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, int nCmdShow);
 	~Game();
 	
 	int run();
 	void tick();
-	void drawHelp();
 	void draw();
 	void reset();
 	
-//TODO:
-	bool loadMap(char * fileName);
+	void closeLevel();
+	void loadLevel(const char * fileName);
 	
 private:
+	void computeTimeElapsed();
+
 	void processKeyboardInput();
 	void processMouseInput();
-	void processMainMenuInput();
+	void processMenuInput();
 	void processPlayerInput();
 
 	bool init(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName, LPCTSTR title, int nCmdShow);
 	bool RegisterWndClass(HINSTANCE hInstance, WNDPROC WndProc, LPCTSTR winClassName);
 	bool verifySettings(Variables * settings);
 
+public:
+	static float gravity;
+	double timeElapsed;
+
 private:
 	Player * player;
 	SpriteSheets * spriteSheets;
+
+	Level * level;
 
 	Variables * settings;
 
 	int windowPosX, windowPosY;
 	int windowWidth, windowHeight;
 
-	Menu * mainMenu;
-	bool mainMenuActive;
-	Text * helpTitleText;
-	vector<char *> helpItemMessages;
-	vector<Text *> helpItemText;
-	int helpItemOffset;
-	int helpItemIncrement;
-	bool helpScreenActive;
+	Menu * menu;
 
-	bool spaceBarPressed;
-	bool enterKeyPressed;
+	bool menuSelectKeyPressed;
+	bool menuBackKeyPressed;
 	bool menuUpKeyPressed;
 	bool menuDownKeyPressed;
-	bool menuSelectKeyPressed;
-	bool escapeKeyPressed;
 
 	HINSTANCE hInstance;
 	HWND hWnd;
