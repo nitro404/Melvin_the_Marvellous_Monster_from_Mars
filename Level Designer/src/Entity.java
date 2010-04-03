@@ -39,7 +39,7 @@ public class Entity {
 	}
 	
 	public int getHeight() {
-		return (this.sprite == null) ? -1 : this.sprite.getWidth();
+		return (this.sprite == null) ? -1 : this.sprite.getHeight();
 	}
 	
 	public void paintOn(Graphics g) {
