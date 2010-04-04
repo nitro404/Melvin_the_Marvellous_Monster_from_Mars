@@ -6,3 +6,6 @@ LEVEL DESIGNER
 
 GAME ENGINE
  + Spritesheet file importer - done, but ',' is not replaced in name / parentname
+ + Add item type everywhere
+ + Fix import routine
+ + Fix crash when unloading maps
