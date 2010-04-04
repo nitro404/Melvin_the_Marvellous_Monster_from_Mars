@@ -11,14 +11,15 @@ Player::Player(float xPos,
 				: timeElapsed(externalTimeElapsed),
 				  isJumping(false),
 				  jumpVelocity(32),
-				  jumpCooldown(0.94f),
+				  jumpCooldown(0.92f),
 				  jumpTime(0),
 				  isMoving(false),
 				  movementDirection(0),
+				  spacing(25),
 				  movingAnimationSequence(0),
 				  movingAnimationInterval(11),
 				  movingAnimationEnd(movingAnimationInterval * 3),
-				  disguise(0) {
+				  disguise(1) {
 	this->windowHeight = windowHeight;
 	this->windowWidth = windowWidth;
 	this->settings = settings;
@@ -29,7 +30,7 @@ Player::Player(float xPos,
 
 	this->scale = D3DXVECTOR2(1, 1);
 	this->size = D3DXVECTOR2(playerSprite->getWidth() * scale.x, playerSprite->getHeight() * scale.y);
-	this->offset = D3DXVECTOR2((playerSprite->getWidth() / 2.0f) * scale.x, (playerSprite->getHeight() / 2.0f) * scale.y);
+	this->offset = D3DXVECTOR2(((playerSprite->getWidth() / 2.0f) * scale.x) + 20, (playerSprite->getHeight() / 2.0f) * scale.y);
 	this->position = D3DXVECTOR2(xPos - offset.x, yPos - offset.y);
 	this->velocity = D3DXVECTOR2(0, 0);
 	this->velocityStep = 2.5f;
@@ -38,15 +39,15 @@ Player::Player(float xPos,
 Player::~Player() { }
 
 void Player::tick() {
+	D3DXVECTOR2 lastPosition = position;
 	playerColour = D3DCOLOR_RGBA(255, 255, 255, 255);
 
-	if(isJumping) {
-		position.y += (float) (-velocity.y * (timeElapsed * 10));
-	}
+	position.y += (float) (-velocity.y * (timeElapsed * 10));
+	velocity.y -= (float) (Constants::GRAVITY * (timeElapsed * 10));
+
 	jumpTime -= (float) timeElapsed;
 	if(jumpTime < 0) { jumpTime = 0; }
 
-	velocity.y -= (float) (Constants::GRAVITY * (timeElapsed * 10));
 	if(position.y + getOffsetY() > windowHeight ) {
 		isJumping = false;
 		position.y = windowHeight - getOffsetY();
@@ -77,6 +78,14 @@ void Player::tick() {
 			disguiseSprite = playerSpriteSheet->getSprite(29);
 		}
 	}
+
+/*
+	D3DXVECTOR2 intersection;
+	if(level->checkCollision(lastPosition, position, intersection)) {
+		position.x = windowWidth / 2.0f;
+		position.y = windowHeight / 2.0f;
+	}
+*/
 }
 
 void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
@@ -96,8 +105,8 @@ void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 
 void Player::moveLeft() {
 	movementDirection = -1;
-	if(position.x - getOffsetX() - velocityStep < 0) {
-		position.x = getOffsetX();
+	if(position.x - getOffsetX() + spacing - velocityStep < 0) {
+		position.x = getOffsetX() - spacing;
 	}
 	else {
 		position.x -= velocityStep;
@@ -106,8 +115,8 @@ void Player::moveLeft() {
 
 void Player::moveRight() {
 	movementDirection = 1;
-	if(position.x + getOffsetX() + velocityStep > windowWidth) {
-		position.x = windowWidth - getOffsetX();
+	if(position.x + getOffsetX() - spacing + velocityStep > windowWidth) {
+		position.x = windowWidth - getOffsetX() + spacing;
 	}
 	else {
 		position.x += velocityStep;

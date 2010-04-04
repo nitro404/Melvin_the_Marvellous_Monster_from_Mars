@@ -26,8 +26,6 @@ Sprite::Sprite(char * fileName,
 	if(fileName != NULL) {
 		D3DXCreateSprite(d3dDevice, &sprite);
 
-
-
 		string spriteFileName;
 		if(directory != NULL) {
 			spriteFileName.append(directory);

@@ -22,6 +22,15 @@ public:
 	int size() {
 		return edges.size();
 	}
+
+	Edge * elementAt(int i) {
+		if(i < 0 || i >= (int) edges.size()) { return NULL; }
+		return edges.at(i);
+	}
+
+	Edge * getEdge(int i) {
+		return elementAt(i);
+	}
 	
 	bool containsVertex(const Vertex & v) {
 		for(unsigned int i=0;i<edges.size();i++) {

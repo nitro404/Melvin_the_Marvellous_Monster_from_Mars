@@ -5,6 +5,7 @@
 #include "Sprite.h"
 #include "SpriteSheet.h"
 #include "SpriteSheets.h"
+#include "CollisionHandler.h"
 
 class Object {
 public:
@@ -12,7 +13,7 @@ public:
 	virtual ~Object() { if(sprite != NULL) { delete sprite; } }
 
 	virtual void tick() { }
-	virtual void draw(LPDIRECT3DDEVICE9 d3dDevice) { }
+	virtual void draw(LPDIRECT3DDEVICE9 d3dDevice) { if(sprite != NULL) { sprite->draw(&scale, &offset, orientation, &offset, &position, d3dDevice); } }
 	virtual void reset() { }
 	virtual void readFrom(ifstream & input) { }
 
@@ -41,17 +42,45 @@ public:
 		char * yData = strchr(xData, ',');
 		*yData = '\0';
 		yData += sizeof(char);
-		char * spriteSheetName = strchr(yData, ',');
-		*spriteSheetName = '\0';
-		spriteSheetName += sizeof(char);
-		char * spriteName = strchr(spriteSheetName, ',');
-		*spriteName = '\0';
-		spriteName += sizeof(char);
+		char * spriteSheetNameData = strchr(yData, ',');
+		*spriteSheetNameData = '\0';
+		spriteSheetNameData += sizeof(char);
+		char * spriteNameData = strchr(spriteSheetNameData, ',');
+		*spriteNameData = '\0';
+		spriteNameData += sizeof(char);
+
+		char * spriteSheetName = strtrimcpy(spriteSheetNameData);
+		char * spriteName = strtrimcpy(spriteNameData);
+
+		SpriteSheet * spriteSheet = spriteSheets.getSpriteSheet(spriteSheetName);
+		if(spriteSheet == NULL) {
+			prompt("WARNING: Unable to load from sprite sheet \"%s\".", spriteSheetName);
+			delete o;
+			delete [] temp;
+			delete [] spriteSheetName;
+			delete [] spriteName;
+			return NULL;
+		}
+		o->sprite = spriteSheet->getSprite(spriteName);
+		if(o->sprite == NULL) {
+			prompt("WARNING: Unable to load sprite \"%s\" from sprite sheet \"%s\".", spriteName, spriteSheetName);
+			delete o;
+			delete [] temp;
+			delete [] spriteSheetName;
+			delete [] spriteName;
+			return NULL;
+		}
 
 		o->position.x = (float) atoi(xData);
 		o->position.y = (float) atoi(yData);
-		// y dis crash:
-		o->sprite = spriteSheets.getSpriteSheet(spriteSheetName)->getSprite(spriteName);
+		o->scale = D3DXVECTOR2(1, 1);
+		if(o->sprite == NULL) {
+			o->offset = D3DXVECTOR2(0, 0);
+		}
+		else {
+			o->offset = D3DXVECTOR2((float) (o->sprite->getWidth() / 2.0f), (float) (o->sprite->getHeight()));
+		}
+		o->orientation = 0;
 
 		delete [] temp;
 		return o;

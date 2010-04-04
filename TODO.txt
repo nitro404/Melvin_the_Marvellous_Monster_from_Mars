@@ -2,8 +2,7 @@ LEVEL DESIGNER
  + Change relative paths to use paths relative to your current path (add alternate alternative?)
  + Snap to grid (move only)
  + Draw triggers
- + Unable to move pet
- + Change type to string - remove Type 2 as it is redundant.
+ + Change sprite sheet type to string
 
 GAME ENGINE
  + Spritesheet file importer - done, but ',' is not replaced in name / parentname

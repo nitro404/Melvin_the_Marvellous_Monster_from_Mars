@@ -34,6 +34,7 @@ private:
 	int disguise;
 
 	int movementDirection;
+	int spacing;
 
 	bool isJumping;
 	float jumpVelocity;

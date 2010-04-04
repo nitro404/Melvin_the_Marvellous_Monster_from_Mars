@@ -41,10 +41,8 @@ public:
 	double timeElapsed;
 
 private:
-	Player * player;
-	SpriteSheets * spriteSheets;
-
 	Level * level;
+	SpriteSheets * spriteSheets;
 
 	Variables * settings;
 

@@ -35,15 +35,12 @@ Game::Game(Variables * settings,
 
 	spriteSheets = SpriteSheets::parseFrom(settings->getValue("SpriteSheet File"), settings->getValue("Sprite Directory"), d3dDevice);
 
-	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, timeElapsed, settings, spriteSheets, d3dDevice);
-
 	menu = new Menu(windowWidth, windowHeight, this, settings, d3dDevice);
 }
 
 Game::~Game() {
 	delete settings;
 	if(spriteSheets != NULL) { delete spriteSheets; }
-	delete player;
 	if(level != NULL) { delete level; }
 	delete menu;
 	if(keyboard != NULL) {
@@ -98,7 +95,7 @@ void Game::tick() {
 	processKeyboardInput();
 	processMouseInput();
 	
-	player->tick();
+	if(level != NULL) { level->tick(); }
 }
 
 void Game::draw() {
@@ -106,7 +103,7 @@ void Game::draw() {
 	
 	d3dDevice->BeginScene();
 
-	player->draw(d3dDevice);
+	if(level != NULL) { level->draw(d3dDevice); }
 	
 	d3dDevice->EndScene();
 	
@@ -163,7 +160,7 @@ void Game::closeLevel() {
 
 void Game::loadLevel(const char * fileName) {
 	closeLevel();
-	level = new Level(fileName, spriteSheets);
+	level = new Level(fileName, spriteSheets, settings, timeElapsed, windowWidth, windowHeight, d3dDevice);
 	reset();
 }
 
@@ -303,19 +300,21 @@ void Game::processMenuInput() {
 void Game::processPlayerInput() {
 	if(menu->isActive()) { return; }
 
-	player->isMoving = false;
+	if(level == NULL) { return; }
+
+	level->player->isMoving = false;
 	if(keyboardState[DIK_LEFT] & 0x80 || keyboardState[DIK_A] & 0x80) {
-		player->moveLeft();
-		player->isMoving = true;
+		level->player->moveLeft();
+		level->player->isMoving = true;
 	}
 	
 	if(keyboardState[DIK_RIGHT] & 0x80 || keyboardState[DIK_D] & 0x80) {
-		player->moveRight();
-		player->isMoving = true;
+		level->player->moveRight();
+		level->player->isMoving = true;
 	}
 	
 	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {
-		player->jump();
+		level->player->jump();
 	}
 }
 
