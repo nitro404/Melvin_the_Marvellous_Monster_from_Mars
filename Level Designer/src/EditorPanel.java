@@ -424,7 +424,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				}
 			}
 			if(selectedSprite == null) {
-				for(int i=0;i<world.numberOfItems();i++) {
+				for(int i=world.numberOfItems()-1;i>=0;i--) {
 					Entity e = world.getItem(i);
 					if(p.x >= e.location.x &&
 					   p.y >= e.location.y &&
@@ -436,7 +436,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				}
 			}
 			if(selectedSprite == null) {
-				for(int i=0;i<world.numberOfAI();i++) {
+				for(int i=world.numberOfAI()-1;i>=0;i--) {
 					Entity e = world.getAI(i);
 					if(p.x >= e.location.x &&
 					   p.y >= e.location.y &&
@@ -448,7 +448,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				}
 			}
 			if(selectedSprite == null) {
-				for(int i=0;i<world.numberOfObjects();i++) {
+				for(int i=world.numberOfObjects()-1;i>=0;i--) {
 					Entity e = world.getObject(i);
 					if(p.x >= e.location.x &&
 					   p.y >= e.location.y &&
@@ -460,7 +460,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				}
 			}
 			if(selectedSprite == null) {
-				for(int i=0;i<world.numberOfTiles();i++) {
+				for(int i=world.numberOfTiles()-1;i>=0;i--) {
 					Entity e = world.getTile(i);
 					if(selectedGridBlock.x >= e.location.x &&
 					   selectedGridBlock.y >= e.location.y &&
