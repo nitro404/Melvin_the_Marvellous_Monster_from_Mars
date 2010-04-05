@@ -1,0 +1,69 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 16, 12
+Edges: 5
+	962, 627; 741, 630
+	962, 627; 956, 437
+	741, 630; 489, 418
+	489, 418; 263, 417
+	263, 417; 266, 261
+Player: 416, 255, Alien, Walking 1
+Pet: 736, 480, Fluffy, Idle 1
+Objects: 0
+Tiles: 0
+AI: 0
+Items: 54
+	946, 421, Items, Banana
+	946, 444, Items, Banana
+	947, 470, Items, Banana
+	949, 495, Items, Banana
+	950, 515, Items, Banana
+	950, 542, Items, Banana
+	950, 567, Items, Banana
+	950, 587, Items, Banana
+	923, 613, Items, Peach
+	897, 612, Items, Peach
+	876, 614, Items, Peach
+	843, 614, Items, Peach
+	823, 613, Items, Peach
+	789, 616, Items, Peach
+	755, 616, Items, Peach
+	727, 615, Items, Peach
+	693, 609, Items, Green Apple
+	666, 582, Items, Green Apple
+	651, 571, Items, Green Apple
+	632, 559, Items, Green Apple
+	614, 547, Items, Green Apple
+	595, 526, Items, Green Apple
+	587, 513, Items, Green Apple
+	564, 503, Items, Green Apple
+	548, 492, Items, Green Apple
+	523, 474, Items, Green Apple
+	502, 445, Items, Green Apple
+	488, 430, Items, Green Apple
+	474, 422, Items, Green Apple
+	463, 412, Items, Green Apple
+	461, 411, Items, Green Apple
+	440, 412, Items, Red Apple
+	416, 413, Items, Red Apple
+	405, 412, Items, Red Apple
+	389, 412, Items, Red Apple
+	373, 412, Items, Red Apple
+	345, 415, Items, Red Apple
+	329, 413, Items, Red Apple
+	318, 411, Items, Red Apple
+	292, 411, Items, Red Apple
+	272, 412, Items, Red Apple
+	259, 412, Items, Red Apple
+	248, 409, Items, Red Apple
+	236, 409, Items, Red Apple
+	229, 381, Items, Pear
+	233, 340, Items, Pear
+	231, 318, Items, Pear
+	233, 300, Items, Pear
+	235, 278, Items, Pear
+	238, 263, Items, Pear
+	237, 240, Items, Pear
+	467, 643, Items, Peach
+	381, 676, Items, Red Apple
+	274, 693, Items, Banana

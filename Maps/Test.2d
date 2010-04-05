@@ -7,13 +7,20 @@ Edges: 5
 	252, 638; 6, 636
 	6, 636; 6, 426
 	1021, 637; 1023, 425
-Player: 137, 156, Alien, Walking 1
-Pet: 811, 514, Fluffy, Idle 1
-Objects: 22
+Player: 725, 354, Alien, Walking 1
+Pet: 878, 520, Fluffy, Idle 1
+Objects: 4
 	508, 557, Rocks, Rock 1
-	623, 559, Rocks, Rock 2
+	285, 552, Rocks, Rock 2
 	440, 551, Rocks, Rock 3
 	374, 558, Rocks, Rock 4
+Tiles: 0
+AI: 4
+	94, 337, FBI Agent, Stand
+	903, 411, White Rat, White Rat Walk 1
+	908, 327, Brown Rat, Brown Rat Walk 1
+	904, 248, Gray Rat, Gray Rat Walk 1
+Items: 18
 	64, 47, Items, Magnet
 	183, 39, Items, Pylon
 	275, 43, Items, Bottle
@@ -29,12 +36,6 @@ Objects: 22
 	638, 188, Items, Banana
 	583, 190, Items, Peach
 	534, 192, Items, Pear
-	485, 199, Items, Red Apple
+	607, 531, Items, Red Apple
 	428, 196, Items, Green Apple
-	376, 200, Items, Orange
-Tiles: 0
-AI: 4
-	267, 322, FBI Agent, Stand
-	903, 411, White Rat, White Rat Walk 1
-	908, 327, Brown Rat, Brown Rat Walk 1
-	904, 248, Gray Rat, Gray Rat Walk 1
+	706, 599, Items, Orange
