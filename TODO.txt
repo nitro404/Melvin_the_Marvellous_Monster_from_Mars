@@ -2,10 +2,9 @@ LEVEL DESIGNER
  + Change relative paths to use paths relative to your current path (add alternate alternative?)
  + Snap to grid (move only)
  + Draw triggers
- + Change sprite sheet type to string
 
 GAME ENGINE
- + Spritesheet file importer - done, but ',' is not replaced in name / parentname
- + Add item type everywhere
- + Fix import routine
- + Fix crash when unloading maps
+ + Fix animations to use time
+ + Fix collision detection code
+ + Finish pet following code
+ + Finish grab item code

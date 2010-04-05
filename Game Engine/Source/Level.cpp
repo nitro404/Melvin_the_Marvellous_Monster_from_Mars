@@ -8,6 +8,8 @@ Level::Level(const char * fileName,
 			 int externalWindowHeight,
 			 LPDIRECT3DDEVICE9 d3dDevice)
 				: name(NULL),
+				  player(NULL),
+				  pet(NULL),
 				  timeElapsed(externalTimeElapsed),
 				  spriteSheets(externalSpriteSheets),
 				  windowWidth(externalWindowWidth),
@@ -32,7 +34,8 @@ Level::Level(const char * fileName,
 	strcpy_s(this->name, strlen(tempLevelName) + 1, tempLevelName);
 	delete [] tempLevelName;
 
-	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, timeElapsed, settings, spriteSheets, d3dDevice);
+	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, timeElapsed, *this, settings, spriteSheets, d3dDevice);
+	pet = new Pet(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, *player, timeElapsed, settings, spriteSheets, d3dDevice);
 
 	this->readFrom(in);
 
@@ -42,6 +45,7 @@ Level::Level(const char * fileName,
 Level::~Level() {
 	delete [] name;
 	delete player;
+	if(pet != NULL) { delete pet; }
 	for(unsigned int i=0;i<objects.size();i++) {
 		delete objects.at(i);
 	}
@@ -51,7 +55,19 @@ Level::~Level() {
 	for(unsigned int i=0;i<ai.size();i++) {
 		delete ai.at(i);
 	}
+	for(unsigned int i=0;i<items.size();i++) {
+		delete items.at(i);
+	}
 }
+
+/*bool Level::checkCollision(D3DXVECTOR2 & position, double radius) {
+	for(int i=0;i<boundaries.size();i++) {
+		if(CollisionHandler::checkRadiusIntersection(*boundaries.elementAt(i), position, radius)) {
+			return true;
+		}
+	}
+	return false;
+}*/
 
 bool Level::checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition, D3DXVECTOR2 & intersection) {
 	for(int i=0;i<boundaries.size();i++) {
@@ -72,7 +88,11 @@ void Level::tick() {
 	for(unsigned int i=0;i<ai.size();i++) {
 		ai.at(i)->tick();
 	}
+	for(unsigned int i=0;i<items.size();i++) {
+		items.at(i)->tick();
+	}
 	player->tick();
+	pet->tick();
 }
 
 void Level::draw(LPDIRECT3DDEVICE9 d3dDevice) {
@@ -86,6 +106,16 @@ void Level::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 		ai.at(i)->draw(d3dDevice);
 	}
 	player->draw(d3dDevice);
+	pet->draw(d3dDevice);
+	for(unsigned int i=0;i<items.size();i++) {
+		items.at(i)->draw(d3dDevice);
+	}
+
+#if _DEBUG
+	for(int i=0;i<boundaries.size();i++) {
+		boundaries.elementAt(i)->draw(d3dDevice);
+	}
+#endif
 }
 
 void Level::readFrom(ifstream &in) {
@@ -124,7 +154,7 @@ void Level::readFrom(ifstream &in) {
 	*strchr(yData, ',') = '\0';
 	petSpawn = Vertex(atoi(xData), atoi(yData));
 	delete [] temp;
-//	pet->setPosition(petSpawn.x, petSpawn.y);
+	pet->setPosition((float) petSpawn.x + pet->getOffsetX(), (float) petSpawn.y + pet->getOffsetY());
 
 	in.getline(input, maxLength); // objects
 	int numberOfObjects = atoi(strchr(input, ':') + sizeof(char));
@@ -148,5 +178,13 @@ void Level::readFrom(ifstream &in) {
 		in.getline(input, maxLength);
 		Object * newAI = Object::parseFrom(input, *spriteSheets);
 		if(newAI != NULL) { ai.push_back(newAI); }
+	}
+
+	in.getline(input, maxLength); // items
+	int numberOfItems = atoi(strchr(input, ':') + sizeof(char));
+	for(int i=0;i<numberOfItems;i++) {
+		in.getline(input, maxLength);
+		Object * newItem = Object::parseFrom(input, *spriteSheets);
+		if(newItem != NULL) { items.push_back(newItem); }
 	}
 }

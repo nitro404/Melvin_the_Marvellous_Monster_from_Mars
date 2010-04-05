@@ -306,6 +306,9 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 					else if(newEntity.getType() == Sprite.TYPE_AI) {
 						world.addAI(newEntity);
 					}
+					else if(newEntity.getType() == Sprite.TYPE_ITEM) {
+						world.addItem(newEntity);
+					}
 					else {
 						if(newEntity.isTiled()) {
 							world.addTile(newEntity);
@@ -421,6 +424,18 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				}
 			}
 			if(selectedSprite == null) {
+				for(int i=0;i<world.numberOfItems();i++) {
+					Entity e = world.getItem(i);
+					if(p.x >= e.location.x &&
+					   p.y >= e.location.y &&
+					   p.x <= e.location.x + e.getWidth() &&
+					   p.y <= e.location.y + e.getHeight()) {
+						selectedSprite = e;
+						break;
+					}
+				}
+			}
+			if(selectedSprite == null) {
 				for(int i=0;i<world.numberOfAI();i++) {
 					Entity e = world.getAI(i);
 					if(p.x >= e.location.x &&
@@ -428,6 +443,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 					   p.x <= e.location.x + e.getWidth() &&
 					   p.y <= e.location.y + e.getHeight()) {
 						selectedSprite = e;
+						break;
 					}
 				}
 			}
@@ -439,6 +455,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 					   p.x <= e.location.x + e.getWidth() &&
 					   p.y <= e.location.y + e.getHeight()) {
 						selectedSprite = e;
+						break;
 					}
 				}
 			}
@@ -450,6 +467,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 					   selectedGridBlock.x <= e.location.x + (e.getWidth() / World.GRID_SIZE) - 1 &&
 					   selectedGridBlock.y <= e.location.y + (e.getHeight() / World.GRID_SIZE) - 1) {
 						selectedSprite = e;
+						break;
 					}
 				}
 			}
@@ -570,6 +588,10 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		
 		if(world.hasPet()) {
 			world.getPet().paintOn(g);
+		}
+
+		for(int i=0;i<world.numberOfItems();i++) {
+			world.getItem(i).paintOn(g);
 		}
 	}
 	

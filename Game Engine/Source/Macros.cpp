@@ -99,7 +99,7 @@ void prompt(const char * message, ...) {
 		};
 
 		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 2, &vertex, sizeof(TestDrawPointVertex));
+		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 1, &vertex, sizeof(TestDrawPointVertex));
 	}
 
 	void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float r) {

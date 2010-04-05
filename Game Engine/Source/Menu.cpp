@@ -124,10 +124,10 @@ void Menu::moveUp() {
 		mainMenuItems.at(mainMenuIndex)->setColour(activeColour);
 	}
 	else if(menuType == MENU_NEWGAME) {
-		mapMenuItems.at(mainMenuIndex)->setColour(inactiveColour);
+		mapMenuItems.at(mapMenuIndex)->setColour(inactiveColour);
 		mapMenuIndex--;
 		if(mapMenuIndex < 0) { mapMenuIndex = mapMenuItems.size() - 1; }
-		mapMenuItems.at(mainMenuIndex)->setColour(activeColour);
+		mapMenuItems.at(mapMenuIndex)->setColour(activeColour);
 	}
 }
 

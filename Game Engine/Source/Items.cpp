@@ -27,41 +27,31 @@ Items::~Items() {
 	}
 }
 
+int Items::getItemLimit() {
+	return this->limit;
+}
+
+void Items::setItemLimit(int limit) {
+	this->limit = limit;
+}
+
+void Items::removeItemLimit() {
+	this->limit = -1;
+}
+
+int Items::numberOfItems() {
+	return this->items.size();
+}
+
 bool Items::addItem(Item &item) {
+	if(this->limit > 0 && (int) this->items.size() >= this->limit) { return false; }
+
 	for(unsigned int i=0;i<this->items.size();i++) {
 		if(*this->items.at(i) == item) {
 			return false;
 		}
 	}
 	this->items.push_back(&item);
-	return true;
-}
-
-bool Items::removeItem(const Item &item, bool deleteItem) {
-	for(unsigned int i=0;i<this->items.size();i++) {
-		if(*this->items.at(i) == item) {
-			this->removeItem(i, deleteItem);
-			return true;
-		}
-	}
-	return false;
-}
-
-bool Items::removeItem(const char * itemName, bool deleteItem) {
-	for(unsigned int i=0;i<this->items.size();i++) {
-		if(_stricmp(this->items.at(i)->getName(), itemName) == 0) {
-			this->removeItem(i, deleteItem);
-			return true;
-		}
-	}
-	return false;
-}
-
-bool Items::removeItem(int itemIndex, bool deleteItem) {
-	if(itemIndex < 0 || itemIndex >= (int) this->items.size()) { return false; }
-
-	if(deleteItem) { delete this->items.at(itemIndex); }
-	this->items.erase(this->items.begin() + itemIndex);
 	return true;
 }
 
@@ -96,6 +86,34 @@ bool Items::hasItem(const char * itemName) {
 		}
 	}
 	return false;
+}
+
+bool Items::removeItem(const Item &item, bool deleteItem) {
+	for(unsigned int i=0;i<this->items.size();i++) {
+		if(*this->items.at(i) == item) {
+			this->removeItem(i, deleteItem);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Items::removeItem(const char * itemName, bool deleteItem) {
+	for(unsigned int i=0;i<this->items.size();i++) {
+		if(_stricmp(this->items.at(i)->getName(), itemName) == 0) {
+			this->removeItem(i, deleteItem);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Items::removeItem(int itemIndex, bool deleteItem) {
+	if(itemIndex < 0 || itemIndex >= (int) this->items.size()) { return false; }
+
+	if(deleteItem) { delete this->items.at(itemIndex); }
+	this->items.erase(this->items.begin() + itemIndex);
+	return true;
 }
 
 int Items::itemIndex(const Item &item) {

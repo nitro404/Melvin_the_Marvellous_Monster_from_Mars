@@ -22,13 +22,29 @@ public class Graph {
 	public void addEdge(Edge e) {
 		if(e != null && !this.edges.contains(e)) {
 			this.edges.add(e);
-			if(e.a != null && !this.vertices.contains(e.a)) {
-				this.vertices.add(e.a);
+			if(e.a != null) {
+				int indexA = this.vertices.indexOf(e.a);
+				if(indexA >= 0) {
+					e.a = this.vertices.elementAt(indexA);
+				}
+				else {
+					this.vertices.add(e.a);
+				}
 			}
-			if(e.b != null && !this.vertices.contains(e.b)) {
-				this.vertices.add(e.b);
+			if(e.b != null) {
+				int indexB = this.vertices.indexOf(e.b);
+				if(indexB >= 0) {
+					e.b = this.vertices.elementAt(indexB);
+				}
+				else {
+					this.vertices.add(e.b);
+				}
 			}
 		}
+	}
+
+	public int size() {
+		return this.edges.size();
 	}
 	
 	public boolean containsVertex(Vertex v) {
@@ -55,10 +71,6 @@ public class Graph {
 			}
 		}
 		return false;
-	}
-	
-	public int size() {
-		return this.edges.size();
 	}
 	
 	public void writeTo(PrintWriter out) throws IOException {

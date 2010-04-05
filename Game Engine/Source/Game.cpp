@@ -316,6 +316,10 @@ void Game::processPlayerInput() {
 	if(keyboardState[DIK_UP] & 0x80 || keyboardState[DIK_W] & 0x80) {
 		level->player->jump();
 	}
+
+	if(keyboardState[DIK_G] & 0x80) {
+		level->player->grab();
+	}
 }
 
 void Game::processMouseInput() {

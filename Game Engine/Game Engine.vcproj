@@ -241,6 +241,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Source\Pet.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Source\Player.h"
 					>
 				</File>
@@ -308,6 +312,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\Menu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Pet.cpp"
 					>
 				</File>
 				<File

@@ -1,7 +1,6 @@
 #include "CollisionHandler.h"
 
 bool CollisionHandler::checkLineIntersection(Edge & e, D3DXVECTOR2 & c, D3DXVECTOR2 & d, D3DXVECTOR2 & i) {
-	//Line collision detection algorithm borrowed from previos project, "Lamb Mines"
 	Vertex a = e.a;
 	Vertex b = e.b;
 
@@ -42,9 +41,13 @@ bool CollisionHandler::checkLineIntersection(Edge & e, D3DXVECTOR2 & c, D3DXVECT
         return false;
 
     // Apply the discovered position to line A-B in the originial 
-    i.x = a.x + ABpos * theCos;
-    i.y = a.y + ABpos * theSin;
+    i.x = a.x + (ABpos * theCos);
+    i.y = a.y + (ABpos * theSin);
 
     //Success
     return true;
+}
+
+bool CollisionHandler::checkRadiusIntersection(D3DXVECTOR2 & p1, D3DXVECTOR2 & p2, double r1, double r2) {
+	return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2)) < r1 + r2;
 }

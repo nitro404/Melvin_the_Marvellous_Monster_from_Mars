@@ -12,6 +12,7 @@ public class World {
 	private Vector<Entity> objects;
 	private Vector<Entity> tiles;
 	private Vector<Entity> ai;
+	private Vector<Entity> items;
 	
 	final public static String WORLD_TYPE = "2D Cartesian World";
 	final public static double WORLD_VERSION = 1.0;
@@ -25,6 +26,7 @@ public class World {
 		this.objects = new Vector<Entity>();
 		this.tiles = new Vector<Entity>();
 		this.ai = new Vector<Entity>();
+		this.items = new Vector<Entity>();
 	}
 	
 	public void addEdge(Edge e) {
@@ -87,7 +89,8 @@ public class World {
 		   e.isTiled() ||
 		   e.getSprite().getType() == Sprite.TYPE_PLAYER ||
 		   e.getSprite().getType() == Sprite.TYPE_PET ||
-		   e.getSprite().getType() == Sprite.TYPE_AI) { return; }
+		   e.getSprite().getType() == Sprite.TYPE_AI ||
+		   e.getSprite().getType() == Sprite.TYPE_ITEM) { return; }
 		
 		if(!this.objects.contains(e)) {
 			this.objects.add(e);
@@ -115,6 +118,14 @@ public class World {
 		}
 	}
 	
+	public void addItem(Entity e) {
+		if(e == null || e.getSprite() == null || !(e.getSprite().getType() == Sprite.TYPE_ITEM)) { return; }
+		
+		if(!this.items.contains(e)) {
+			this.items.add(e);
+		}
+	}
+	
 	public int numberOfObjects() {
 		return this.objects.size();
 	}
@@ -125,6 +136,10 @@ public class World {
 	
 	public int numberOfAI() {
 		return this.ai.size();
+	}
+	
+	public int numberOfItems() {
+		return this.items.size();
 	}
 	
 	public boolean containsObject(Entity e) {
@@ -145,6 +160,12 @@ public class World {
 		return this.ai.contains(e);
 	}
 	
+	public boolean containsItems(Entity e) {
+		if(e == null) { return false; }
+		
+		return this.items.contains(e);
+	}
+	
 	public boolean removeObject(Entity e) {
 		if(e == null) { return false; }
 		
@@ -161,6 +182,12 @@ public class World {
 		if(e == null) { return false; }
 		
 		return this.ai.remove(e);
+	}
+	
+	public boolean removeItem(Entity e) {
+		if(e == null) { return false; }
+		
+		return this.items.remove(e);
 	}
 	
 	public boolean removeObject(int index) {
@@ -181,6 +208,12 @@ public class World {
 		return this.ai.remove(index) != null;
 	}
 	
+	public boolean removeItem(int index) {
+		if(index < 0 || index >= this.items.size()) { return false; }
+		
+		return this.items.remove(index) != null;
+	}
+	
 	public Entity getObject(int index) {
 		if(index < 0 || index >= this.objects.size()) { return null; }
 		
@@ -197,6 +230,12 @@ public class World {
 		if(index < 0 || index >= this.ai.size()) { return null; }
 		
 		return this.ai.elementAt(index);
+	}
+	
+	public Entity getItem(int index) {
+		if(index < 0 || index >= this.items.size()) { return null; }
+		
+		return this.items.elementAt(index);
 	}
 	
 	public void bringSpriteToFront(Entity e) {
@@ -260,7 +299,7 @@ public class World {
 		}
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(fileName.trim()));
-			World world = parseFrom(in, spriteSheets);
+			World world = readFrom(in, spriteSheets);
 			if(in != null) {
 				in.close();
 			}
@@ -281,7 +320,7 @@ public class World {
 		return null;
 	}
 	
-	public static World parseFrom(BufferedReader in, SpriteSheets spriteSheets) throws IOException {
+	public static World readFrom(BufferedReader in, SpriteSheets spriteSheets) throws IOException {
 		if(in == null) {
 			return null;
 		}
@@ -369,11 +408,9 @@ public class World {
 			return null;
 		}
 		int numberOfObjects = Integer.valueOf(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim());
-		Entity newObject;
 		for(int i=0;i<numberOfObjects;i++) {
 			input = in.readLine().trim();
-			newObject = Entity.parseFrom(input, spriteSheets);
-			world.addObject(newObject);
+			world.addObject(Entity.parseFrom(input, spriteSheets));
 		}
 		
 		// read in the tiles
@@ -384,11 +421,9 @@ public class World {
 			return null;
 		}
 		int numberOfTiles = Integer.valueOf(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim());
-		Entity newTile;
 		for(int i=0;i<numberOfTiles;i++) {
 			input = in.readLine().trim();
-			newTile = Entity.parseFrom(input, spriteSheets);
-			world.addTile(newTile);
+			world.addTile(Entity.parseFrom(input, spriteSheets));
 		}
 		
 		// read in the ai
@@ -399,11 +434,22 @@ public class World {
 			return null;
 		}
 		int numberOfAI = Integer.valueOf(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim());
-		Entity newAI;
 		for(int i=0;i<numberOfAI;i++) {
 			input = in.readLine().trim();
-			newAI = Entity.parseFrom(input, spriteSheets);
-			world.addAI(newAI);
+			world.addAI(Entity.parseFrom(input, spriteSheets));
+		}
+		
+		// read in the items
+		input = in.readLine();
+		String itemsHeader = input.substring(0, input.indexOf(':', 0)).trim();
+		if(!itemsHeader.equalsIgnoreCase("Items")) {
+			System.out.println("ERROR: Corrupted world file. Expected header \"Items\", found \"" + itemsHeader + "\".");
+			return null;
+		}
+		int numberOfItems = Integer.valueOf(input.substring(input.lastIndexOf(':', input.length() - 1) + 1, input.length()).trim());
+		for(int i=0;i<numberOfItems;i++) {
+			input = in.readLine().trim();
+			world.addItem(Entity.parseFrom(input, spriteSheets));
 		}
 		
 		return world;
@@ -488,6 +534,14 @@ public class World {
 			this.ai.elementAt(i).writeTo(out);
 			out.println();
 		}
+		
+		// write the items
+		out.println("Items: " + this.items.size());
+		for(int i=0;i<this.items.size();i++) {
+			out.print("\t");
+			this.items.elementAt(i).writeTo(out);
+			out.println();
+		}
 	}
 
 	public void paintOn(Graphics g, Color lineColour, Color vertexColour) {
@@ -508,6 +562,51 @@ public class World {
 			if(!w.objects.contains(this.objects.elementAt(i))) {
 				return false;
 			}
+		}
+		
+		if(this.tiles.size() != w.tiles.size()) {
+			return false;
+		}
+		for(int i=0;i<this.tiles.size();i++) {
+			if(!w.tiles.contains(this.tiles.elementAt(i))) {
+				return false;
+			}
+		}
+		
+		if(this.ai.size() != w.ai.size()) {
+			return false;
+		}
+		for(int i=0;i<this.ai.size();i++) {
+			if(!w.ai.contains(this.ai.elementAt(i))) {
+				return false;
+			}
+		}
+		
+		if(this.items.size() != w.items.size()) {
+			return false;
+		}
+		for(int i=0;i<this.items.size();i++) {
+			if(!w.items.contains(this.items.elementAt(i))) {
+				return false;
+			}
+		}
+		
+		if(this.player == null && w.player != null ||
+				   this.player != null && w.player == null) {
+					return false;
+				}
+				if(this.player != null && w.player != null &&
+				   !(this.player.equals(w.player))) {
+					return false;
+				}
+		
+		if(this.pet == null && w.pet != null ||
+		   this.pet != null && w.pet == null) {
+			return false;
+		}
+		if(this.pet != null && w.pet != null &&
+		   !(this.pet.equals(w.pet))) {
+			return false;
 		}
 		
 		return this.graph.equals(w.graph);

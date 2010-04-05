@@ -18,9 +18,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	Game game = Game(settings, hInstance, WndProc, "game", nCmdShow);
 	game.run();
 	
-	#if _DEBUG
+#if _DEBUG
 	atexit(checkForLeaks);
-	#endif
+#endif
 
 	return 0;
 }

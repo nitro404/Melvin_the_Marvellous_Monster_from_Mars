@@ -10,24 +10,35 @@
 class Object {
 public:
 	Object() : sprite(NULL) { }
-	virtual ~Object() { if(sprite != NULL) { delete sprite; } }
+	virtual ~Object() { }
 
 	virtual void tick() { }
-	virtual void draw(LPDIRECT3DDEVICE9 d3dDevice) { if(sprite != NULL) { sprite->draw(&scale, &offset, orientation, &offset, &position, d3dDevice); } }
+	virtual void draw(LPDIRECT3DDEVICE9 d3dDevice) {
+		if(sprite != NULL) { sprite->draw(&scale, &offset, orientation, &offset, &position, d3dDevice); }
+#if _DEBUG
+		testDrawPoint(d3dDevice, position.x, position.y);
+		testDrawPoint(d3dDevice, getX(), getY());
+		testDrawEmptyCircle(d3dDevice, getX(), getY(), getScaledRadius(), getScaledRadius());
+#endif
+	}
 	virtual void reset() { }
 	virtual void readFrom(ifstream & input) { }
 
+	virtual char * getName() { return (sprite == NULL) ? NULL : sprite->getName(); }
+
+	virtual D3DXVECTOR2 getCenter() { return D3DXVECTOR2(position.x + offset.x, position.y + offset.y); }
 	virtual float getX() { return position.x + offset.x; }
 	virtual float getY() { return position.y + offset.y; }
 	virtual float getOffsetX() { return offset.x; }
 	virtual float getOffsetY() { return offset.y; }
 	virtual float getHeight() { return size.x; }
 	virtual float getWidth() { return size.y; }
+	virtual float getScaledRadius() { return ((offset.x < offset.y) ? offset.x : offset.y) * 0.7f; }
 
 	virtual float getOrientation() { return orientation; }
 	virtual float getVelocityX() { return velocity.x; }
 	virtual float getVelocityY() { return velocity.y; }
-	virtual float getVelocity() { return sqrt( pow(velocity.x, 2) + pow(velocity.y, 2) ); }
+	virtual float getSpeed() { return sqrt( pow(velocity.x, 2) + pow(velocity.y, 2) ); }
 
 	virtual void setPosition(float xPos, float yPos) { position.x = xPos; position.y = yPos; }
 	virtual void setVelocity(float xVel, float yVel) { velocity.x = xVel; velocity.y = yVel; }
@@ -73,16 +84,17 @@ public:
 
 		o->position.x = (float) atoi(xData);
 		o->position.y = (float) atoi(yData);
+		if(o->sprite->isTiled()) {
+			o->position.x *= Constants::GRID_SIZE;
+			o->position.y *= Constants::GRID_SIZE;
+		}
 		o->scale = D3DXVECTOR2(1, 1);
-		if(o->sprite == NULL) {
-			o->offset = D3DXVECTOR2(0, 0);
-		}
-		else {
-			o->offset = D3DXVECTOR2((float) (o->sprite->getWidth() / 2.0f), (float) (o->sprite->getHeight()));
-		}
+		o->offset = D3DXVECTOR2((float) (o->sprite->getWidth() / 2.0f) * o->scale.x, (float) (o->sprite->getHeight() / 2.0f) * o->scale.y);
 		o->orientation = 0;
 
 		delete [] temp;
+		delete [] spriteSheetName;
+		delete [] spriteName;
 		return o;
 	}
 

@@ -9,12 +9,12 @@
 class Edge {
 public:
 	Edge() { }
-	Edge(Vertex v1, Vertex v2) : a(v1), b(v2) { }
+	Edge(const Vertex & v1, const Vertex & v2) : a(v1), b(v2) { }
 	Edge(const Edge & e) : a(e.a), b(e.b) { }
 	Edge & operator = (const Edge & e) { a = e.a; b = e.b; return *this; }
 	~Edge() { }
 
-	bool containsVertex(Vertex v) { return a == v || b == v; }
+	bool containsVertex(const Vertex & v) { return a == v || b == v; }
 	double getDeltaX() { return b.x - a.x; }
 	double getDeltaY() { return b.y - a.y; }
 	double getLength() { return sqrt(pow((double) (b.x - a.x), 2) + pow((double) (b.y - a.y), 2)); }
@@ -48,5 +48,6 @@ public:
 #endif
 
 public:
-	Vertex a, b;
+	Vertex a;
+	Vertex b;
 };

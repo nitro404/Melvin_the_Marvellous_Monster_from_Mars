@@ -23,6 +23,7 @@ public class Sprite {
 	public static int TYPE_DISGUISE = 4;
 	public static int TYPE_PET = 5;
 	public static int TYPE_AI = 6;
+	public static int TYPE_ITEM = 7;
 	
 	public Sprite(String fileName, String spriteDirectory) {
 		this(fileName, spriteDirectory, -1);
@@ -144,7 +145,8 @@ public class Sprite {
 		   type == TYPE_PLAYER ||
 		   type == TYPE_DISGUISE ||
 		   type == TYPE_PET ||
-		   type == TYPE_AI) {
+		   type == TYPE_AI ||
+		   type == TYPE_ITEM) {
 			this.type = type;
 		}
 		else {
@@ -178,6 +180,9 @@ public class Sprite {
 		}
 		else if(typeString.equalsIgnoreCase("AI")) {
 			return TYPE_AI;
+		}
+		else if(typeString.equalsIgnoreCase("Item")) {
+			return TYPE_ITEM;
 		}
 		else {
 			return TYPE_UNKNOWN;

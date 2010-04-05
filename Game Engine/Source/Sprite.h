@@ -34,9 +34,7 @@ public:
 
 	void draw(D3DXMATRIX & transformation, LPDIRECT3DDEVICE9 d3dDevice);
 	void draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
-	void drawCentered(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
 	void drawBackwards(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
-	void drawBackwardsCentered(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice);
 
 public:
 	static int TYPE_UNKNOWN;
@@ -47,6 +45,7 @@ public:
 	static int TYPE_DISGUISE;
 	static int TYPE_PET;
 	static int TYPE_AI;
+	static int TYPE_ITEM;
 
 private:
 	LPDIRECT3DTEXTURE9 texture;

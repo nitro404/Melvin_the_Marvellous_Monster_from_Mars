@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Game Engine">
+      <UniqueIdentifier>{1ff4af0d-4f6e-4c94-bb64-db861669d200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Engine\Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Game Engine\Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Settings File Parser">
+      <UniqueIdentifier>{fdbd9638-04db-4f13-9a76-56420b11f390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Settings File Parser\Source Files">
+      <UniqueIdentifier>{939fa928-cfc8-4207-85c9-eb4ffde0996c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Settings File Parser\Header Files">
+      <UniqueIdentifier>{002abf67-452e-4513-aee9-7813fa460c89}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\CollisionHandler.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Constants.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Font.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Item.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Items.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Level.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Macros.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Main.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Menu.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Sprite.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SpriteSheet.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SpriteSheets.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Text.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Variable.cpp">
+      <Filter>Settings File Parser\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Variables.cpp">
+      <Filter>Settings File Parser\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pet.cpp">
+      <Filter>Game Engine\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\CollisionHandler.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Constants.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Edge.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Font.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graph.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Includes.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Item.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Items.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Level.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Main.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Menu.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Object.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Sprite.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SpriteSheet.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SpriteSheets.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Text.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vertex.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Variable.h">
+      <Filter>Settings File Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Variables.h">
+      <Filter>Settings File Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Pet.h">
+      <Filter>Game Engine\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
