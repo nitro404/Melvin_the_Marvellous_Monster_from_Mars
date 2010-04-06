@@ -35,36 +35,12 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 		spriteLocations = new Vector<Point>(30);
 		int yPos = 5;
 		int maxWidth = 5;
-		boolean addSprite = true;
-		int lastSprite = 0;
+		boolean addSprite = false;
+		int lastSprite = -1;
 		for(int i=0;i<editorWindow.spriteSheets.size();i++) {
 			for(int j=0;j<editorWindow.spriteSheets.elementAt(i).size();j++) {
-				Sprite r = editorWindow.spriteSheets.elementAt(i).elementAt(j); 
-				if(r.getName() != null &&
-				   (r.getType() == Sprite.TYPE_PLAYER && addSprite) ||
-				   (r.getType() == Sprite.TYPE_PET && addSprite) ||
-				    r.getType() == Sprite.TYPE_TILE ||
-				    r.getType() == Sprite.TYPE_OBJECT ||
-				   (r.getType() == Sprite.TYPE_AI && addSprite) ||
-				    r.getType() == Sprite.TYPE_ITEM) {
-					
-					Image s = r.getImage();
-					ImageIcon c = new ImageIcon();
-					c.setImage(s);
-					JButton b = new JButton(c);
-					b.addActionListener(this);
-					b.setBackground(new Color(255, 255, 255));
-					b.setSize(new Dimension(r.getDimensions()));
-					b.setBorder(null);
-					b.setBorderPainted(false);
-					this.add(b);
-					b.setLocation(5, yPos);
-					yPos += r.getHeight() + 5;
-					spriteButtons.add(b);
-					spriteLocations.add(new Point(i, j));
-					if(r.getWidth() + 20 > maxWidth) { maxWidth = r.getWidth() + 20; }
-					addSprite = false;
-				}
+				Sprite r = editorWindow.spriteSheets.elementAt(i).elementAt(j);
+				
 				if((r.getType() == Sprite.TYPE_PLAYER ||
 				    r.getType() == Sprite.TYPE_PET ||
 				    r.getType() == Sprite.TYPE_AI) &&
@@ -89,6 +65,32 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 						addSprite = true;
 					}
 					lastSprite = currentSprite;
+				}
+				
+				if(r.getName() != null &&
+				   (r.getType() == Sprite.TYPE_PLAYER && addSprite) ||
+				   (r.getType() == Sprite.TYPE_PET && addSprite) ||
+				    r.getType() == Sprite.TYPE_TILE ||
+				    r.getType() == Sprite.TYPE_OBJECT ||
+				   (r.getType() == Sprite.TYPE_AI && addSprite) ||
+				    r.getType() == Sprite.TYPE_ITEM) {
+					
+					Image s = r.getImage();
+					ImageIcon c = new ImageIcon();
+					c.setImage(s);
+					JButton b = new JButton(c);
+					b.addActionListener(this);
+					b.setBackground(new Color(255, 255, 255));
+					b.setSize(new Dimension(r.getDimensions()));
+					b.setBorder(null);
+					b.setBorderPainted(false);
+					this.add(b);
+					b.setLocation(5, yPos);
+					yPos += r.getHeight() + 5;
+					spriteButtons.add(b);
+					spriteLocations.add(new Point(i, j));
+					if(r.getWidth() + 20 > maxWidth) { maxWidth = r.getWidth() + 20; }
+					addSprite = false;
 				}
 			}
 		}
