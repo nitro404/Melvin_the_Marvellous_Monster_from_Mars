@@ -307,6 +307,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	public void createNewMap() {
 		this.world = new World();
 		editorPanel.setWorld(world);
+		editorPanel.reset();
 		setMapDimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 	
