@@ -1,3 +1,6 @@
+MISC
+ + Run Test.bat doesn't remove debug exectuable
+
 LEVEL DESIGNER
  + Change relative paths to use paths relative to your current path (add alternate alternative?)
  + Snap to grid (move only)

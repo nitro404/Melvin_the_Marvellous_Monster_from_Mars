@@ -23,20 +23,21 @@ public:
 	void grab();
 
 private:
-	void loadDisguises();
+	void loadSprites();
 
 public:
 	const static int DISGUISE_NONE;
 	const static int DISGUISE_WIG;
 	const static int DISGUISE_FBI;
 	const static int DISGUISE_BOX;
-	const static int DISGUISE_BIOHAZARD;
+	const static int DISGUISE_BIO;
 	bool isMoving;
 
 private:
 	Sprite * playerSprite;
 	Sprite * disguiseSprite;
-	Sprite *** disguises;
+	Sprite *** disguiseSprites;
+	Sprite ** playerSprites;
 	SpriteSheet * playerSpriteSheet;
 
 	double & timeElapsed;

@@ -1,0 +1,17 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 18, 12
+Edges: 0
+Player: 513, 626, Alien, Alien Walk 1
+Pet: None
+Objects: 0
+Tiles: 0
+AI: 0
+Items: 7
+	7, 690, Items, Wig
+	152, 682, Items, Box
+	292, 687, Items, BioHazard Suit
+	415, 688, Items, FBI Suit
+	681, 726, Items, Banana
+	780, 679, Items, Pylon
+	950, 649, Items, Radioactive Rod
