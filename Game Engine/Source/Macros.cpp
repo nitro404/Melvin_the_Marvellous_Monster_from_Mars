@@ -72,88 +72,116 @@ void prompt(const char * message, ...) {
 
 #if _DEBUG
 
-	struct TestDrawPointVertex {
-		float x, y, z, rhw;
-		DWORD colour;
+D3DCOLOR _DEBUG_COLOUR = D3DCOLOR_XRGB(0, 255, 0);
+
+struct TestDrawPointVertex {
+	float x, y, z, rhw;
+	DWORD colour;
+};
+
+void testDrawPoint(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, D3DCOLOR colour) {
+	float r = 2;
+	TestDrawPointVertex vertex[] = {
+		{x-r, y-r, 0, 0.5, colour},
+		{x+r, y-r, 0, 0.5, colour},
+		{x+r, y+r, 0, 0.5, colour},
+		{x-r, y+r, 0, 0.5, colour},
+		{x-r, y-r, 0, 0.5, colour}
 	};
 
-	void testDrawPoint(LPDIRECT3DDEVICE9 d3dDevice, float x, float y) {
-		float r = 2;
-		TestDrawPointVertex vertex[] = {
-			{x-r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x+r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x+r, y+r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-r, y+r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)}
-		};
+	d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+	d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
+}
 
-		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
-	}
+void testDrawLine(LPDIRECT3DDEVICE9 d3dDevice, float x1, float y1, float x2, float y2, D3DCOLOR colour) {
+	float r = 2;
+	TestDrawPointVertex vertex[] = {
+		{x1, y1, 0, 0.5, colour},
+		{x2, y2, 0, 0.5, colour}
+	};
 
-	void testDrawLine(LPDIRECT3DDEVICE9 d3dDevice, float x1, float y1, float x2, float y2) {
-		float r = 2;
-		TestDrawPointVertex vertex[] = {
-			{x1, y1, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x2, y2, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)}
-		};
+	d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+	d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 1, &vertex, sizeof(TestDrawPointVertex));
+}
 
-		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 1, &vertex, sizeof(TestDrawPointVertex));
-	}
+void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float r, D3DCOLOR colour) {
+	TestDrawPointVertex vertex[] = {
+		{x-r, y-r, 0, 0.5, colour},
+		{x+r, y-r, 0, 0.5, colour},
+		{x+r, y+r, 0, 0.5, colour},
+		{x-r, y+r, 0, 0.5, colour},
+		{x-r, y-r, 0, 0.5, colour}
+	};
 
-	void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float r) {
-		TestDrawPointVertex vertex[] = {
-			{x-r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x+r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x+r, y+r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-r, y+r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-r, y-r, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)}
-		};
+	d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+	d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
+}
 
-		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
-	}
+void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr, D3DCOLOR colour) {
+	TestDrawPointVertex vertex[] = {
+		{x-xr, y-yr, 0, 0.5, colour},
+		{x+xr, y-yr, 0, 0.5, colour},
+		{x+xr, y+yr, 0, 0.5, colour},
+		{x-xr, y+yr, 0, 0.5, colour},
+		{x-xr, y-yr, 0, 0.5, colour}
+	};
 
-	void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr) {
-		TestDrawPointVertex vertex[] = {
-			{x-xr, y-yr, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x+xr, y-yr, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x+xr, y+yr, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-xr, y+yr, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-xr, y-yr, 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)}
-		};
+	d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+	d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
+}
 
-		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
-	}
+void testDrawBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float r, D3DCOLOR colour) {
+	TestDrawPointVertex vertex[] = {
+		{x-r, y-r, 0, 0.5, colour},
+		{x+r, y-r, 0, 0.5, colour},
+		{x+r, y+r, 0, 0.5, colour},
+		{x-r, y+r, 0, 0.5, colour},
+		{x-r, y-r, 0, 0.5, colour}
+	};
 
-	void testDrawEmptyCircle(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr) {
-		float c = 16;
-		float a = 0;
-		float i = 360.0f / c;
-		TestDrawPointVertex vertex[] = {
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)},
-			{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, D3DCOLOR_XRGB(0, 255, 0)}
-		};
+	d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+	d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
+}
 
-		d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-		d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, (unsigned int) (c), &vertex, sizeof(TestDrawPointVertex));
-	}
+void testDrawBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr, D3DCOLOR colour) {
+	TestDrawPointVertex vertex[] = {
+		{x-xr, y-yr, 0, 0.5, colour},
+		{x+xr, y-yr, 0, 0.5, colour},
+		{x+xr, y+yr, 0, 0.5, colour},
+		{x-xr, y+yr, 0, 0.5, colour},
+		{x-xr, y-yr, 0, 0.5, colour}
+	};
+
+	d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+	d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 4, &vertex, sizeof(TestDrawPointVertex));
+}
+
+void testDrawEmptyCircle(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr, D3DCOLOR colour) {
+	float c = 16;
+	float a = 0;
+	float i = 360.0f / c;
+	TestDrawPointVertex vertex[] = {
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour},
+		{x-(sin(D3DXToRadian(a+=i))*xr), y-(cos(D3DXToRadian(a))*yr), 0, 0.5, colour}
+	};
+
+	d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+	d3dDevice->DrawPrimitiveUP(D3DPT_LINESTRIP, (unsigned int) (c), &vertex, sizeof(TestDrawPointVertex));
+}
 
 #endif

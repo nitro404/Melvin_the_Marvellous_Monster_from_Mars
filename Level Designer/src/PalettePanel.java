@@ -35,12 +35,13 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 		spriteLocations = new Vector<Point>(30);
 		int yPos = 5;
 		int maxWidth = 5;
-		boolean addSprite;
+		boolean addSprite = true;
+		int lastSprite = 0;
 		for(int i=0;i<editorWindow.spriteSheets.size();i++) {
-			addSprite = true;
 			for(int j=0;j<editorWindow.spriteSheets.elementAt(i).size();j++) {
 				Sprite r = editorWindow.spriteSheets.elementAt(i).elementAt(j); 
-				if((r.getType() == Sprite.TYPE_PLAYER && addSprite) ||
+				if(r.getName() != null &&
+				   (r.getType() == Sprite.TYPE_PLAYER && addSprite) ||
 				   (r.getType() == Sprite.TYPE_PET && addSprite) ||
 				    r.getType() == Sprite.TYPE_TILE ||
 				    r.getType() == Sprite.TYPE_OBJECT ||
@@ -62,12 +63,32 @@ public class PalettePanel extends JPanel implements Scrollable, ActionListener {
 					spriteButtons.add(b);
 					spriteLocations.add(new Point(i, j));
 					if(r.getWidth() + 20 > maxWidth) { maxWidth = r.getWidth() + 20; }
+					addSprite = false;
+				}
+				if((r.getType() == Sprite.TYPE_PLAYER ||
+				    r.getType() == Sprite.TYPE_PET ||
+				    r.getType() == Sprite.TYPE_AI) &&
+				   r.getName() != null) {
+					int currentSprite = lastSprite;
 					
-					if(r.getType() == Sprite.TYPE_PLAYER ||
-					   r.getType() == Sprite.TYPE_PET || 
-					   r.getType() == Sprite.TYPE_AI) {
-						addSprite = false;
+					if(r.getName().toLowerCase().startsWith("Alien".toLowerCase())) { currentSprite = 0; }
+					if(r.getName().toLowerCase().startsWith("Fluffy".toLowerCase())) { currentSprite = 1; }
+					if(r.getName().toLowerCase().startsWith("White Rat".toLowerCase())) { currentSprite = 2; }
+					if(r.getName().toLowerCase().startsWith("Brown Rat".toLowerCase())) { currentSprite = 3; }
+					if(r.getName().toLowerCase().startsWith("Gray Rat".toLowerCase())) { currentSprite = 4; }
+					if(r.getName().toLowerCase().startsWith("FBI Agent".toLowerCase())) { currentSprite = 5; }
+					if(r.getName().toLowerCase().startsWith("BioHazard Person".toLowerCase())) { currentSprite = 6; }
+					if(r.getName().toLowerCase().startsWith("Scientist 1".toLowerCase())) { currentSprite = 7; }
+					if(r.getName().toLowerCase().startsWith("Scientist 2".toLowerCase())) { currentSprite = 8; }
+					if(r.getName().toLowerCase().startsWith("Girl Holding Baby".toLowerCase())) { currentSprite = 9; }
+					if(r.getName().toLowerCase().startsWith("Granny".toLowerCase())) { currentSprite = 10; }
+					if(r.getName().toLowerCase().startsWith("Conductor".toLowerCase())) { currentSprite = 11; }
+					if(r.getName().toLowerCase().startsWith("Hobo".toLowerCase())) { currentSprite = 12; }
+					
+					if(currentSprite != lastSprite) {
+						addSprite = true;
 					}
+					lastSprite = currentSprite;
 				}
 			}
 		}

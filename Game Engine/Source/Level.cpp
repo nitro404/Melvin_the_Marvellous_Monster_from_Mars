@@ -1,19 +1,23 @@
 #include "Level.h"
 
+extern D3DXVECTOR2 playerNewPosition;
+extern D3DXVECTOR2 playerLastPosition;
+
 Level::Level(const char * fileName,
 			 SpriteSheets * externalSpriteSheets,
 			 Variables * settings,
 			 double & externalTimeElapsed,
 			 int externalWindowWidth,
 			 int externalWindowHeight,
-			 LPDIRECT3DDEVICE9 d3dDevice)
+			 LPDIRECT3DDEVICE9 d3dDev)
 				: name(NULL),
 				  player(NULL),
 				  pet(NULL),
-				  timeElapsed(externalTimeElapsed),
 				  spriteSheets(externalSpriteSheets),
+				  timeElapsed(externalTimeElapsed),
 				  windowWidth(externalWindowWidth),
-				  windowHeight(externalWindowHeight) {
+				  windowHeight(externalWindowHeight),
+				  d3dDevice(d3dDev) {
 
 	if(spriteSheets == NULL) {
 		quit("Error", "Cannot open level without corresponding sprite sheet collection.");
@@ -92,7 +96,7 @@ void Level::tick() {
 		items.at(i)->tick();
 	}
 	player->tick();
-	pet->tick();
+	if(pet != NULL) { pet->tick(); }
 }
 
 void Level::draw(LPDIRECT3DDEVICE9 d3dDevice) {
@@ -106,14 +110,26 @@ void Level::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 		ai.at(i)->draw(d3dDevice);
 	}
 	player->draw(d3dDevice);
-	pet->draw(d3dDevice);
+	if(pet != NULL) { pet->draw(d3dDevice); }
 	for(unsigned int i=0;i<items.size();i++) {
 		items.at(i)->draw(d3dDevice);
 	}
 
 #if _DEBUG
+	D3DXVECTOR2 intersection;
+
+	testDrawPoint(d3dDevice, (float) playerLastPosition.x, (float) playerLastPosition.y, D3DCOLOR_XRGB(255, 0, 0));
+	testDrawPoint(d3dDevice, (float) playerNewPosition.x, (float) playerNewPosition.y, D3DCOLOR_XRGB(255, 0, 0));
+
+	testDrawLine(d3dDevice, (float) playerLastPosition.x, (float) playerLastPosition.y,
+							(float) playerNewPosition.x, (float) playerNewPosition.y, D3DCOLOR_XRGB(255, 0, 0));
+
 	for(int i=0;i<boundaries.size();i++) {
 		boundaries.elementAt(i)->draw(d3dDevice);
+
+		if(CollisionHandler::checkLineIntersection(*boundaries.elementAt(i), playerLastPosition, playerNewPosition, intersection)) {
+			testDrawBox(d3dDevice, 40, 40, 70, 70, D3DCOLOR_XRGB(255, 255, 255));
+		}
 	}
 #endif
 }
@@ -121,7 +137,7 @@ void Level::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 void Level::readFrom(ifstream &in) {
 	const int maxLength = 256;
 	char input[maxLength];
-	char * temp, * xData, * yData;
+	char * temp, * temp2, * xData, * yData;
 
 	in.getline(input, maxLength); // header
 	in.getline(input, maxLength); // grid size
@@ -148,13 +164,23 @@ void Level::readFrom(ifstream &in) {
 	in.getline(input, maxLength); // pet
 	temp = strtrimcpy(input);
 	xData = strchr(temp, ':') + sizeof(char);
-	yData = strchr(xData, ',');
-	*yData = '\0';
-	yData += sizeof(char);
-	*strchr(yData, ',') = '\0';
-	petSpawn = Vertex(atoi(xData), atoi(yData));
-	delete [] temp;
-	pet->setPosition((float) petSpawn.x + pet->getOffsetX(), (float) petSpawn.y + pet->getOffsetY());
+	temp2 = strtrimcpy(xData);
+	if(_stricmp(temp2, "None") == 0) {
+		delete [] temp2;
+		delete [] temp;
+		if(pet != NULL) { delete pet; }
+		pet = NULL;
+	}
+	else {
+		delete [] temp2;
+		yData = strchr(xData, ',');
+		*yData = '\0';
+		yData += sizeof(char);
+		*strchr(yData, ',') = '\0';
+		petSpawn = Vertex(atoi(xData), atoi(yData));
+		delete [] temp;
+		pet->setPosition((float) petSpawn.x + pet->getOffsetX(), (float) petSpawn.y + pet->getOffsetY());
+	}
 
 	in.getline(input, maxLength); // objects
 	int numberOfObjects = atoi(strchr(input, ':') + sizeof(char));

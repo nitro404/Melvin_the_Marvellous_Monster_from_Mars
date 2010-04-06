@@ -37,7 +37,14 @@ public:
 	char * getName();
 	void setName(char * name);
 
+	static int SpriteSheet::parseType(const char * data);
 	static SpriteSheet * parseFrom(ifstream & in, char * spriteDirectory, LPDIRECT3DDEVICE9 d3dDevice);
+
+public:
+	const static int TYPE_INVALID;
+	const static int TYPE_ARBITRARY_OFFSETS;
+	const static int TYPE_SINGLE_GRID;
+	const static int TYPE_MULTIPLE_GRIDS;
 
 private:
 	char * name;

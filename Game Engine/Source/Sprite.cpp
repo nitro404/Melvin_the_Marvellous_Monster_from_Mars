@@ -136,9 +136,9 @@ void Sprite::setType(int type) {
 }
 
 int Sprite::parseType(const char * data) {
-	if(data == NULL) { return TYPE_UNKNOWN; }
-	char * typeString = strtrimcpy(data);
 	int type = TYPE_UNKNOWN;
+	if(data == NULL) { return type; }
+	char * typeString = strtrimcpy(data);
 	
 	if(_stricmp(typeString, "SpriteSheet") == 0) {
 		type = TYPE_SHEET;

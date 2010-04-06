@@ -1,0 +1,17 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 14, 12
+Edges: 7
+	128, 64; 384, 64
+	128, 129; 385, 118
+	130, 227; 384, 192
+	384, 257; 131, 316
+	383, 322; 127, 398
+	383, 420; 128, 512
+	384, 513; 129, 639
+Player: 174, -100, Alien, Walking 1
+Pet: None
+Objects: 0
+Tiles: 0
+AI: 0
+Items: 0

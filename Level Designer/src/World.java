@@ -364,7 +364,7 @@ public class World {
 		int mapWidth = Integer.valueOf(input.substring(input.indexOf(':', 0) + 1, input.indexOf(',', 0)).trim());
 		int mapHeight = Integer.valueOf(input.substring(input.indexOf(',', 0) + 1, input.length()).trim());
 		world.gridSize = new Vertex(mapWidth, mapHeight);
-		world.dimensions = new Dimension(mapWidth * GRID_SIZE, mapHeight * GRID_SIZE);
+		world.dimensions = new Dimension((mapWidth * GRID_SIZE) + 1, (mapHeight * GRID_SIZE) + 1);
 		
 		// read in the corresponding edges for each barrier
 		input = in.readLine();

@@ -6,6 +6,6 @@
 
 class CollisionHandler {
 public:
-	static bool checkLineIntersection(Edge & e, D3DXVECTOR2 & p, D3DXVECTOR2 & d, D3DXVECTOR2 & i);
-	static bool checkRadiusIntersection(D3DXVECTOR2 & p1, D3DXVECTOR2 & p2, double r1, double r2);
+	static bool checkLineIntersection(const Edge & e, const D3DXVECTOR2 & p, const D3DXVECTOR2 & d, D3DXVECTOR2 & i);
+	static bool checkRadiusIntersection(const D3DXVECTOR2 & p1, const D3DXVECTOR2 & p2, double r1, double r2);
 };

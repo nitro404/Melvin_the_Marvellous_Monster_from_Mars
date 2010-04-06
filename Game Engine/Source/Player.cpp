@@ -1,6 +1,17 @@
 #include "Player.h"
 #include "Level.h"
 
+#if _DEBUG
+extern D3DXVECTOR2 playerNewPosition;
+extern D3DXVECTOR2 playerLastPosition;
+#endif
+
+const int Player::DISGUISE_NONE = 0;
+const int Player::DISGUISE_WIG = 1;
+const int Player::DISGUISE_FBI = 2;
+const int Player::DISGUISE_BOX = 3;
+const int Player::DISGUISE_BIOHAZARD = 4;
+
 Player::Player(float xPos,
 			   float yPos,
 			   int windowWidth,
@@ -13,8 +24,9 @@ Player::Player(float xPos,
 				: timeElapsed(externalTimeElapsed),
 				  settings(externalSettings),
 				  level(externalLevel),
+				  disguise(2),
 				  isJumping(false),
-				  jumpVelocity(70), //32
+				  jumpVelocity(32), //32
 				  jumpCooldown(0.92f),
 				  jumpTime(0),
 				  isMoving(false),
@@ -28,14 +40,13 @@ Player::Player(float xPos,
 				  grabAnimationSequence(0),
 				  grabAnimationInterval(9),
 				  grabAnimationEnd(grabAnimationInterval * 3),
-				  spacing(25),
-				  disguise(1) {
+				  spacing(25) {
 	this->windowHeight = windowHeight;
 	this->windowWidth = windowWidth;
 	
 	this->playerSpriteSheet = spriteSheets->getSpriteSheet("Alien");
-	this->playerSprite = playerSpriteSheet->getSprite(0);
-	this->disguiseSprite = playerSpriteSheet->getSprite(3);
+	this->playerSprite = playerSpriteSheet->getSprite("Alien Walking 1");
+	this->disguiseSprite = playerSpriteSheet->getSprite("Alien Walking 1 Wig");
 
 	this->scale = D3DXVECTOR2(1, 1);
 	this->size = D3DXVECTOR2(playerSprite->getWidth() * scale.x, playerSprite->getHeight() * scale.y);
@@ -59,6 +70,7 @@ void Player::tick() {
 		isJumping = false;
 	}
 
+	position.x += (isMoving) ? (((movementDirection >= 0) ? 1 : -1) * (float) (velocityStep * timeElapsed * 10)) : 0;
 	position.y += (float) (-velocity.y * (timeElapsed * 10));
 	velocity.y -= (float) (Constants::GRAVITY * (timeElapsed * 10));
 
@@ -102,25 +114,22 @@ void Player::tick() {
 		}
 		else {
 			playerSprite = playerSpriteSheet->getSprite(16 + grabAnimationSequence / grabAnimationInterval);
-			disguiseSprite = playerSpriteSheet->getSprite(19 + (grabAnimationSequence / grabAnimationInterval));
+			disguiseSprite = playerSpriteSheet->getSprite(11 + (grabAnimationSequence / grabAnimationInterval));
 		}
 	}
 
 	D3DXVECTOR2 intersection;
 	D3DXVECTOR2 bottomCenter(getX(), position.y + getHeight());
+#if _DEBUG
+	playerNewPosition = bottomCenter;
+	playerLastPosition = lastBottomCenter;
+#endif
 	if(level.checkCollision(lastBottomCenter, bottomCenter, intersection)) {
 		position.y = intersection.y - size.y - 0.1f;
 		position.x = intersection.x - offset.x;
 		velocity.x = 0;
 		velocity.y = 0;
 	}
-
-	/*D3DXVECTOR2 bottomCenter(getX(), position.y + getHeight());
-	if(level.checkCollision(bottomCenter, 25)) {
-		position = lastPosition;
-		velocity.x = 0;
-		velocity.y = 0;
-	}*/
 
 	if(position.y + size.y > windowHeight) {
 		position.y = windowHeight - size.y;
@@ -154,23 +163,22 @@ void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 	}
 
 #if _DEBUG
-	testDrawEmptyBox(d3dDevice, getX(), getY(), offset.x, offset.y);
-//	testDrawEmptyCircle(d3dDevice, getX(), getY(), 25, 25);
-	testDrawPoint(d3dDevice, getX(), getY());
+//	testDrawEmptyBox(d3dDevice, getX(), getY(), offset.x, offset.y);
+//	testDrawPoint(d3dDevice, getX(), getY());
 
-	testDrawPoint(d3dDevice, frontOfPlayer.x, frontOfPlayer.y);
-	testDrawEmptyCircle(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, grabRadius, grabRadius);
+//	testDrawPoint(d3dDevice, frontOfPlayer.x, frontOfPlayer.y);
+//	testDrawEmptyCircle(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, grabRadius, grabRadius);
 #endif
 }
 
 void Player::moveLeft() {
 	movementDirection = -1;
-	position.x -= (float) (velocityStep * timeElapsed * 10);
+//	position.x -= (float) (velocityStep * timeElapsed * 10);
 }
 
 void Player::moveRight() {
 	movementDirection = 1;
-	position.x += (float) (velocityStep * timeElapsed * 10);
+//	position.x += (float) (velocityStep * timeElapsed * 10);
 }
 
 void Player::jump() {

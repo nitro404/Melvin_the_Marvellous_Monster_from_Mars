@@ -735,3 +735,486 @@ private:
 
 
 
+
+
+SpriteSheet Name: Old Alien
+SpriteSheet Type: Single Grid
+File Name: Alien.png
+Offset: 1, 1
+Size: 126, 126
+Increment: 128, 128
+Horizontal: true
+Number of Rows: 8
+Number of Columns: 8
+Attributes: 18
+	Sprite: 0
+		Name: Walking 1
+		Type: Player
+	Sprite: 1
+		Name: Walking 2
+		Type: Player
+	Sprite: 2
+		Name: Walking 3
+		Type: Player
+	Sprite: 3
+		Name: Walking 1 Disguise 1
+		Type: Disguise
+	Sprite: 4
+		Name: Walking 2 Disguise 1
+		Type: Disguise
+	Sprite: 5
+		Name: Walking 3 Disguise 1
+		Type: Disguise
+	Sprite: 8
+		Name: Grab Low 1
+		Type: Player
+	Sprite: 9
+		Name: Grab Low 2
+		Type: Player
+	Sprite: 10
+		Name: Grab Low 3
+		Type: Player
+	Sprite: 11
+		Name: Grab 1 Disguise 1
+		Type: Disguise
+	Sprite: 12
+		Name: Grab 2 Disguise 1
+		Type: Disguise
+	Sprite: 13
+		Name: Grab 3 Disguise 1
+		Type: Disguise
+	Sprite: 16
+		Name: Grab High 1
+		Type: Player
+	Sprite: 17
+		Name: Grab High 2
+		Type: Player
+	Sprite: 18
+		Name: Grab High 3
+		Type: Player
+	Sprite: 24
+		Name: Jump 1
+		Type: Player
+	Sprite: 25
+		Name: Jump 2
+		Type: Player
+	Sprite: 26
+		Name: Jump 3
+		Type: Player
+	Sprite: 27
+		Name: Jump 1 Disguise 1
+		Type: Disguise
+	Sprite: 28
+		Name: Jump 2 Disguise 1
+		Type: Disguise
+	Sprite: 29
+		Name: Jump 3 Disguise 1	
+		Type: Player
+	Sprite: 32
+		Name: Death 1
+		Type: Player
+	Sprite: 33
+		Name: Death 2
+		Type: Player
+	Sprite: 34
+		Name: Death 3
+		Type: Player
+
+SpriteSheet Name: FBI Agent
+SpriteSheet Type: Single Grid
+File Name: People.png
+Offset: 1, 1
+Size: 111, 223
+Increment: 113, 225
+Horizontal: true
+Number of Rows: 2
+Number of Columns: 6
+Attributes: 12
+	Sprite: 0
+		Name: Stationary
+		Type: AI
+	Sprite: 1
+		Name: Walk 1
+		Type: AI
+	Sprite: 2
+		Name: Walk 2
+		Type: AI
+	Sprite: 3
+		Name: Walk 3
+		Type: AI
+	Sprite: 4
+		Name: Walk 4
+		Type: AI
+	Sprite: 5
+		Name: Walk 5
+		Type: AI
+	Sprite: 6
+		Name: Deploy Gun 1
+		Type: AI
+	Sprite: 7
+		Name: Deploy Gun 1
+		Type: AI
+	Sprite: 8
+		Name: Deploy Gun 2
+		Type: AI
+	Sprite: 9
+		Name: Deploy Gun 3
+		Type: AI
+	Sprite: 10
+		Name: Deploy Gun 4
+		Type: AI
+	Sprite: 11
+		Name: Deploy Gun 5
+		Type: AI
+
+SpriteSheet Name: BioHazard Person
+SpriteSheet Type: Single Grid
+File Name: People.png
+Offset: 679, 1
+Size: 111, 223
+Increment: 113, 225
+Horizontal: true
+Number of Rows: 2
+Number of Columns: 7
+Attributes: 14
+	Sprite: 0
+		Name: Stationary
+		Type: AI
+	Sprite: 1
+		Name: Walk 1
+		Type: AI
+	Sprite: 2
+		Name: Walk 2
+		Type: AI
+	Sprite: 3
+		Name: Walk 3
+		Type: AI
+	Sprite: 4
+		Name: Walk 4
+		Type: AI
+	Sprite: 5
+		Name: Walk 5
+		Type: AI
+	Sprite: 6
+		Name: Walk 6
+		Type: AI
+	Sprite: 7
+		Name: Walk 7
+		Type: AI
+	Sprite: 8
+		Name: Walk 8
+		Type: AI
+	Sprite: 9
+		Name: Walk 9
+		Type: AI
+	Sprite: 10
+		Name: Walk 10
+		Type: AI
+	Sprite: 11
+		Name: Walk 11
+		Type: AI
+	Sprite: 12
+		Name: Walk 12
+		Type: AI
+	Sprite: 13
+		Name: Walk 13
+		Type: AI
+
+SpriteSheet Name: Scientist 1
+SpriteSheet Type: Single Grid
+File Name: People.png
+Offset: 1, 451
+Size: 96, 220
+Increment: 98, 222
+Horizontal: true
+Number of Rows: 2
+Number of Columns: 7
+Attributes: 14
+	Sprite: 0
+		Name: Stationary
+		Type: AI
+	Sprite: 1
+		Name: Walk 1
+		Type: AI
+	Sprite: 2
+		Name: Walk 2
+		Type: AI
+	Sprite: 3
+		Name: Walk 3
+		Type: AI
+	Sprite: 4
+		Name: Walk 4
+		Type: AI
+	Sprite: 5
+		Name: Walk 5
+		Type: AI
+	Sprite: 6
+		Name: Walk 6
+		Type: AI
+	Sprite: 7
+		Name: Walk 7
+		Type: AI
+	Sprite: 8
+		Name: Walk 8
+		Type: AI
+	Sprite: 9
+		Name: Walk 9
+		Type: AI
+	Sprite: 10
+		Name: Walk 10
+		Type: AI
+	Sprite: 11
+		Name: Walk 11
+		Type: AI
+	Sprite: 12
+		Name: Walk 12
+		Type: AI
+	Sprite: 13
+		Name: Walk 13
+		Type: AI
+
+SpriteSheet Name: Scientist 2
+SpriteSheet Type: Single Grid
+File Name: People.png
+Offset: 687, 451
+Size: 96, 228
+Increment: 98, 230
+Horizontal: true
+Number of Rows: 2
+Number of Columns: 7
+Attributes: 14
+	Sprite: 0
+		Name: Stationary
+		Type: AI
+	Sprite: 1
+		Name: Walk 1
+		Type: AI
+	Sprite: 2
+		Name: Walk 2
+		Type: AI
+	Sprite: 3
+		Name: Walk 3
+		Type: AI
+	Sprite: 4
+		Name: Walk 4
+		Type: AI
+	Sprite: 5
+		Name: Walk 5
+		Type: AI
+	Sprite: 6
+		Name: Walk 6
+		Type: AI
+	Sprite: 7
+		Name: Walk 7
+		Type: AI
+	Sprite: 8
+		Name: Walk 8
+		Type: AI
+	Sprite: 9
+		Name: Walk 9
+		Type: AI
+	Sprite: 10
+		Name: Walk 10
+		Type: AI
+	Sprite: 11
+		Name: Walk 11
+		Type: AI
+	Sprite: 12
+		Name: Walk 12
+		Type: AI
+	Sprite: 13
+		Name: Walk 13
+		Type: AI
+
+SpriteSheet Name: Girl Holding Baby
+SpriteSheet Type: Single Grid
+File Name: People.png
+Offset: 1484, 1
+Size: 118, 123
+Increment: 120, 125
+Horizontal: true
+Number of Rows: 1
+Number of Columns: 3
+Attributes: 3
+	Sprite: 0
+		Name: Happy
+		Type: AI
+	Sprite: 1
+		Name: Neutral
+		Type: AI
+	Sprite: 2
+		Name: Sad
+		Type: AI
+
+SpriteSheet Name: Granny
+SpriteSheet Type: Single Grid
+File Name: People.png
+Offset: 1484, 126
+Size: 58, 138
+Increment: 60, 140
+Horizontal: true
+Number of Rows: 1
+Number of Columns: 3
+Attributes: 3
+	Sprite: 0
+		Name: Happy
+		Type: AI
+	Sprite: 1
+		Name: Neutral
+		Type: AI
+	Sprite: 2
+		Name: Sad
+		Type: AI
+
+SpriteSheet Name: Conductor
+SpriteSheet Type: Single Grid
+File Name: People.png
+Offset: 1664, 126
+Size: 48, 198
+Increment: 50, 200
+Horizontal: true
+Number of Rows: 1
+Number of Columns: 3
+Attributes: 3
+	Sprite: 0
+		Name: Happy
+		Type: AI
+	Sprite: 1
+		Name: Neutral
+		Type: AI
+	Sprite: 2
+		Name: Sad
+		Type: AI
+
+SpriteSheet Name: Hobo
+SpriteSheet Type: Single Grid
+File Name: People.png
+Offset: 1484, 326
+Size: 148, 168
+Increment: 150, 170
+Horizontal: true
+Number of Rows: 1
+Number of Columns: 3
+Attributes: 3
+	Sprite: 0
+		Name: Happy
+		Type: AI
+	Sprite: 1
+		Name: Neutral
+		Type: AI
+	Sprite: 2
+		Name: Sad
+		Type: AI
+
+
+
+
+
+
+
+
+
+SpriteSheet Name: UFO
+SpriteSheet Type: Arbitrary Offsets
+File Name: UFO.png
+Number of Sprites: 1
+	Sprite: 0
+		Name: UFO
+		Type: Object
+		Offset: 1, 1
+		Size: 311, 206
+
+SpriteSheet Name: Barrel
+SpriteSheet Type: Arbitrary Offsets
+File Name: Barrel.png
+Number of Sprites: 1
+	Sprite: 0
+		Name: Barrel
+		Type: Object
+		Offset: 0, 0
+		Size: 128, 256
+
+SpriteSheet Name: Tree
+SpriteSheet Type: Arbitrary Offsets
+File Name: Tree.png
+Number of Sprites: 1
+	Sprite: 0
+		Name: Tree
+		Type: Object
+		Offset: 0, 0
+		Size: 256, 512
+
+SpriteSheet Name: Car
+SpriteSheet Type: Arbitrary Offsets
+File Name: Car.png
+Number of Sprites: 1
+	Sprite: 0
+		Name: Tree
+		Type: Object
+		Offset: 0, 0
+		Size: 512, 185
+
+
+
+
+
+
+
+
+@ECHO OFF
+CLS
+
+SET RELEASE_DIR=Game
+SET GAME_EXE_COMPILED=Game Engine.exe
+SET GAME_EXE_DEBUG=Debug.exe
+SET GAME_DEBUG_DIR=Game Engine\Debug
+
+CD "%RELEASE_DIR%"
+"%GAME_EXE_DEBUG%"
+
+
+ECHO.
+ECHO Copy Debug Executable? (Y/N)
+IF EXIST "%RELEASE_DIR%\%GAME_EXE_DEBUG%" DEL "%RELEASE_DIR%\%GAME_EXE_DEBUG%"
+SET /P DEBUG=
+IF "%DEBUG:~0,1%" == "Y" GOTO COPY_DEBUG
+IF "%DEBUG:~0,1%" == "y" GOTO COPY_DEBUG
+GOTO SKIP_DEBUG
+:COPY_DEBUG
+XCOPY "%GAME_DEBUG_DIR%\%GAME_EXE_COMPILED%" "%RELEASE_DIR%" /I /Y
+REN "%RELEASE_DIR%\%GAME_EXE_COMPILED%" "%GAME_EXE_DEBUG%"
+ECHO.
+ECHO Done!
+:SKIP_DEBUG
+
+
+
+
+
+
+SpriteSheet Name: Ground Tiles
+SpriteSheet Type: Single Grid
+File Name: Ground Tiles.png
+Offset: 1, 1
+Size: 64, 64
+Increment: 66, 66
+Horizontal: true
+Number of Rows: 2
+Number of Columns: 2
+Attributes: 4
+	Sprite: 0
+		Name: Grass
+		Type: Tile
+	Sprite: 1
+		Name: Grass Edge
+		Type: Tile
+	Sprite: 2
+		Name: Grass Edge Flipped
+		Type: Tile
+	Sprite: 3
+		Name: Asphalt
+		Type: Tile
+
+
+
+

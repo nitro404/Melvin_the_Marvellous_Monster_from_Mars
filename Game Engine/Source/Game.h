@@ -37,11 +37,11 @@ private:
 	bool verifySettings(Variables * settings);
 
 public:
-	static float gravity;
 	double timeElapsed;
 
 private:
 	Level * level;
+	D3DCOLOR backgroundColour;
 	SpriteSheets * spriteSheets;
 
 	Variables * settings;

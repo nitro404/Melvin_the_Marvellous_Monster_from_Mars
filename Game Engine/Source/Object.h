@@ -16,9 +16,7 @@ public:
 	virtual void draw(LPDIRECT3DDEVICE9 d3dDevice) {
 		if(sprite != NULL) { sprite->draw(&scale, &offset, orientation, &offset, &position, d3dDevice); }
 #if _DEBUG
-		testDrawPoint(d3dDevice, position.x, position.y);
-		testDrawPoint(d3dDevice, getX(), getY());
-		testDrawEmptyCircle(d3dDevice, getX(), getY(), getScaledRadius(), getScaledRadius());
+		testDrawEmptyCircle(d3dDevice, getX(), getY(), getScaledRadius(), getScaledRadius(), _DEBUG_COLOUR);
 #endif
 	}
 	virtual void reset() { }

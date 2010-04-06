@@ -1,5 +1,10 @@
 #include "SpriteSheet.h"
 
+const int SpriteSheet::TYPE_INVALID = -1;
+const int SpriteSheet::TYPE_ARBITRARY_OFFSETS = 0;
+const int SpriteSheet::TYPE_SINGLE_GRID = 1;
+const int SpriteSheet::TYPE_MULTIPLE_GRIDS = 2;
+
 SpriteSheet::SpriteSheet(Sprite * externalSpriteSheet,
 						 SpriteSheetOffset * offsets,
 						 int numberOfSprites)
@@ -69,7 +74,7 @@ Sprite * SpriteSheet::getSprite(int index) {
 Sprite * SpriteSheet::getSprite(char * name) {
 	if(name == NULL || strlen(name) == 0) { return NULL; }
 	for(unsigned int i=0;i<sprites.size();i++) {
-		if(_stricmp(sprites.at(i)->getName(), name) == 0) {
+		if(sprites.at(i)->getName() != NULL && _stricmp(sprites.at(i)->getName(), name) == 0) {
 			return sprites.at(i);
 		}
 	}
@@ -95,6 +100,24 @@ void SpriteSheet::setName(char * name) {
 	}
 	this->name = new char[strlen(name) + 1];
 	strcpy_s(this->name, strlen(name) + 1, name);
+}
+
+int SpriteSheet::parseType(const char * data) {
+	int type = TYPE_INVALID;
+	if(data == NULL) { return type; }
+	char * typeString = strtrimcpy(data);
+	
+	if(_stricmp(typeString, "Arbitrary Offsets") == 0) {
+		type = TYPE_ARBITRARY_OFFSETS;
+	}
+	else if(_stricmp(typeString, "Single Grid") == 0) {
+		type = TYPE_SINGLE_GRID;
+	}
+	else if(_stricmp(typeString, "Multiple Grids") == 0) {
+		type = TYPE_MULTIPLE_GRIDS;
+	}
+	delete [] typeString;
+	return type;
 }
 
 SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDIRECT3DDEVICE9 d3dDevice) {
@@ -156,6 +179,7 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 				spriteSheetImage->setType(Sprite::TYPE_SHEET);
 				delete [] spriteSheetFileName;
 
+				// Arbitrary Offset SpriteSheet Type ==============================================
 				if(spriteSheetType == 1) {
 					int numberOfSprites;
 					
@@ -335,7 +359,8 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 					delete [] spriteTypes;
 					delete [] offsets;
 				}
-				else if(spriteSheetType == 3) {
+				// Single Grid SpriteSheet Type ===============================================================
+				else if(spriteSheetType == TYPE_SINGLE_GRID) {
 					int numberOfAttributes;
 					int xOffset, yOffset;
 					int width, height;
@@ -463,6 +488,11 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, char * spriteDirectory, LPDI
 						spriteAttributes.clear(true);
 					}
 				}
+				else if(spriteSheetType == TYPE_MULTIPLE_GRIDS) {
+					prompt("TODO: Finish Multiple Grid SpriteSheet Import Routine.");
+					return NULL;
+				}
+				// Invalid SpriteSheet Type ===================================================================
 				else {
 					printf("ERROR: Invalid sprite sheet type specified.\n");
 					delete [] spriteSheetName;

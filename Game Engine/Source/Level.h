@@ -42,4 +42,5 @@ private:
 	double & timeElapsed;
 	int windowWidth;
 	int windowHeight;
+	LPDIRECT3DDEVICE9 d3dDevice;
 };

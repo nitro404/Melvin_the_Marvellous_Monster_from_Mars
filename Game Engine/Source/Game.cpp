@@ -1,6 +1,9 @@
 #include "Game.h"
 
-float Game::gravity = 0.98f;
+#if _DEBUG
+D3DXVECTOR2 playerNewPosition;
+D3DXVECTOR2 playerLastPosition;
+#endif
 
 Game::Game(Variables * settings,
 		   HINSTANCE hInstance,
@@ -13,6 +16,7 @@ Game::Game(Variables * settings,
 			 menuUpKeyPressed(false),
 			 menuDownKeyPressed(false),
 			 level(NULL),
+			 backgroundColour(D3DCOLOR_XRGB(173, 244, 255)),
 			 directInput(NULL),
 			 keyboard(NULL),
 			 mouse(NULL),
@@ -36,6 +40,10 @@ Game::Game(Variables * settings,
 	spriteSheets = SpriteSheets::parseFrom(settings->getValue("SpriteSheet File"), settings->getValue("Sprite Directory"), d3dDevice);
 
 	menu = new Menu(windowWidth, windowHeight, this, settings, d3dDevice);
+
+#if _DEBUG
+	backgroundColour = D3DCOLOR_XRGB(0, 0, 0);
+#endif
 }
 
 Game::~Game() {
@@ -99,7 +107,7 @@ void Game::tick() {
 }
 
 void Game::draw() {
-	d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(173, 244, 255), 1.0f, 0);
+	d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, backgroundColour, 1.0f, 0);
 	
 	d3dDevice->BeginScene();
 

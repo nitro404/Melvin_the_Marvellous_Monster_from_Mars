@@ -16,11 +16,14 @@ using namespace std;
 #include "DirectX.h"
 
 #if _DEBUG
-	void testDrawPoint(LPDIRECT3DDEVICE9 d3dDevice, float x, float y);
-	void testDrawLine(LPDIRECT3DDEVICE9 d3dDevice, float x1, float y1, float x2, float y2);
-	void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float r);
-	void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float rx, float ry);
-	void testDrawEmptyCircle(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr);
+extern D3DCOLOR _DEBUG_COLOUR;
+void testDrawPoint(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, D3DCOLOR colour);
+void testDrawLine(LPDIRECT3DDEVICE9 d3dDevice, float x1, float y1, float x2, float y2, D3DCOLOR colour);
+void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float r, D3DCOLOR colour);
+void testDrawEmptyBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float rx, float ry, D3DCOLOR colour);
+void testDrawBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float r, D3DCOLOR colour);
+void testDrawBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr, D3DCOLOR colour);
+void testDrawEmptyCircle(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr, D3DCOLOR colour);
 #endif
 
 char * strtrimcpy(const char * data);

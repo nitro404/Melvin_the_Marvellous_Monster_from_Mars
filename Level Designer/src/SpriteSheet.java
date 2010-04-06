@@ -11,6 +11,16 @@ public class SpriteSheet {
 	private Vector<Sprite> sprites;
 	private String name;
 	
+	final public static int TYPE_INVALID = -1;
+	final public static int TYPE_ARBITRARY_OFFSETS = 0;
+	final public static int TYPE_SINGLE_GRID = 1;
+	final public static int TYPE_MULTIPLE_GRIDS = 2;
+	
+	public SpriteSheet() {
+		this.sprites = new Vector<Sprite>();
+		this.name = null;
+	}
+	
 	public SpriteSheet(Sprite sprite,
 					   Vector<Rectangle> offsets) {
 		this.name = null;
@@ -121,6 +131,22 @@ public class SpriteSheet {
 	
 	public void setName(String name) { this.name = name; }
 	
+	public static int parseType(String data) {
+		if(data == null || data.trim().length() == 0) { return TYPE_INVALID; }
+		String temp = data.trim();
+		if(temp.equalsIgnoreCase("Arbitrary Offsets")) {
+			return TYPE_ARBITRARY_OFFSETS;
+		}
+		else if(temp.equalsIgnoreCase("Single Grid")) {
+			return TYPE_SINGLE_GRID;
+		}
+		else if(temp.equalsIgnoreCase("Multiple Grids")) {
+			return TYPE_MULTIPLE_GRIDS;
+		}
+		return TYPE_INVALID;
+		
+	}
+	
 	public static SpriteSheet parseFrom(BufferedReader in, String spriteDirectory) {
 		if(in == null || spriteDirectory == null) {
 			System.out.println("ERROR: Cannot parse sprite sheet from null parameter(s).");
@@ -150,15 +176,21 @@ public class SpriteSheet {
 						properties.add(v);
 					}
 					
-					if(v != null && (v.getID().equalsIgnoreCase("Attributes") || v.getID().equalsIgnoreCase("Number of Sprites"))) {
+					if(v != null && (v.getID().equalsIgnoreCase("Attributes") ||
+					   v.getID().equalsIgnoreCase("Grids") ||
+					   v.getID().equalsIgnoreCase("Number of Sprites"))) {
 						spriteSheetName = properties.getValue("SpriteSheet Name").replace(",", "");
 						if(spriteSheetName == null) {
 							System.out.println("ERROR: Sprite sheet must have a name.");
 							return null;
 						}
 						
-						try { spriteSheetType = Integer.parseInt(properties.getValue("SpriteSheet Type")); }
+						try { spriteSheetType = SpriteSheet.parseType(properties.getValue("SpriteSheet Type")); }
 						catch(NumberFormatException e) {
+							System.out.println("ERROR: Invalid sprite sheet type.");
+							return null;
+						}
+						if(spriteSheetType == TYPE_INVALID) {
 							System.out.println("ERROR: Invalid sprite sheet type.");
 							return null;
 						}
@@ -179,7 +211,8 @@ public class SpriteSheet {
 						spriteSheetImage = new Sprite(spriteSheetFileName, spriteDirectory);
 						spriteSheetImage.setType(Sprite.TYPE_SHEET);
 						
-						if(spriteSheetType == 1) {
+						// Arbitrary Offset SpriteSheet Type ======================================
+						if(spriteSheetType == TYPE_ARBITRARY_OFFSETS) {
 							Variables spriteAttributes; 
 							int numberOfSprites;
 							
@@ -261,7 +294,8 @@ public class SpriteSheet {
 								spriteSheet.getSprite(i).setType(spriteTypes[i]);
 							}
 						}
-						else if(spriteSheetType == 3) {
+						// Single Grid SpriteSheet Type ===========================================
+						else if(spriteSheetType == TYPE_SINGLE_GRID) {
 							Variables spriteAttributes;
 							Point offset;
 							Dimension size, increment;
@@ -353,6 +387,149 @@ public class SpriteSheet {
 								spriteAttributes.clear();
 							}
 						}
+						// Multiple Grids SpriteSheet Type ========================================
+						else if(spriteSheetType == TYPE_MULTIPLE_GRIDS) {
+							int numberOfGrids;
+							int spriteIndexOffset = 0;
+							
+							try { numberOfGrids = Integer.parseInt(v.getValue()); }
+							catch(NumberFormatException e) {
+								System.out.println("ERROR: Invalid number of grids.");
+								return null;
+							}
+							if(numberOfGrids < 1) {
+								System.out.println("ERROR: Must parse at least 1 grid.");
+								return null;
+							}
+							
+							spriteSheet = new SpriteSheet();
+							spriteSheet.setName(spriteSheetName);
+							
+							Variables gridAttributes = new Variables();
+							int numberOfAttributes[] = new int[numberOfGrids];
+							Point offset[] = new Point[numberOfGrids];
+							Dimension size[] = new Dimension[numberOfGrids];
+							Dimension increment[] = new Dimension[numberOfGrids];
+							boolean horizontal[] = new boolean[numberOfGrids];
+							int numberOfRows[] = new int[numberOfGrids];
+							int numberOfColumns[] = new int[numberOfGrids];
+							for(int i=0;i<numberOfGrids;i++) {
+								gridAttributes = new Variables();
+								numberOfAttributes[i] = -1;
+								offset[i] = null;
+								size[i] = null;
+								increment[i] = null;
+								horizontal[i] = true;
+								numberOfRows[i] = -1;
+								numberOfColumns[i] = -1;
+							}
+							
+							for(int i=0;i<numberOfGrids;i++) {
+								for(int j=0;j<8;j++) {
+									gridAttributes.add(Variable.parseFrom(in.readLine()));
+								}
+								
+								int gridIndex;
+								try { gridIndex = Integer.parseInt(gridAttributes.getValue("Grid")); }
+								catch(NumberFormatException e) {
+									System.out.println("ERROR: Invalid number of sprite attributes.");
+									return null;
+								}
+								if(gridIndex < 0 || gridIndex >= numberOfGrids) {
+									System.out.println("ERROR: Invalid number of sprite attributes.");
+									return null;
+								}
+								
+								try { numberOfAttributes[gridIndex] = Integer.parseInt(gridAttributes.getValue("Attributes")); }
+								catch(NumberFormatException e) {
+									System.out.println("ERROR: Invalid number of sprite attributes.");
+									return null;
+								}
+								
+								offset[gridIndex] = Utilities.parsePoint(gridAttributes.getValue("Offset"));
+								if(offset == null) {
+									System.out.println("ERROR: Invalid or missing sprite sheet offset.");
+									return null;
+								}
+								
+								size[gridIndex] = Utilities.parseDimension(gridAttributes.getValue("Size"));
+								if(size == null) {
+									System.out.println("ERROR: Invalid or missing sprite sheet tile size.");
+									return null;
+								}
+								
+								increment[gridIndex] = Utilities.parseDimension(gridAttributes.getValue("Increment"));
+								if(increment == null) {
+									System.out.println("ERROR: Invalid or missing sprite sheet tile increment.");
+									return null;
+								}
+								
+								String temp = gridAttributes.getValue("Horizontal");
+								if(temp == null) {
+									System.out.println("ERROR: Missing horizontal / vertical sprite sheet specification.");
+									return null;
+								}
+								horizontal[gridIndex] = temp.equalsIgnoreCase("true");
+								
+								try { numberOfRows[gridIndex] = Integer.parseInt(gridAttributes.getValue("Number of Rows")); }
+								catch(NumberFormatException e) {
+									System.out.println("ERROR: Missing number of rows in sprite sheet.");
+									return null;
+								}
+								
+								try { numberOfColumns[gridIndex] = Integer.parseInt(gridAttributes.getValue("Number of Columns")); }
+								catch(NumberFormatException e) {
+									System.out.println("ERROR: Missing number of columns in sprite sheet.");
+									return null;
+								}
+								
+								int xPos = offset[gridIndex].x;
+								int yPos = offset[gridIndex].y;
+								for(int j=0;j<numberOfRows[gridIndex];j++) {
+									for(int k=0;k<numberOfColumns[gridIndex];k++) {
+										spriteSheet.sprites.add(new Sprite(spriteSheetImage.getImage().getSubimage(xPos, yPos, size[gridIndex].width, size[gridIndex].height)));
+										if(horizontal[gridIndex]) { xPos += increment[gridIndex].width; }
+										else { yPos += increment[gridIndex].height; }
+									}
+									if(horizontal[gridIndex]) { yPos += increment[gridIndex].height; xPos = offset[gridIndex].x; }
+									else { xPos += increment[gridIndex].width; yPos = offset[gridIndex].y; }
+								}
+								
+								int spriteIndex;
+								String spriteName, spriteType;
+								Variables spriteAttributes = new Variables();
+								for(int j=0;j<numberOfAttributes[gridIndex];j++) {
+									for(int k=0;k<3;k++) {
+										spriteAttributes.add(Variable.parseFrom(in.readLine()));
+									}
+									try { spriteIndex = spriteIndexOffset + Integer.parseInt(spriteAttributes.getValue("Sprite")); }
+									catch(NumberFormatException e) {
+										System.out.println("ERROR: Invalid sprite attribute index.");
+										return null;
+									}
+									if(spriteIndex < spriteIndexOffset || spriteIndex >= spriteSheet.size()) {
+										System.out.println("ERROR: Sprite attribute index out of range.");
+										return null;
+									}
+									spriteName = spriteAttributes.getValue("Name").replace(",", "");;
+									spriteType = spriteAttributes.getValue("Type");
+									if(spriteName == null || spriteType == null) {
+										System.out.println("ERROR: Sprite name or type missing.");
+										return null;
+									}
+									spriteSheet.sprites.elementAt(spriteIndex).setName(spriteName);
+									spriteSheet.sprites.elementAt(spriteIndex).setIndex(spriteIndex);
+									spriteSheet.sprites.elementAt(spriteIndex).setParentName(spriteSheetName);
+									spriteSheet.sprites.elementAt(spriteIndex).setType(Sprite.parseType(spriteType));
+									
+									spriteAttributes.clear();
+								}
+								
+								gridAttributes.clear();
+								spriteIndexOffset = spriteSheet.size();
+							}
+						}
+						// Invalid SpriteSheet Type ===============================================
 						else {
 							System.out.println("ERROR: Invalid sprite sheet type specified.");
 							return null;
