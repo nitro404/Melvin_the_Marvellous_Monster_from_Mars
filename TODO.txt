@@ -1,13 +1,10 @@
 LEVEL DESIGNER
  + Change relative paths to use paths relative to your current path (add alternate alternative?)
  + Snap to grid (move only)
- + Draw lines on top of tiles
- + Fix line auto-connection (buggy)
+ + Add background colour to saved map
 
 GAME ENGINE
  + Fix animations to use time
  + Fix collision detection code
  + Finish pet following code
  + Finish grab item code
- + Implement parseType to SpriteSheet import routine
- + Implement new grid type import subroutine

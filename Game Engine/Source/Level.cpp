@@ -64,15 +64,6 @@ Level::~Level() {
 	}
 }
 
-/*bool Level::checkCollision(D3DXVECTOR2 & position, double radius) {
-	for(int i=0;i<boundaries.size();i++) {
-		if(CollisionHandler::checkRadiusIntersection(*boundaries.elementAt(i), position, radius)) {
-			return true;
-		}
-	}
-	return false;
-}*/
-
 bool Level::checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition, D3DXVECTOR2 & intersection) {
 	for(int i=0;i<boundaries.size();i++) {
 		if(CollisionHandler::checkLineIntersection(*boundaries.elementAt(i), lastPosition, newPosition, intersection)) {

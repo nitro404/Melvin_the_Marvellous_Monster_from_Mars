@@ -44,11 +44,13 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 	public static Color DEFAULT_LINE_COLOUR = new Color(0, 0, 0);
 	public static Color DEFAULT_VERTEX_COLOUR = new Color(0, 0, 0);
 	public static Color DEFAULT_SELECTED_COLOUR = new Color(255, 0, 0);
+	public static Color DEFAULT_BACKGROUND_COLOUR = new Color(173, 244, 255);
 	
 	public Color selectedColour;
 	public Color gridColour;
 	public Color lineColour;
-	public Color vertexColour; 
+	public Color vertexColour;
+	public Color backgroundColour;
 	
 	final private int doubleClickSpeed = 200;
 	private long lastMouseDown = 0;
@@ -88,6 +90,7 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		lineColour = DEFAULT_LINE_COLOUR;
 		vertexColour = DEFAULT_VERTEX_COLOUR;
 		selectedColour = DEFAULT_SELECTED_COLOUR;
+		backgroundColour = DEFAULT_BACKGROUND_COLOUR;
 		if(settings != null) {
 			Color temp;
 			if((temp = Utilities.parseColour(settings.getValue("Grid Colour"))) != null) {
@@ -356,9 +359,6 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 				Vertex newVertex = new Vertex(selectedPoint.x, selectedPoint.y);
 				world.addVertex(newVertex);
 				lastSelectedVertex = null;
-				/*if(drawingPopupMenuConnectVertices.isSelected() && lastSelectedVertex != null) {
-					world.addEdge(new Edge(lastSelectedVertex, newVertex));
-				}*/
 				selectedVertex = null;
 			}
 			else if(e.getSource() == drawingPopupMenuDeleteVertex) {
@@ -489,6 +489,9 @@ public class EditorPanel extends JPanel implements Scrollable, ActionListener, M
 		super.paintComponent(g);
 		
 		g.clearRect(0, 0, this.getWidth(), this.getHeight());
+		
+		g.setColor(backgroundColour);
+		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		
 		drawObjects(g);
 		

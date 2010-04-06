@@ -414,7 +414,6 @@ public class SpriteSheet {
 							int numberOfRows[] = new int[numberOfGrids];
 							int numberOfColumns[] = new int[numberOfGrids];
 							for(int i=0;i<numberOfGrids;i++) {
-								gridAttributes = new Variables();
 								numberOfAttributes[i] = -1;
 								offset[i] = null;
 								size[i] = null;

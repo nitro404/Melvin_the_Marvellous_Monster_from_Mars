@@ -35,8 +35,8 @@ public class EditorWindow extends JFrame implements ActionListener {
 	
 	public World world;
 	
-	final public static int DEFAULT_WIDTH = 16;
-	final public static int DEFAULT_HEIGHT = 10;
+	final public static int DEFAULT_WIDTH = 18;
+	final public static int DEFAULT_HEIGHT = 12;
 	
 	private JMenuBar menu;
 	private JMenu menuFile;
@@ -54,6 +54,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 	private JMenuItem menuViewLineColour;
 	private JMenuItem menuViewVertexColour;
 	private JMenuItem menuViewSelectedColour;
+	private JMenuItem menuViewBackgroundColour;
 	private JMenu menuMode;
 	private JMenuItem menuModeTile;
 	private JMenuItem menuModeDraw;
@@ -167,6 +168,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		this.editorPanel.lineColour = EditorPanel.DEFAULT_LINE_COLOUR;
 		this.editorPanel.vertexColour = EditorPanel.DEFAULT_VERTEX_COLOUR;
 		this.editorPanel.selectedColour = EditorPanel.DEFAULT_SELECTED_COLOUR;
+		this.editorPanel.backgroundColour = EditorPanel.DEFAULT_BACKGROUND_COLOUR;
 	}
 	
 	private void createMenu() {
@@ -187,6 +189,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuViewLineColour = new JMenuItem("Line Colour");
 		menuViewVertexColour = new JMenuItem("Vertex Colour");
 		menuViewSelectedColour = new JMenuItem("Selected Colour");
+		menuViewBackgroundColour = new JMenuItem("Background Colour");
 		menuMode = new JMenu("Mode");
 		menuModeTile = new JMenuItem("Tile Textures");
 		menuModeDraw = new JMenuItem("Draw Boundaries");
@@ -206,6 +209,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuViewLineColour.addActionListener(this);
 		menuViewVertexColour.addActionListener(this);
 		menuViewSelectedColour.addActionListener(this);
+		menuViewBackgroundColour.addActionListener(this);
 		menuMode.addActionListener(this);
 		menuModeTile.addActionListener(this);
 		menuModeDraw.addActionListener(this);
@@ -226,6 +230,7 @@ public class EditorWindow extends JFrame implements ActionListener {
 		menuView.add(menuViewLineColour);
 		menuView.add(menuViewVertexColour);
 		menuView.add(menuViewSelectedColour);
+		menuView.add(menuViewBackgroundColour);
 		menuMode.add(menuModeTile);
 		menuMode.add(menuModeDraw);
 		menuHelp.add(menuHelpAbout);
@@ -283,13 +288,16 @@ public class EditorWindow extends JFrame implements ActionListener {
 			editorPanel.gridColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.gridColour);
 		}
 		else if(e.getSource() == menuViewLineColour) {
-			editorPanel.lineColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.lineColour);
+			editorPanel.lineColour = JColorChooser.showDialog(this, "Choose Line Colour", editorPanel.lineColour);
 		}
 		else if(e.getSource() == menuViewVertexColour) {
-			editorPanel.vertexColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.vertexColour);
+			editorPanel.vertexColour = JColorChooser.showDialog(this, "Choose Vertex Colour", editorPanel.vertexColour);
 		}
 		else if(e.getSource() == menuViewSelectedColour) {
-			editorPanel.selectedColour = JColorChooser.showDialog(this, "Choose Grid Colour", editorPanel.selectedColour);
+			editorPanel.selectedColour = JColorChooser.showDialog(this, "Choose Selected Colour", editorPanel.selectedColour);
+		}
+		else if(e.getSource() == menuViewBackgroundColour) {
+			editorPanel.backgroundColour = JColorChooser.showDialog(this, "Choose Background Colour", editorPanel.backgroundColour);
 		}
 		else if(e.getSource() == menuModeTile) {
 			editorPanel.mode = EditorPanel.MODE_TILING;

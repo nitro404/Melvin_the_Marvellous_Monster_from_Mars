@@ -10,8 +10,8 @@ int Sprite::TYPE_PET = 5;
 int Sprite::TYPE_AI = 6;
 int Sprite::TYPE_ITEM = 6;
 
-Sprite::Sprite(char * fileName,
-			   char * directory,
+Sprite::Sprite(const char * fileName,
+			   const char * directory,
 			   LPDIRECT3DDEVICE9 d3dDevice)
 				: texture(NULL),
 				  sprite(NULL),

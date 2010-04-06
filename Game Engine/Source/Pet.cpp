@@ -18,7 +18,7 @@ Pet::Pet(float xPos,
 	this->windowWidth = windowWidth;
 
 	this->petSpriteSheet = spriteSheets->getSpriteSheet("Fluffy");
-	this->petSprite = petSpriteSheet->getSprite(0);
+	this->petSprite = petSpriteSheet->getSprite("Fluffy Idle 1");
 
 	this->scale = D3DXVECTOR2(1, 1);
 	this->size = D3DXVECTOR2(petSprite->getWidth() * scale.x, petSprite->getHeight() * scale.y);

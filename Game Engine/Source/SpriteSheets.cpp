@@ -91,7 +91,7 @@ bool SpriteSheets::add(SpriteSheet * spriteSheet) {
 
 SpriteSheets * SpriteSheets::parseFrom(char * fileName, char * spriteDirectory, LPDIRECT3DDEVICE9 d3dDevice) {
 	if(fileName == NULL || spriteDirectory == NULL) {
-		printf("ERROR: Cannot parse sprite sheet collection from null parameter(s).\n");
+		prompt("ERROR: Cannot parse sprite sheet collection from null parameter(s).\n");
 		return NULL;
 	}
 
@@ -102,7 +102,7 @@ SpriteSheets * SpriteSheets::parseFrom(char * fileName, char * spriteDirectory, 
 	SpriteSheets * spriteSheets = new SpriteSheets();
 	ifstream in(fileNameTrimmed);
 	if(in.bad()) {
-		printf("ERROR: Unable to read sprite sheet data file.\n");
+		prompt("ERROR: Unable to read sprite sheet data file.\n");
 		delete [] spriteDirectoryTrimmed;
 		delete [] fileNameTrimmed;
 		return NULL;

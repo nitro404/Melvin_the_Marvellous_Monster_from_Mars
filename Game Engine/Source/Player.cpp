@@ -6,11 +6,11 @@ extern D3DXVECTOR2 playerNewPosition;
 extern D3DXVECTOR2 playerLastPosition;
 #endif
 
-const int Player::DISGUISE_NONE = 0;
-const int Player::DISGUISE_WIG = 1;
-const int Player::DISGUISE_FBI = 2;
-const int Player::DISGUISE_BOX = 3;
-const int Player::DISGUISE_BIOHAZARD = 4;
+const int Player::DISGUISE_NONE = -1;
+const int Player::DISGUISE_WIG = 0;
+const int Player::DISGUISE_FBI = 1;
+const int Player::DISGUISE_BOX = 2;
+const int Player::DISGUISE_BIOHAZARD = 3;
 
 Player::Player(float xPos,
 			   float yPos,
@@ -24,9 +24,9 @@ Player::Player(float xPos,
 				: timeElapsed(externalTimeElapsed),
 				  settings(externalSettings),
 				  level(externalLevel),
-				  disguise(2),
+				  disguise(DISGUISE_BOX),
 				  isJumping(false),
-				  jumpVelocity(32), //32
+				  jumpVelocity(32),
 				  jumpCooldown(0.92f),
 				  jumpTime(0),
 				  isMoving(false),
@@ -40,13 +40,19 @@ Player::Player(float xPos,
 				  grabAnimationSequence(0),
 				  grabAnimationInterval(9),
 				  grabAnimationEnd(grabAnimationInterval * 3),
+				  playerSprite(NULL),
+				  disguiseSprite(NULL),
+				  disguises(NULL),
 				  spacing(25) {
 	this->windowHeight = windowHeight;
 	this->windowWidth = windowWidth;
 	
 	this->playerSpriteSheet = spriteSheets->getSpriteSheet("Alien");
-	this->playerSprite = playerSpriteSheet->getSprite("Alien Walking 1");
-	this->disguiseSprite = playerSpriteSheet->getSprite("Alien Walking 1 Wig");
+
+//	loadDisguises();
+
+	this->playerSprite = playerSpriteSheet->getSprite("Alien Walk 1");
+	this->disguiseSprite = playerSpriteSheet->getSprite("Alien Walk 1 Box");
 
 	this->scale = D3DXVECTOR2(1, 1);
 	this->size = D3DXVECTOR2(playerSprite->getWidth() * scale.x, playerSprite->getHeight() * scale.y);
@@ -57,7 +63,72 @@ Player::Player(float xPos,
 	this->velocityStep = 12.0f;
 }
 
-Player::~Player() { }
+Player::~Player() {
+	/*
+	for(int i=0;i<4;i++) {
+		delete [] disguises[i];
+	}
+	delete [] disguises;
+	*/
+}
+
+void Player::loadDisguises() {
+	disguises = new Sprite**[4];
+	for(int i=0;i<4;i++) {
+		disguises[4] = new Sprite*[12];
+	}
+	disguises[DISGUISE_WIG][0] = playerSpriteSheet->getSprite("Alien Walk 1 Wig");
+	disguises[DISGUISE_WIG][1] = playerSpriteSheet->getSprite("Alien Walk 2 Wig");
+	disguises[DISGUISE_WIG][2] = playerSpriteSheet->getSprite("Alien Walk 3 Wig");
+	disguises[DISGUISE_WIG][3] = playerSpriteSheet->getSprite("Alien Grab 1 Wig");
+	disguises[DISGUISE_WIG][4] = playerSpriteSheet->getSprite("Alien Grab 2 Wig");
+	disguises[DISGUISE_WIG][5] = playerSpriteSheet->getSprite("Alien Grab 3 Wig");
+	disguises[DISGUISE_WIG][6] = playerSpriteSheet->getSprite("Alien Grab 1 Wig");
+	disguises[DISGUISE_WIG][7] = playerSpriteSheet->getSprite("Alien Grab 2 Wig");
+	disguises[DISGUISE_WIG][8] = playerSpriteSheet->getSprite("Alien Grab 3 Wig");
+	disguises[DISGUISE_WIG][9] = playerSpriteSheet->getSprite("Alien Jump 1 Wig");
+	disguises[DISGUISE_WIG][10] = playerSpriteSheet->getSprite("Alien Jump 2 Wig");
+	disguises[DISGUISE_WIG][11] = playerSpriteSheet->getSprite("Alien Jump 3 Wig");
+
+	disguises[DISGUISE_FBI][0] = playerSpriteSheet->getSprite("Alien Walk 1 FBI Suit");
+	disguises[DISGUISE_FBI][1] = playerSpriteSheet->getSprite("Alien Walk 2 FBI Suit");
+	disguises[DISGUISE_FBI][2] = playerSpriteSheet->getSprite("Alien Walk 3 FBI Suit");
+	disguises[DISGUISE_FBI][3] = playerSpriteSheet->getSprite("Alien Grab Low 1 FBI Suit");
+	disguises[DISGUISE_FBI][4] = playerSpriteSheet->getSprite("Alien Grab Low 2 FBI Suit");
+	disguises[DISGUISE_FBI][5] = playerSpriteSheet->getSprite("Alien Grab Low 3 FBI Suit");
+	disguises[DISGUISE_FBI][6] = playerSpriteSheet->getSprite("Alien Grab High 1 FBI Suit");
+	disguises[DISGUISE_FBI][7] = playerSpriteSheet->getSprite("Alien Grab High 2 FBI Suit");
+	disguises[DISGUISE_FBI][8] = playerSpriteSheet->getSprite("Alien Grab High 3 FBI Suit");
+	disguises[DISGUISE_FBI][9] = playerSpriteSheet->getSprite("Alien Jump 1 FBI Suit");
+	disguises[DISGUISE_FBI][10] = playerSpriteSheet->getSprite("Alien Jump 2 FBI Suit");
+	disguises[DISGUISE_FBI][11] = playerSpriteSheet->getSprite("Alien Jump 3 FBI Suit");
+
+	disguises[DISGUISE_BOX][0] = playerSpriteSheet->getSprite("Alien Walk 1 Box");
+	disguises[DISGUISE_BOX][1] = playerSpriteSheet->getSprite("Alien Walk 2 Box");
+	disguises[DISGUISE_BOX][2] = playerSpriteSheet->getSprite("Alien Walk 3 Box");
+	disguises[DISGUISE_BOX][3] = playerSpriteSheet->getSprite("Alien Grab Low 1 Box");
+	disguises[DISGUISE_BOX][4] = playerSpriteSheet->getSprite("Alien Grab Low 2 Box");
+	disguises[DISGUISE_BOX][5] = playerSpriteSheet->getSprite("Alien Grab Low 3 Box");
+	disguises[DISGUISE_BOX][6] = playerSpriteSheet->getSprite("Alien Grab High 1 Box");
+	disguises[DISGUISE_BOX][7] = playerSpriteSheet->getSprite("Alien Grab High 2 Box");
+	disguises[DISGUISE_BOX][8] = playerSpriteSheet->getSprite("Alien Grab High 3 Box");
+	disguises[DISGUISE_BOX][9] = playerSpriteSheet->getSprite("Alien Jump 1 Box");
+	disguises[DISGUISE_BOX][10] = playerSpriteSheet->getSprite("Alien Jump 2 Box");
+	disguises[DISGUISE_BOX][11] = playerSpriteSheet->getSprite("Alien Jump 3 Box");
+
+	disguises[DISGUISE_BOX][0] = playerSpriteSheet->getSprite("Alien Walk 1 BioHazard Suit");
+	disguises[DISGUISE_BOX][1] = playerSpriteSheet->getSprite("Alien Walk 2 BioHazard Suit");
+	disguises[DISGUISE_BOX][2] = playerSpriteSheet->getSprite("Alien Walk 3 BioHazard Suit");
+	disguises[DISGUISE_BOX][3] = playerSpriteSheet->getSprite("Alien Grab Low 1 BioHazard Suit");
+	disguises[DISGUISE_BOX][4] = playerSpriteSheet->getSprite("Alien Grab Low 2 BioHazard Suit");
+	disguises[DISGUISE_BOX][5] = playerSpriteSheet->getSprite("Alien Grab Low 3 BioHazard Suit");
+	disguises[DISGUISE_BOX][6] = playerSpriteSheet->getSprite("Alien Grab High 1 BioHazard Suit");
+	disguises[DISGUISE_BOX][7] = playerSpriteSheet->getSprite("Alien Grab High 2 BioHazard Suit");
+	disguises[DISGUISE_BOX][8] = playerSpriteSheet->getSprite("Alien Grab High 3 BioHazard Suit");
+	disguises[DISGUISE_BOX][9] = playerSpriteSheet->getSprite("Alien Jump 1 BioHazard Suit");
+	disguises[DISGUISE_BOX][10] = playerSpriteSheet->getSprite("Alien Jump 2 BioHazard Suit");
+	disguises[DISGUISE_BOX][11] = playerSpriteSheet->getSprite("Alien Jump 3 BioHazard Suit");
+}
 
 void Player::tick() {
 	D3DXVECTOR2 lastPosition = position;
@@ -74,8 +145,11 @@ void Player::tick() {
 	position.y += (float) (-velocity.y * (timeElapsed * 10));
 	velocity.y -= (float) (Constants::GRAVITY * (timeElapsed * 10));
 
-	playerSprite = playerSpriteSheet->getSprite(movingAnimationSequence / movingAnimationInterval);
-	disguiseSprite = playerSpriteSheet->getSprite(3 + (movingAnimationSequence / movingAnimationInterval));
+//	playerSprite = playerSpriteSheet->getSprite(movingAnimationSequence / movingAnimationInterval);
+//	disguiseSprite = playerSpriteSheet->getSprite(3 + (movingAnimationSequence / movingAnimationInterval));
+
+//	playerSprite = ;
+//	disguiseSprite = disguises[disguise][(movingAnimationSequence / movingAnimationInterval)];
 
 	if(isMoving) {
 		movingAnimationSequence++;
@@ -92,7 +166,7 @@ void Player::tick() {
 		}
 	}
 
-	if(isJumping) {
+	/*if(isJumping) {
 		if(velocity.y > 0.5) {
 			playerSprite = playerSpriteSheet->getSprite(24);
 			disguiseSprite = playerSpriteSheet->getSprite(27);
@@ -116,7 +190,7 @@ void Player::tick() {
 			playerSprite = playerSpriteSheet->getSprite(16 + grabAnimationSequence / grabAnimationInterval);
 			disguiseSprite = playerSpriteSheet->getSprite(11 + (grabAnimationSequence / grabAnimationInterval));
 		}
-	}
+	}*/
 
 	D3DXVECTOR2 intersection;
 	D3DXVECTOR2 bottomCenter(getX(), position.y + getHeight());

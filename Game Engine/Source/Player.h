@@ -22,6 +22,9 @@ public:
 	void jump();
 	void grab();
 
+private:
+	void loadDisguises();
+
 public:
 	const static int DISGUISE_NONE;
 	const static int DISGUISE_WIG;
@@ -33,6 +36,7 @@ public:
 private:
 	Sprite * playerSprite;
 	Sprite * disguiseSprite;
+	Sprite *** disguises;
 	SpriteSheet * playerSpriteSheet;
 
 	double & timeElapsed;

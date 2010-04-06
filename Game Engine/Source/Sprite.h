@@ -5,7 +5,7 @@
 
 class Sprite {
 public:
-	Sprite(char * fileName, char * directory, LPDIRECT3DDEVICE9 d3dDevice);
+	Sprite(const char * fileName, const char * directory, LPDIRECT3DDEVICE9 d3dDevice);
 	Sprite(int x, int y, int spriteWidth, int spriteHeight, LPDIRECT3DTEXTURE9 externalTexture, LPD3DXSPRITE externalSprite);
 	~Sprite();
 

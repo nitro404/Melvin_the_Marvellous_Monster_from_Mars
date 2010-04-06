@@ -11,6 +11,8 @@ struct SpriteSheetOffset {
 
 class SpriteSheet {
 public:
+	SpriteSheet::SpriteSheet();
+
 	SpriteSheet(Sprite * externalSpriteSheet,
 				SpriteSheetOffset * offsets,
 				int numberOfSprites);
@@ -29,6 +31,7 @@ public:
 	~SpriteSheet();
 
 	int size();
+	void addSprite(Sprite * sprite);
 	Sprite * elementAt(int index);
 	Sprite * getSprite(int index);
 	Sprite * getSprite(char * name);
@@ -38,7 +41,7 @@ public:
 	void setName(char * name);
 
 	static int SpriteSheet::parseType(const char * data);
-	static SpriteSheet * parseFrom(ifstream & in, char * spriteDirectory, LPDIRECT3DDEVICE9 d3dDevice);
+	static SpriteSheet * parseFrom(ifstream & in, const char * spriteDirectory, LPDIRECT3DDEVICE9 d3dDevice);
 
 public:
 	const static int TYPE_INVALID;
