@@ -1,4 +1,0 @@
-Grid: 64x64
-Screen Size: 15x12 (960x768)
-Player Item Limit: 5
-Storge Bank

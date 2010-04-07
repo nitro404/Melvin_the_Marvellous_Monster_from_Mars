@@ -8,9 +8,9 @@ extern D3DXVECTOR2 playerCollisionPosition;
 
 bool CollisionHandler::checkLineIntersection(const Edge & edge, const D3DXVECTOR2 & p1, const D3DXVECTOR2 & p2, D3DXVECTOR2 * i, double * newY) {
 	double x1 = edge.a.x;
-	double y1 = edge.a.y;
+	double y1 = edge.a.y + 0.8;
 	double x2 = edge.b.x;
-	double y2 = edge.b.y;
+	double y2 = edge.b.y + 0.8;
 	double x3 = p1.x;
 	double y3 = p1.y;
 	double x4 = p2.x;

@@ -1,15 +1,12 @@
-MISC
- + Run Test.bat doesn't remove debug exectuable
-
 LEVEL DESIGNER
- + Change relative paths to use paths relative to your current path (add alternate alternative?)
- + Snap to grid (move only)
- + Add background colour to saved map
+ - Change relative paths to use paths relative to your current path (add alternate alternative?)
+ - Snap to grid (move only)
+ - Add background colour to saved map
 
 GAME ENGINE
- + Fix animations to use time
- + Fix collision detection code (y coord and max angle)
- + Finish pet following code
+ - Fix animations to use time
+ - Implement external background colour from map
+ - Visibility Checking
+ + Fix collision detection code for downward slopes (radial vertex collision?)
  + Finish grab item code
  + Simple AI
- + Scrolling + visibility checking

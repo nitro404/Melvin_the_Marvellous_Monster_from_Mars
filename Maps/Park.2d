@@ -45,8 +45,8 @@ Edges: 43
 	1457, 481; 1507, 463
 	1686, 660; 1637, 661
 	2338, 695; 2526, 694
-Player: 209, 245, Alien, Alien Walk 1
-Pet: None
+Player: 86, 575, Alien, Alien Walk 1
+Pet: 249, 595, Fluffy, Fluffy Idle 1
 Objects: 16
 	86, 403, Stuff, Tree 1
 	420, 399, Stuff, Tree 2

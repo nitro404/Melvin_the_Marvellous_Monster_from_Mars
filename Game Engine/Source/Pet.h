@@ -20,9 +20,13 @@ public:
 
 private:
 	Sprite * petSprite;
+	Sprite ** petMovementSprites;
 	SpriteSheet * petSpriteSheet;
 
 	int movementDirection;
+	int movingAnimationSequence;
+	int movingAnimationInterval;
+	int movingAnimationEnd;
 
 	Player & player;
 	double & timeElapsed;

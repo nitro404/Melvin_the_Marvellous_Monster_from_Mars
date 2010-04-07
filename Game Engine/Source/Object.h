@@ -30,13 +30,14 @@ public:
 
 	virtual char * getName() { return (sprite == NULL) ? NULL : sprite->getName(); }
 
-	virtual D3DXVECTOR2 getCenter() { return D3DXVECTOR2(position.x + offset.x, position.y + offset.y); }
 	virtual float getX() { return position.x + offset.x; }
 	virtual float getY() { return position.y + offset.y; }
 	virtual float getOffsetX() { return offset.x; }
 	virtual float getOffsetY() { return offset.y; }
 	virtual float getHeight() { return size.x; }
 	virtual float getWidth() { return size.y; }
+	virtual D3DXVECTOR2 getCenter() { return D3DXVECTOR2(position.x + offset.x, position.y + offset.y); }
+	virtual D3DXVECTOR2 getBottomCenter() { return D3DXVECTOR2(position.x + offset.x, position.y + size.y); }
 	virtual float getScaledRadius() { return ((offset.x < offset.y) ? offset.x : offset.y) * 0.7f; }
 
 	virtual float getOrientation() { return orientation; }

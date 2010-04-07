@@ -31,7 +31,7 @@ Player::Player(float xPos,
 				  disguise(DISGUISE_NONE),
 				  isJumping(false),
 				  jumpVelocity(32),
-				  jumpCooldown(0.92f),
+				  jumpCooldown(0.8f),
 				  jumpTime(0),
 				  isMoving(false),
 				  movementDirection(0),
@@ -57,7 +57,7 @@ Player::Player(float xPos,
 	loadSprites();
 
 	this->playerSprite = playerSpriteSheet->getSprite("Alien Walk 1");
-	this->disguiseSprite = playerSpriteSheet->getSprite("Alien Walk 1 Wig");
+//	this->disguiseSprite = playerSpriteSheet->getSprite("Alien Walk 1 Wig");
 
 	this->scale = D3DXVECTOR2(1, 1);
 	this->size = D3DXVECTOR2(playerSprite->getWidth() * scale.x, playerSprite->getHeight() * scale.y);
@@ -66,6 +66,8 @@ Player::Player(float xPos,
 	this->velocity = D3DXVECTOR2(0, 0);
 	this->maxVelocity = 2;
 	this->velocityStep = 20.0f;
+
+	this->movementHistory.push_front(D3DXVECTOR2(position.x + offset.x, position.y + size.y));
 }
 
 Player::~Player() {
@@ -158,6 +160,7 @@ void Player::tick() {
 	D3DXVECTOR2 lastPosition = position;
 	D3DXVECTOR2 lastBottomCenter(position.x + offset.x, position.y + size.y);
 	D3DXVECTOR2 previousLastBottomCenter(previousLastPosition.x + offset.x, previousLastPosition.y + size.y);
+
 	playerColour = D3DCOLOR_RGBA(255, 255, 255, 255);
 
 	jumpTime -= (float) timeElapsed;
@@ -251,6 +254,7 @@ void Player::tick() {
 	double newY;
 	if(level.checkCollision(previousLastBottomCenter, bottomCenter, &intersection, &newY)) {
 		position.y = (float) (newY - size.y - 0.1f);
+		isJumping = false;
 		velocity.x = 0;
 		velocity.y = 0;
 	}
@@ -271,6 +275,10 @@ void Player::tick() {
 
 	frontOfPlayer = D3DXVECTOR2((movementDirection >= 0) ? getX() + offset.x - spacing : getX() - offset.x + spacing, getY() + 15);
 	previousLastPosition = lastPosition;
+
+	if(position != lastPosition) {
+		movementHistory.push_front(D3DXVECTOR2(position.x + offset.x, position.y + size.y));
+	}
 }
 
 void Player::draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice) {
@@ -280,13 +288,13 @@ void Player::draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice) {
 	}
 	if(movementDirection >= 0) {
 		playerSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
-		if(disguise != DISGUISE_NONE) {
+		if(disguise != DISGUISE_NONE && disguiseSprite != NULL) {
 			disguiseSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
 		}
 	}
 	else {
 		playerSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
-		if(disguise != DISGUISE_NONE) {
+		if(disguise != DISGUISE_NONE && disguiseSprite != NULL) {
 			disguiseSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
 		}
 	}
@@ -296,22 +304,20 @@ void Player::draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice) {
 //	testDrawPoint(d3dDevice, getX(), getY(), &externalScrollingOffset);
 
 //	testDrawPoint(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, &externalScrollingOffset);
-//	testDrawEmptyCircle(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, grabRadius, grabRadius, &externalScrollingOffset);
+	testDrawEmptyCircle(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, grabRadius, grabRadius, D3DCOLOR_XRGB(0, 0, 255), &externalScrollingOffset);
 #endif
 }
 
 void Player::moveLeft() {
 	movementDirection = -1;
-//	position.x -= (float) (velocityStep * timeElapsed * 10);
 }
 
 void Player::moveRight() {
 	movementDirection = 1;
-//	position.x += (float) (velocityStep * timeElapsed * 10);
 }
 
 void Player::jump() {
-	if(!isJumping) {
+	if(!isJumping && jumpTime == 0) {
 		isJumping = true;
 		velocity.y = jumpVelocity;
 		jumpTime = jumpCooldown;
@@ -332,11 +338,23 @@ void Player::grab() {
 	if(item == NULL) { return; }
 
 	isGrabbing = true;
+}
 
-	/*if(item->getY() < getY()) {
-		prompt("%s above", item->getName());
+D3DXVECTOR2 Player::getFollowPosition() const {
+	if(movementHistory.empty()) {
+		return D3DXVECTOR2(0, 0);
 	}
-	else if(item->getY() >= getY()) {
-		prompt("%s below", item->getName());
-	}*/
+	else {
+		return movementHistory.back();
+	}
+}
+
+void Player::popFollowPosition() {
+	if(!movementHistory.empty()) {
+		movementHistory.pop_back();
+	}
+}
+
+bool Player::hasFollowPosition() {
+	return !movementHistory.empty();
 }

@@ -141,8 +141,8 @@ Edges: 139
 	4114, 640; 4077, 619
 	4077, 619; 4040, 640
 	2526, 532; 2604, 467
-Player: 198, 483, Alien, Alien Walk 1
-Pet: None
+Player: 210, 535, Alien, Alien Walk 1
+Pet: 383, 585, Fluffy, Fluffy Idle 1
 Objects: 38
 	1, 585, Stuff, Space Ship
 	230, 689, Platforms, Platform Box

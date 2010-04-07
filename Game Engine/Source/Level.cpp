@@ -91,6 +91,30 @@ bool Level::checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition
 			}
 			isColliding = true;
 		}
+
+		for(int j=0;j<2;j++) {
+			D3DXVECTOR2 temp;
+			if(j == 0) {
+				temp.x = (float) boundaries.elementAt(i)->a.x;
+				temp.y = (float) boundaries.elementAt(i)->a.y;
+			}
+			else {
+				temp.x = (float) boundaries.elementAt(i)->b.x;
+				temp.y = (float) boundaries.elementAt(i)->b.y;
+			}
+			if(CollisionHandler::checkRadiusIntersection(temp, newPosition, 3, 3)) {
+				tempY = temp.y - 0.5f;
+				if(!isColliding) {
+					minY = tempY;
+				}
+				else {
+					if(tempY < minY) {
+						minY = tempY;
+					}
+				}
+				isColliding = true;
+			}
+		}
 	}
 	if(newY != NULL && isColliding) {
 		*newY = minY;

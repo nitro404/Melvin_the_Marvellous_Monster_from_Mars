@@ -22,6 +22,10 @@ public:
 	void jump();
 	void grab();
 
+	D3DXVECTOR2 getFollowPosition() const;
+	void popFollowPosition();
+	bool hasFollowPosition();
+
 private:
 	void loadSprites();
 
@@ -58,6 +62,7 @@ private:
 	int movingAnimationSequence;
 	int movingAnimationInterval;
 	int movingAnimationEnd;
+	deque<D3DXVECTOR2> movementHistory;
 
 	float grabRadius;
 	Object * item;
