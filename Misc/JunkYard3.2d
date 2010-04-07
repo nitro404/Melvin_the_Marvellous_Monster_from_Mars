@@ -1,0 +1,86 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 16, 12
+Edges: 36
+	183, 767; 183, 767
+	0, 767; 183, 767
+	183, 767; 414, 766
+	414, 766; 577, 766
+	577, 766; 767, 767
+	767, 767; 1019, 767
+	1029, 729; 435, 727
+	531, 684; 531, 684
+	531, 684; 1025, 685
+	915, 641; 626, 640
+	816, 599; 724, 600
+	721, 557; 660, 555
+	619, 505; 635, 511
+	619, 505; 605, 497
+	605, 497; 592, 479
+	592, 479; 592, 479
+	592, 479; 577, 469
+	577, 469; 545, 465
+	545, 465; 531, 462
+	675, 481; 672, 480
+	675, 481; 681, 469
+	681, 469; 691, 464
+	691, 464; 707, 461
+	707, 461; 718, 446
+	718, 446; 734, 442
+	734, 442; 748, 442
+	822, 475; 796, 469
+	822, 475; 844, 460
+	844, 460; 866, 450
+	866, 450; 867, 450
+	867, 450; 888, 460
+	888, 460; 901, 472
+	957, 483; 956, 484
+	957, 483; 968, 473
+	968, 473; 980, 464
+	980, 464; 998, 461
+Player: 100, 635, Alien, Alien Walk 1
+Pet: None
+Objects: 22
+	660, 540, Stuff, Barrel
+	529, 720, Platforms, Platform Box
+	625, 720, Platforms, Platform Block
+	722, 720, Platforms, Platform Block
+	819, 720, Platforms, Platform Block
+	819, 677, Platforms, Platform Block
+	722, 677, Platforms, Platform Block
+	625, 677, Platforms, Platform Block
+	720, 636, Platforms, Platform Painting
+	529, 677, Platforms, Platform Box
+	623, 635, Platforms, Platform Box
+	720, 592, Platforms, Platform Box
+	432, 720, Platforms, Platform Box
+	817, 636, Platforms, Platform Block
+	915, 720, Platforms, Platform Block
+	915, 678, Platforms, Platform Block
+	958, 724, Platforms, Platform Block
+	958, 681, Platforms, Platform Block
+	442, 17, Stuff, Cloud Type 3-1
+	31, 44, Stuff, Cloud Type 2-2
+	99, 95, Stuff, Cloud Type 2-2
+	331, 71, Stuff, Cloud Type 2-3
+Tiles: 14
+	0, 10, Junkyard, Dirt 1
+	4, 10, Junkyard, Dirt 2
+	8, 10, Junkyard, Dirt 1
+	12, 10, Junkyard, Dirt 3
+	0, 6, Junkyard, Fence
+	5, 6, Junkyard, Fence
+	10, 6, Junkyard, Fence
+	15, 6, Junkyard, Fence
+	0, 6, Junkyard, Background Pile 1
+	8, 6, Junkyard, Background Pile 1
+	0, 6, Junkyard, Pile 4
+	4, 6, Junkyard, Pile 5
+	8, 6, Junkyard, Pile 3
+	12, 6, Junkyard, Pile 2
+AI: 1
+	16, 599, People, Hobo Neutral
+Items: 3
+	747, 525, Items, Shampoo
+	944, 619, Items, FBI Suit
+	521, 388, Items, Toothbrush

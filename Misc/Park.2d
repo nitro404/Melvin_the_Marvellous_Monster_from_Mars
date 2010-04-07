@@ -1,0 +1,36 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 16, 12
+Edges: 3
+	0, 767; 1023, 768
+	435, 727; 339, 727
+	433, 683; 340, 683
+Player: -72, 645, Alien, Alien Walk 1
+Pet: None
+Objects: 9
+	2, 442, Stuff, Tree 3
+	313, 457, Stuff, Tree 2
+	542, 464, Stuff, Tree 3
+	39, 95, Stuff, Sun 2
+	503, 100, Stuff, Cloud Type 4-3
+	197, 86, Stuff, Cloud Type 4-2
+	862, 667, Items, Cow
+	335, 719, Platforms, Platform Box
+	335, 677, Platforms, Platform Box
+Tiles: 9
+	0, 10, Paths, Grass
+	4, 10, Paths, End Path
+	8, 10, Paths, Path
+	12, 10, Paths, Path
+	4, 10, Paths, Grass
+	6, 10, Paths, End Path
+	5, 10, Paths, End Path
+	10, 10, Paths, Path
+	14, 10, Paths, Path
+AI: 1
+	176, 646, People, Girl Holding Baby Neutral
+Items: 4
+	658, 689, Items, Red Apple
+	543, 666, Items, Green Apple
+	323, 567, Items, Green Can
+	761, 674, Items, Spray Cheese

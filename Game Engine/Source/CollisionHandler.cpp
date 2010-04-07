@@ -1,14 +1,20 @@
 #include "CollisionHandler.h"
 
-bool CollisionHandler::checkLineIntersection(const Edge & e, const D3DXVECTOR2 & c, const D3DXVECTOR2 & d, D3DXVECTOR2 & i) {
-	double x1 = e.a.x;
-	double y1 = e.a.y;
-	double x2 = e.b.x;
-	double y2 = e.b.y;
-	double x3 = c.x;
-	double y3 = c.y;
-	double x4 = d.x;
-	double y4 = d.y;
+#if _DEBUG
+extern D3DXVECTOR2 playerCollisionPointA;
+extern D3DXVECTOR2 playerCollisionPointB;
+extern D3DXVECTOR2 playerCollisionPosition;
+#endif
+
+bool CollisionHandler::checkLineIntersection(const Edge & edge, const D3DXVECTOR2 & p1, const D3DXVECTOR2 & p2, D3DXVECTOR2 * i, double * newY) {
+	double x1 = edge.a.x;
+	double y1 = edge.a.y;
+	double x2 = edge.b.x;
+	double y2 = edge.b.y;
+	double x3 = p1.x;
+	double y3 = p1.y;
+	double x4 = p2.x;
+	double y4 = p2.y;
 
     //Is Line Undefined
     if (x1 == x2 && y1 == y2 || x3 == x4 && y3 == y4) {
@@ -51,8 +57,22 @@ bool CollisionHandler::checkLineIntersection(const Edge & e, const D3DXVECTOR2 &
 	}
 
     // Apply the discovered position to line A-B in the originial 
-    i.x = (float) (x1 + (ABpos * theCos));
-    i.y = (float) (y1 + (ABpos * theSin));
+	if(i != NULL) {
+	    i->x = (float) (x1 + (ABpos * theCos));
+	    i->y = (float) (y1 + (ABpos * theSin));
+	}
+
+	if(newY != NULL) {
+		double newX = p2.x;
+		double slope = ((double) (edge.b.y - edge.a.y)) / ((double) (edge.b.x - edge.a.x));
+		double b = edge.a.y + (slope * (0 - edge.a.x));
+		*newY = (slope * newX) + b;
+#if _DEBUG
+		playerCollisionPointA = D3DXVECTOR2((float) edge.a.x, (float) ((slope * edge.a.x) + b));
+		playerCollisionPointB = D3DXVECTOR2((float) edge.b.x, (float) ((slope * edge.b.x) + b));
+		playerCollisionPosition = D3DXVECTOR2((float) newX, (float)  *newY);
+#endif
+	}
 
     //Success
     return true;

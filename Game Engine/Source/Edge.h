@@ -2,6 +2,7 @@
 
 #if _DEBUG
 #include "Includes.h"
+extern int externalScrollingOffset;
 #endif
 
 #include "Vertex.h"
@@ -41,9 +42,9 @@ public:
 
 #if _DEBUG
 	void draw(LPDIRECT3DDEVICE9 d3dDevice) {
-		testDrawLine(d3dDevice, (float) a.x, (float) a.y, (float) b.x, (float) b.y, D3DCOLOR_XRGB(255, 255, 0));
-		testDrawPoint(d3dDevice, (float) a.x, (float) a.y, D3DCOLOR_XRGB(255, 255, 0));
-		testDrawPoint(d3dDevice, (float) b.x, (float) b.y, D3DCOLOR_XRGB(255, 255, 0));
+		testDrawLine(d3dDevice, (float) a.x, (float) a.y, (float) b.x, (float) b.y, D3DCOLOR_XRGB(255, 255, 0), &externalScrollingOffset);
+		testDrawPoint(d3dDevice, (float) a.x, (float) a.y, D3DCOLOR_XRGB(255, 255, 0), &externalScrollingOffset);
+		testDrawPoint(d3dDevice, (float) b.x, (float) b.y, D3DCOLOR_XRGB(255, 255, 0), &externalScrollingOffset);
 	}
 #endif
 	

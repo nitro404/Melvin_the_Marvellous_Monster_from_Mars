@@ -1,0 +1,275 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 80, 12
+Edges: 140
+	0, 738; 5118, 739
+	215, 654; 19, 654
+	178, 624; 50, 624
+	327, 695; 236, 695
+	634, 650; 825, 650
+	824, 608; 728, 608
+	825, 565; 730, 565
+	247, 489; 226, 452
+	84, 465; 49, 452
+	1687, 688; 1776, 688
+	1780, 651; 1872, 651
+	1874, 609; 2147, 609
+	691, 479; 671, 505
+	541, 463; 512, 490
+	538, 693; 922, 692
+	2151, 694; 2243, 694
+	2246, 650; 2151, 648
+	2607, 693; 2510, 694
+	2510, 651; 2605, 651
+	3015, 605; 3069, 612
+	4127, 695; 4031, 694
+	4032, 651; 4127, 653
+	4028, 595; 3969, 595
+	4040, 640; 4041, 639
+	4235, 614; 4129, 614
+	4330, 655; 4238, 654
+	4423, 693; 4335, 692
+	207, 457; 226, 452
+	404, 506; 438, 510
+	512, 490; 479, 477
+	582, 459; 622, 519
+	622, 519; 671, 505
+	691, 479; 736, 464
+	736, 464; 736, 464
+	814, 540; 846, 551
+	846, 551; 888, 578
+	785, 504; 814, 540
+	99, 513; 133, 521
+	1105, 601; 1055, 628
+	1105, 601; 1158, 589
+	1158, 589; 1193, 557
+	1193, 557; 1234, 540
+	1334, 474; 1370, 487
+	1370, 487; 1393, 519
+	1393, 519; 1428, 512
+	1428, 512; 1453, 484
+	1590, 485; 1590, 485
+	1641, 467; 1688, 511
+	1688, 511; 1727, 505
+	1727, 505; 1754, 477
+	1894, 447; 1966, 454
+	1590, 485; 1641, 467
+	1536, 495; 1590, 485
+	1453, 484; 1481, 475
+	1481, 475; 1497, 459
+	1497, 459; 1536, 495
+	1283, 492; 1334, 474
+	1234, 540; 1283, 492
+	1754, 477; 1799, 493
+	1799, 493; 1894, 447
+	1966, 454; 2049, 498
+	2049, 498; 2109, 545
+	2109, 545; 2188, 593
+	2188, 593; 2222, 588
+	2222, 588; 2275, 626
+	314, 480; 350, 463
+	133, 521; 207, 457
+	84, 465; 99, 513
+	247, 489; 314, 480
+	350, 463; 404, 506
+	438, 510; 479, 477
+	541, 463; 582, 459
+	736, 464; 785, 504
+	888, 578; 996, 626
+	2817, 527; 2840, 516
+	2840, 516; 2861, 526
+	2649, 616; 2624, 638
+	2649, 616; 2717, 605
+	2717, 605; 2717, 605
+	2717, 605; 2772, 571
+	2772, 571; 2835, 541
+	2835, 541; 2892, 555
+	2892, 555; 3015, 605
+	3069, 612; 3114, 616
+	2347, 619; 2391, 591
+	2391, 591; 2420, 590
+	2420, 590; 2492, 554
+	2492, 554; 2526, 532
+	2526, 532; 2555, 504
+	2555, 504; 2599, 466
+	2599, 466; 2627, 471
+	2627, 471; 2674, 521
+	2674, 521; 2700, 519
+	2700, 519; 2766, 462
+	2786, 460; 2766, 462
+	2786, 460; 2824, 490
+	2896, 469; 2929, 469
+	3052, 469; 3084, 486
+	3144, 482; 3168, 461
+	3168, 461; 3199, 482
+	3084, 486; 3144, 482
+	3052, 469; 2978, 508
+	2929, 469; 2978, 508
+	2824, 490; 2896, 469
+	3199, 482; 3239, 509
+	3239, 509; 3299, 481
+	3299, 481; 3329, 489
+	3329, 489; 3369, 473
+	3369, 473; 3369, 473
+	3369, 473; 3412, 476
+	3412, 476; 3442, 516
+	3442, 516; 3495, 503
+	3495, 503; 3527, 471
+	3527, 471; 3551, 470
+	3551, 470; 3581, 496
+	3581, 496; 3619, 537
+	3619, 537; 3680, 559
+	3680, 559; 3795, 622
+	3882, 624; 3936, 590
+	3936, 590; 3949, 595
+	3949, 595; 4046, 536
+	4046, 536; 4058, 532
+	4058, 532; 4092, 489
+	4092, 489; 4143, 469
+	4143, 469; 4215, 518
+	4215, 518; 4316, 459
+	4316, 459; 4353, 494
+	4353, 494; 4415, 481
+	4415, 481; 4449, 466
+	4449, 466; 4501, 510
+	4501, 510; 4539, 504
+	4539, 504; 4574, 479
+	4574, 479; 4622, 487
+	4736, 440; 4836, 488
+	4836, 488; 4836, 488
+	4622, 487; 4736, 440
+	4836, 488; 4887, 500
+	4887, 500; 4945, 473
+	4114, 640; 4077, 619
+	4077, 619; 4040, 640
+Player: 205, 563, Alien, Alien Walk 1
+Pet: None
+Objects: 38
+	1, 585, Stuff, Space Ship
+	230, 689, Platforms, Platform Box
+	631, 687, Platforms, Platform Box
+	631, 644, Platforms, Platform Box
+	726, 687, Platforms, Platform Block
+	726, 644, Platforms, Platform Block
+	726, 601, Platforms, Platform Box
+	823, 687, Platforms, Platform Block
+	725, 560, Platforms, Platform Painting
+	535, 687, Platforms, Platform Box
+	1684, 604, Platforms, Left Stair
+	1982, 604, Platforms, Middle Stair
+	2045, 604, Platforms, Middle Stair
+	1548, 107, Stuff, Sun 1
+	179, 93, Stuff, Cloud Type 3-1
+	570, 128, Stuff, Cloud Type 1-3
+	632, 136, Stuff, Cloud Type 1-3
+	671, 179, Stuff, Cloud Type 1-3
+	701, 67, Stuff, Cloud Type 3-1
+	1388, 150, Stuff, Cloud Type 2-1
+	1731, 94, Stuff, Cloud Type 4-1
+	2346, 82, Stuff, Cloud Type 4-1
+	3160, 81, Stuff, Cloud Type 4-3
+	3857, 81, Stuff, Cloud Type 4-3
+	2617, 539, Stuff, Car
+	2810, 501, Rocks, Rock 1
+	2146, 688, Platforms, Platform Block
+	2146, 645, Platforms, Platform Block
+	2507, 690, Platforms, Platform Block
+	2508, 645, Platforms, Platform Box
+	672, 607, Rocks, Rock 2
+	3968, 581, Stuff, Barrel
+	4028, 648, Platforms, Platform Painting
+	4028, 691, Platforms, Platform Block
+	4026, 608, Rocks, Rock 2
+	4064, 607, Rocks, Rock 2
+	4045, 593, Rocks, Rock 3
+	4129, 608, Platforms, Right Stair
+Tiles: 66
+	0, 10, Junkyard, Dirt 3
+	4, 10, Junkyard, Dirt 2
+	8, 10, Junkyard, Dirt 1
+	12, 10, Junkyard, Dirt 2
+	16, 10, Junkyard, Dirt 1
+	20, 10, Junkyard, Dirt 3
+	24, 10, Junkyard, Dirt 2
+	28, 10, Junkyard, Dirt 3
+	32, 10, Junkyard, Dirt 1
+	36, 10, Junkyard, Dirt 1
+	40, 10, Junkyard, Dirt 2
+	44, 10, Junkyard, Dirt 1
+	0, 6, Junkyard, Fence
+	5, 6, Junkyard, Fence
+	10, 6, Junkyard, Fence
+	15, 6, Junkyard, Fence
+	20, 6, Junkyard, Fence
+	25, 6, Junkyard, Fence
+	30, 6, Junkyard, Fence
+	35, 6, Junkyard, Fence
+	40, 6, Junkyard, Fence
+	45, 6, Junkyard, Fence
+	0, 6, Junkyard, Background Pile 1
+	8, 6, Junkyard, Background Pile 1
+	16, 6, Junkyard, Background Pile 1
+	24, 6, Junkyard, Background Pile 1
+	32, 6, Junkyard, Background Pile 1
+	40, 6, Junkyard, Background Pile 1
+	4, 6, Junkyard, Pile 2
+	8, 6, Junkyard, Pile 3
+	12, 6, Junkyard, Pile 4
+	16, 6, Junkyard, Pile 5
+	20, 6, Junkyard, Pile 3
+	24, 6, Junkyard, Pile 2
+	28, 6, Junkyard, Pile 1
+	32, 6, Junkyard, Pile 4
+	36, 6, Junkyard, Pile 5
+	40, 6, Junkyard, Pile 3
+	44, 6, Junkyard, Pile 2
+	48, 10, Junkyard, Dirt 3
+	52, 10, Junkyard, Dirt 2
+	56, 10, Junkyard, Dirt 1
+	60, 10, Junkyard, Dirt 3
+	64, 10, Junkyard, Dirt 2
+	68, 10, Junkyard, Dirt 1
+	72, 10, Junkyard, Dirt 3
+	76, 10, Junkyard, Dirt 2
+	50, 6, Junkyard, Fence
+	55, 6, Junkyard, Fence
+	60, 6, Junkyard, Fence
+	65, 6, Junkyard, Fence
+	70, 6, Junkyard, Fence
+	75, 6, Junkyard, Fence
+	48, 6, Junkyard, Background Pile 1
+	56, 6, Junkyard, Background Pile 1
+	64, 6, Junkyard, Background Pile 1
+	72, 6, Junkyard, Background Pile 1
+	48, 6, Junkyard, Pile 2
+	52, 6, Junkyard, Pile 3
+	56, 6, Junkyard, Pile 4
+	60, 6, Junkyard, Pile 5
+	64, 6, Junkyard, Pile 3
+	68, 6, Junkyard, Pile 2
+	72, 6, Junkyard, Pile 1
+	76, 6, Junkyard, Pile 2
+	0, 6, Junkyard, Pile 3
+AI: 5
+	1417, 661, Brown Rat, Brown Rat Walk 2
+	1440, 661, White Rat, White Rat Walk 2
+	1877, 493, People, Hobo Neutral
+	4683, 514, People, FBI Agent Walk 1
+	3727, 665, Gray Rat, Gray Rat Walk 2
+Items: 16
+	66, 535, Items, Wig
+	777, 524, Items, Banana
+	521, 384, Items, Toothbrush
+	323, 650, Items, Pylon
+	418, 651, Items, Pylon
+	260, 394, Items, Red Can
+	764, 412, Items, Spray Cheese
+	1312, 388, Items, Shampoo
+	1617, 386, Items, Glass
+	3109, 437, Items, Whistle
+	3330, 393, Items, Box
+	3478, 669, Items, FBI Suit
+	2845, 662, Items, Flowery Dress
+	2459, 653, Items, Poison
+	2018, 516, Items, Christmas Tree
+	4249, 593, Items, Pizza

@@ -3,6 +3,10 @@
 #if _DEBUG
 D3DXVECTOR2 playerNewPosition;
 D3DXVECTOR2 playerLastPosition;
+
+D3DXVECTOR2 playerCollisionPointA;
+D3DXVECTOR2 playerCollisionPointB;
+D3DXVECTOR2 playerCollisionPosition;
 #endif
 
 Game::Game(Variables * settings,
@@ -274,6 +278,8 @@ void Game::processKeyboardInput() {
 }
 
 void Game::processMenuInput() {
+	if(!GetFocus()) { return; }
+
 	// go back in the menu (or quit the game / open the menu, depending)
 	if(keyboardState[DIK_ESCAPE] & 0x80) {
 		if(!menuBackKeyPressed) { menu->back(); }
@@ -306,6 +312,8 @@ void Game::processMenuInput() {
 }
 
 void Game::processPlayerInput() {
+	if(!GetFocus()) { return; }
+
 	if(menu->isActive()) { return; }
 
 	if(level == NULL) { return; }

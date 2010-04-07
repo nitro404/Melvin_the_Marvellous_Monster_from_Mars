@@ -16,7 +16,7 @@ public:
 	~Pet();
 	
 	void tick();
-	void draw(LPDIRECT3DDEVICE9 d3dDevice);
+	void draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice);
 
 private:
 	Sprite * petSprite;

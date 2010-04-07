@@ -1,0 +1,102 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 118, 12
+Edges: 26
+	9792, 733; 2, 734
+	255, 690; 159, 690
+	255, 647; 160, 647
+	256, 604; 160, 604
+	255, 561; 160, 561
+	254, 519; 160, 519
+	639, 417; 258, 417
+	1086, 417; 705, 417
+	255, 478; 159, 478
+	3718, 692; 3621, 692
+	3621, 692; 3621, 692
+	3716, 648; 3621, 648
+	3779, 618; 3719, 618
+	3866, 530; 3793, 530
+	3867, 576; 3794, 576
+	3876, 486; 3784, 486
+	204, 468; 204, 468
+	204, 468; 221, 455
+	221, 455; 243, 468
+	4930, 690; 5024, 690
+	5086, 656; 5022, 654
+	5141, 654; 5088, 656
+	5204, 655; 5142, 654
+	3782, 689; 3877, 689
+	3879, 648; 3780, 648
+	3876, 607; 3781, 607
+Player: -24, 606, Alien, Alien Walk 1
+Pet: None
+Objects: 20
+	156, 643, Platforms, Platform Block
+	156, 600, Platforms, Platform Block
+	156, 557, Platforms, Platform Block
+	156, 686, Platforms, Platform Block
+	156, 514, Platforms, Platform Block
+	156, 472, Platforms, Platform Block
+	3718, 602, Stuff, Barrel
+	5505, 320, Stuff, Caution Sign
+	3786, 524, Stuff, Computer
+	3618, 685, Platforms, Platform Block
+	3618, 642, Platforms, Platform Block
+	3778, 686, Platforms, Platform Block
+	3778, 643, Platforms, Platform Block
+	3778, 601, Platforms, Platform Block
+	3780, 480, Platforms, Platform Box
+	5004, 641, Items, Cow
+	5066, 641, Items, Cow
+	5130, 641, Items, Cow
+	192, 434, Rocks, Rock 2
+	4927, 683, Platforms, Platform Box
+Tiles: 39
+	4, 4, Factory, Hall Locker
+	5, 4, Factory, Hall Locker
+	6, 4, Factory, Hall Locker
+	7, 4, Factory, Hall Locker
+	8, 4, Factory, Hall Locker
+	9, 4, Factory, Hall Locker
+	10, 4, Factory, Hall Alarm
+	11, 4, Factory, Hall Locker
+	12, 4, Factory, Hall Locker
+	13, 4, Factory, Hall Locker
+	14, 4, Factory, Hall Locker
+	15, 4, Factory, Hall Locker
+	16, 4, Factory, Hall Locker
+	29, 4, Factory, Split Off Hall
+	21, 4, Factory, Hall Door
+	0, 4, Factory, Plant Wall
+	17, 4, Factory, Plant Wall
+	25, 4, Factory, Plant Wall
+	33, 4, Factory, Plant Wall
+	37, 4, Factory, Hall Door
+	41, 4, Factory, Plant Wall
+	45, 4, Factory, Plant Wall
+	49, 4, Factory, Plant Wall
+	53, 4, Factory, Hall Door
+	57, 4, Factory, Turbine Left
+	61, 4, Factory, Turbine Middle
+	65, 4, Factory, Turbine Middle
+	69, 4, Factory, Turbine Right
+	73, 4, Factory, Turbine Station
+	78, 4, Factory, Plant Wall
+	82, 4, Factory, Plant Wall
+	77, 4, Factory, Hall Alarm
+	86, 4, Factory, Fuel Cells
+	94, 4, Factory, Dark Wall
+	98, 4, Factory, Plant Wall
+	102, 4, Factory, Plant Wall
+	106, 4, Factory, Control Room Left
+	110, 4, Factory, Control Room Middle
+	114, 4, Factory, Control Room Right
+AI: 5
+	3793, 415, White Rat, White Rat Walk 1
+	1142, 516, People, Scientist 1 Stationary
+	7067, 510, People, FBI Agent Stationary
+	5558, 510, People, BioHazard Person Stationary
+	6005, 511, People, BioHazard Person Stationary
+Items: 2
+	3518, 652, Items, Spray Cheese
+	959, 342, Items, BioHazard Suit

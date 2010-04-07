@@ -1,0 +1,55 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 16, 12
+Edges: 20
+	0, 606; 1, 764
+	1, 764; 260, 768
+	260, 768; 355, 767
+	355, 767; 481, 767
+	481, 767; 524, 767
+	524, 767; 574, 766
+	574, 766; 659, 768
+	659, 768; 698, 767
+	698, 767; 725, 766
+	725, 766; 734, 764
+	928, 767; 1023, 767
+	831, 767; 734, 764
+	831, 767; 928, 767
+	928, 724; 735, 722
+	833, 682; 833, 683
+	833, 682; 925, 685
+	925, 685; 925, 685
+	330, 725; 329, 725
+	330, 725; 238, 723
+	224, 680; 26, 681
+Player: -72, 623, Alien, Alien Walk 1
+Pet: None
+Objects: 8
+	11, 611, Stuff, Space Ship
+	731, 719, Platforms, Platform Block
+	828, 719, Platforms, Platform Block
+	829, 676, Platforms, Platform Box
+	29, 89, Stuff, Sun 1
+	256, 87, Stuff, Cloud Type 4-2
+	470, 49, Stuff, Cloud Type 3-3
+	233, 719, Platforms, Platform Box
+Tiles: 14
+	15, 6, Junkyard, Fence
+	10, 6, Junkyard, Fence
+	5, 6, Junkyard, Fence
+	0, 6, Junkyard, Fence
+	0, 10, Junkyard, Dirt 3
+	4, 10, Junkyard, Dirt 2
+	8, 10, Junkyard, Dirt 1
+	12, 10, Junkyard, Dirt 2
+	0, 6, Junkyard, Background Pile 1
+	8, 6, Junkyard, Background Pile 1
+	0, 6, Junkyard, Pile 3
+	4, 6, Junkyard, Pile 2
+	8, 6, Junkyard, Pile 3
+	12, 6, Junkyard, Pile 4
+AI: 0
+Items: 3
+	455, 678, Items, Pylon
+	632, 680, Items, Pylon
+	831, 604, Items, Pylon

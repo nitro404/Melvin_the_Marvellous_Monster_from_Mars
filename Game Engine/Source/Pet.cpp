@@ -38,11 +38,15 @@ void Pet::tick() {
 //	setPosition(player.getX() - player.getOffsetX(), player.getY() - player.getOffsetY());
 }
 
-void Pet::draw(LPDIRECT3DDEVICE9 d3dDevice) {
+void Pet::draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice) {
+	D3DXVECTOR2 offsetPosition = position;
+	if(scrollingOffset != NULL) {
+		offsetPosition.x -= (*scrollingOffset);
+	}
 	if(movementDirection >= 0) {
-		petSprite->drawBackwards(&scale, &offset, 0, NULL, &position, d3dDevice);
+		petSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
 	}
 	else {
-		petSprite->draw(&scale, &offset, 0, NULL, &position, d3dDevice);
+		petSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
 	}
 }

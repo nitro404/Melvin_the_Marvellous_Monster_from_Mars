@@ -4,6 +4,10 @@
 #if _DEBUG
 extern D3DXVECTOR2 playerNewPosition;
 extern D3DXVECTOR2 playerLastPosition;
+
+extern D3DXVECTOR2 playerCollisionPointA;
+extern D3DXVECTOR2 playerCollisionPointB;
+extern D3DXVECTOR2 playerCollisionPosition;
 #endif
 
 const int Player::DISGUISE_NONE = -1;
@@ -61,7 +65,7 @@ Player::Player(float xPos,
 	this->position = D3DXVECTOR2(xPos, yPos);
 	this->velocity = D3DXVECTOR2(0, 0);
 	this->maxVelocity = 2;
-	this->velocityStep = 18.0f;
+	this->velocityStep = 20.0f;
 }
 
 Player::~Player() {
@@ -150,8 +154,10 @@ void Player::loadSprites() {
 }
 
 void Player::tick() {
+	static D3DXVECTOR2 previousLastPosition = position;
 	D3DXVECTOR2 lastPosition = position;
-	D3DXVECTOR2 lastBottomCenter(getX(), position.y + getHeight());
+	D3DXVECTOR2 lastBottomCenter(position.x + offset.x, position.y + size.y);
+	D3DXVECTOR2 previousLastBottomCenter(previousLastPosition.x + offset.x, previousLastPosition.y + size.y);
 	playerColour = D3DCOLOR_RGBA(255, 255, 255, 255);
 
 	jumpTime -= (float) timeElapsed;
@@ -237,14 +243,14 @@ void Player::tick() {
 	}
 
 	D3DXVECTOR2 intersection;
-	D3DXVECTOR2 bottomCenter(getX(), position.y + getHeight());
+	D3DXVECTOR2 bottomCenter(position.x + offset.x, position.y + size.y);
 #if _DEBUG
 	playerNewPosition = bottomCenter;
-	playerLastPosition = lastBottomCenter;
+	playerLastPosition = previousLastBottomCenter;
 #endif
-	if(level.checkCollision(lastBottomCenter, bottomCenter, intersection)) {
-		position.y = intersection.y - size.y - 0.1f;
-		position.x = intersection.x - offset.x;
+	double newY;
+	if(level.checkCollision(previousLastBottomCenter, bottomCenter, &intersection, &newY)) {
+		position.y = (float) (newY - size.y - 0.1f);
 		velocity.x = 0;
 		velocity.y = 0;
 	}
@@ -259,33 +265,38 @@ void Player::tick() {
 		position.x = (float) -spacing;
 	}
 
-	if(getX() + getOffsetX() - spacing + (velocityStep * timeElapsed * 10) > windowWidth) {
-		position.x = windowWidth - (getOffsetX() * 2) + spacing;
+	if(getX() + getOffsetX() - spacing + (velocityStep * timeElapsed * 10) > level.mapWidth) {
+		position.x = level.mapWidth - (getOffsetX() * 2) + spacing;
 	}
 
 	frontOfPlayer = D3DXVECTOR2((movementDirection >= 0) ? getX() + offset.x - spacing : getX() - offset.x + spacing, getY() + 15);
+	previousLastPosition = lastPosition;
 }
 
-void Player::draw(LPDIRECT3DDEVICE9 d3dDevice) {
+void Player::draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice) {
+	D3DXVECTOR2 offsetPosition = position;
+	if(scrollingOffset != NULL) {
+		offsetPosition.x -= (*scrollingOffset);
+	}
 	if(movementDirection >= 0) {
-		playerSprite->drawBackwards(&scale, &offset, 0, NULL, &position, d3dDevice);
+		playerSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
 		if(disguise != DISGUISE_NONE) {
-			disguiseSprite->drawBackwards(&scale, &offset, 0, NULL, &position, d3dDevice);
+			disguiseSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
 		}
 	}
 	else {
-		playerSprite->draw(&scale, &offset, 0, NULL, &position, d3dDevice);
+		playerSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
 		if(disguise != DISGUISE_NONE) {
-			disguiseSprite->draw(&scale, &offset, 0, NULL, &position, d3dDevice);
+			disguiseSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
 		}
 	}
 
 #if _DEBUG
-//	testDrawEmptyBox(d3dDevice, getX(), getY(), offset.x, offset.y);
-//	testDrawPoint(d3dDevice, getX(), getY());
+//	testDrawEmptyBox(d3dDevice, getX(), getY(), offset.x, offset.y, &externalScrollingOffset);
+//	testDrawPoint(d3dDevice, getX(), getY(), &externalScrollingOffset);
 
-//	testDrawPoint(d3dDevice, frontOfPlayer.x, frontOfPlayer.y);
-//	testDrawEmptyCircle(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, grabRadius, grabRadius);
+//	testDrawPoint(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, &externalScrollingOffset);
+//	testDrawEmptyCircle(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, grabRadius, grabRadius, &externalScrollingOffset);
 #endif
 }
 

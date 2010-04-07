@@ -1,7 +1,13 @@
 #include "Level.h"
 
+#if _DEBUG
 extern D3DXVECTOR2 playerNewPosition;
 extern D3DXVECTOR2 playerLastPosition;
+int externalScrollingOffset;
+extern D3DXVECTOR2 playerCollisionPointA;
+extern D3DXVECTOR2 playerCollisionPointB;
+extern D3DXVECTOR2 playerCollisionPosition;
+#endif
 
 Level::Level(const char * fileName,
 			 SpriteSheets * externalSpriteSheets,
@@ -13,6 +19,11 @@ Level::Level(const char * fileName,
 				: name(NULL),
 				  player(NULL),
 				  pet(NULL),
+				  scrollingOffset(0),
+				  xDimension(0),
+				  yDimension(0),
+				  mapWidth(0),
+				  mapHeight(0),
 				  spriteSheets(externalSpriteSheets),
 				  timeElapsed(externalTimeElapsed),
 				  windowWidth(externalWindowWidth),
@@ -64,13 +75,28 @@ Level::~Level() {
 	}
 }
 
-bool Level::checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition, D3DXVECTOR2 & intersection) {
+bool Level::checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition, D3DXVECTOR2 * intersection, double * newY) {
+	double tempY;
+	double minY;
+	bool isColliding = false;
 	for(int i=0;i<boundaries.size();i++) {
-		if(CollisionHandler::checkLineIntersection(*boundaries.elementAt(i), lastPosition, newPosition, intersection)) {
-			return true;
+		if(CollisionHandler::checkLineIntersection(*boundaries.elementAt(i), lastPosition, newPosition, intersection, &tempY)) {
+			if(!isColliding) {
+				minY = tempY;
+			}
+			else {
+// Perhaps check if two points form angle < 180, if so then extend each x coordinate?
+				if(tempY < minY) {
+					minY = tempY;
+				}
+			}
+			isColliding = true;
 		}
 	}
-	return false;
+	if(newY != NULL && isColliding) {
+		*newY = minY;
+	}
+	return isColliding;
 }
 
 void Level::tick() {
@@ -88,40 +114,50 @@ void Level::tick() {
 	}
 	player->tick();
 	if(pet != NULL) { pet->tick(); }
+
+	int halfWidth = (windowWidth / 2) - 1;
+	float xPos = player->getCenter().x;
+	if(xPos > halfWidth && xPos < (mapWidth - 1) - halfWidth) {
+		scrollingOffset = (int) (player->getCenter().x - halfWidth);
+	}
+#if _DEBUG
+	externalScrollingOffset = scrollingOffset;
+#endif
 }
 
 void Level::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 	for(unsigned int i=0;i<tiles.size();i++) {
-		tiles.at(i)->draw(d3dDevice);
+		tiles.at(i)->draw(&scrollingOffset, d3dDevice);
 	}
 	for(unsigned int i=0;i<objects.size();i++) {
-		objects.at(i)->draw(d3dDevice);
+		objects.at(i)->draw(&scrollingOffset, d3dDevice);
 	}
 	for(unsigned int i=0;i<ai.size();i++) {
-		ai.at(i)->draw(d3dDevice);
+		ai.at(i)->draw(&scrollingOffset, d3dDevice);
 	}
-	player->draw(d3dDevice);
-	if(pet != NULL) { pet->draw(d3dDevice); }
+	player->draw(&scrollingOffset, d3dDevice);
+	if(pet != NULL) { pet->draw(&scrollingOffset, d3dDevice); }
 	for(unsigned int i=0;i<items.size();i++) {
-		items.at(i)->draw(d3dDevice);
+		items.at(i)->draw(&scrollingOffset, d3dDevice);
 	}
 
 #if _DEBUG
-	D3DXVECTOR2 intersection;
-
-	testDrawPoint(d3dDevice, (float) playerLastPosition.x, (float) playerLastPosition.y, D3DCOLOR_XRGB(255, 0, 0));
-	testDrawPoint(d3dDevice, (float) playerNewPosition.x, (float) playerNewPosition.y, D3DCOLOR_XRGB(255, 0, 0));
+	testDrawPoint(d3dDevice, (float) playerLastPosition.x, (float) playerLastPosition.y, D3DCOLOR_XRGB(255, 0, 255), &externalScrollingOffset);
+	testDrawPoint(d3dDevice, (float) playerNewPosition.x, (float) playerNewPosition.y, D3DCOLOR_XRGB(255, 0, 255), &externalScrollingOffset);
 
 	testDrawLine(d3dDevice, (float) playerLastPosition.x, (float) playerLastPosition.y,
-							(float) playerNewPosition.x, (float) playerNewPosition.y, D3DCOLOR_XRGB(255, 0, 0));
+							(float) playerNewPosition.x, (float) playerNewPosition.y, D3DCOLOR_XRGB(255, 0, 255), &externalScrollingOffset);
 
 	for(int i=0;i<boundaries.size();i++) {
 		boundaries.elementAt(i)->draw(d3dDevice);
 
-		if(CollisionHandler::checkLineIntersection(*boundaries.elementAt(i), playerLastPosition, playerNewPosition, intersection)) {
-			testDrawBox(d3dDevice, 40, 40, 70, 70, D3DCOLOR_XRGB(255, 255, 255));
+		if(CollisionHandler::checkLineIntersection(*boundaries.elementAt(i), playerLastPosition, playerNewPosition, NULL, NULL)) {
+			testDrawBox(d3dDevice, 40, 40, 70, 70, D3DCOLOR_XRGB(255, 255, 255), &externalScrollingOffset);
 		}
 	}
+
+	testDrawLine(d3dDevice, playerCollisionPointA.x, playerCollisionPointA.y, playerCollisionPointB.x, playerCollisionPointB.y, D3DCOLOR_XRGB(255, 0, 0), &externalScrollingOffset);
+	testDrawPoint(d3dDevice, playerCollisionPosition.x, playerCollisionPosition.y, D3DCOLOR_XRGB(255, 0, 0), &externalScrollingOffset);
 #endif
 }
 
@@ -131,8 +167,20 @@ void Level::readFrom(ifstream &in) {
 	char * temp, * temp2, * xData, * yData;
 
 	in.getline(input, maxLength); // header
+
 	in.getline(input, maxLength); // grid size
-	in.getline(input, maxLength); // dimensions
+
+	in.getline(input, maxLength); // dimension
+	temp = strtrimcpy(input);
+	xData = strchr(temp, ':') + sizeof(char);
+	yData = strchr(xData, ',');
+	*yData = '\0';
+	yData += sizeof(char);
+	xDimension = atoi(xData);
+	yDimension = atoi(yData);
+	delete [] temp;
+	mapWidth = xDimension * Constants::GRID_SIZE;
+	mapHeight = yDimension * Constants::GRID_SIZE;
 
 	in.getline(input, maxLength); // edges
 	int numberOfEdges = atoi(strchr(input, ':') + sizeof(char));
@@ -150,7 +198,7 @@ void Level::readFrom(ifstream &in) {
 	*strchr(yData, ',') = '\0';
 	playerSpawn = Vertex(atoi(xData), atoi(yData));
 	delete [] temp;
-	player->setPosition((float) playerSpawn.x + player->getOffsetX(), (float) playerSpawn.y + player->getOffsetY());
+	player->setPosition((float) playerSpawn.x, (float) playerSpawn.y);
 
 	in.getline(input, maxLength); // pet
 	temp = strtrimcpy(input);
@@ -170,7 +218,7 @@ void Level::readFrom(ifstream &in) {
 		*strchr(yData, ',') = '\0';
 		petSpawn = Vertex(atoi(xData), atoi(yData));
 		delete [] temp;
-		pet->setPosition((float) petSpawn.x + pet->getOffsetX(), (float) petSpawn.y + pet->getOffsetY());
+		pet->setPosition((float) petSpawn.x, (float) petSpawn.y);
 	}
 
 	in.getline(input, maxLength); // objects

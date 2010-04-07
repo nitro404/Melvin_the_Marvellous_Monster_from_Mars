@@ -13,10 +13,16 @@ public:
 	virtual ~Object() { }
 
 	virtual void tick() { }
-	virtual void draw(LPDIRECT3DDEVICE9 d3dDevice) {
-		if(sprite != NULL) { sprite->draw(&scale, &offset, orientation, &offset, &position, d3dDevice); }
+	virtual void draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice) {
+		if(sprite != NULL) {
+			D3DXVECTOR2 offsetPosition = position;
+			if(scrollingOffset != NULL) {
+				offsetPosition.x -= (*scrollingOffset);
+			}
+			sprite->draw(&scale, &offset, orientation, &offset, &offsetPosition, d3dDevice);
+		}
 #if _DEBUG
-		testDrawEmptyCircle(d3dDevice, getX(), getY(), getScaledRadius(), getScaledRadius(), _DEBUG_COLOUR);
+		testDrawEmptyCircle(d3dDevice, getX(), getY(), getScaledRadius(), getScaledRadius(), _DEBUG_COLOUR, &externalScrollingOffset);
 #endif
 	}
 	virtual void reset() { }

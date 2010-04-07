@@ -1,0 +1,55 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 16, 12
+Edges: 19
+	1, 766; 170, 765
+	170, 765; 220, 765
+	220, 765; 288, 765
+	288, 765; 345, 765
+	345, 765; 431, 766
+	431, 766; 489, 765
+	489, 765; 555, 768
+	555, 768; 615, 766
+	615, 766; 677, 768
+	677, 768; 723, 767
+	723, 767; 783, 768
+	783, 768; 899, 768
+	899, 768; 979, 766
+	979, 766; 1020, 768
+	349, 722; 255, 722
+	443, 719; 349, 722
+	446, 681; 350, 682
+	509, 654; 451, 654
+	540, 718; 562, 730
+Player: -72, 573, Alien, Alien Walk 1
+Pet: None
+Objects: 8
+	452, 64, Stuff, Cloud Type 3-3
+	65, 161, Stuff, Cloud Type 2-3
+	449, 638, Stuff, Barrel
+	347, 718, Platforms, Platform Painting
+	348, 673, Platforms, Platform Box
+	249, 717, Platforms, Platform Block
+	513, 718, Rocks, Rock 1
+	512, 696, Rocks, Rock 2
+Tiles: 14
+	15, 5, Junkyard, Fence
+	10, 5, Junkyard, Fence
+	5, 5, Junkyard, Fence
+	0, 5, Junkyard, Fence
+	0, 10, Junkyard, Dirt 3
+	4, 10, Junkyard, Dirt 2
+	8, 10, Junkyard, Dirt 1
+	12, 10, Junkyard, Dirt 3
+	0, 6, Junkyard, Background Pile 1
+	8, 6, Junkyard, Background Pile 1
+	0, 6, Junkyard, Pile 5
+	4, 6, Junkyard, Pile 3
+	8, 6, Junkyard, Pile 2
+	12, 6, Junkyard, Pile 1
+AI: 1
+	761, 543, People, FBI Agent Walk 1
+Items: 3
+	354, 614, Items, Wig
+	-1, 693, Items, Hammer
+	586, 695, Items, Pizza

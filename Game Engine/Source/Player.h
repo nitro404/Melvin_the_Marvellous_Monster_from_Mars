@@ -15,7 +15,7 @@ public:
 	~Player();
 	
 	void tick();
-	void draw(LPDIRECT3DDEVICE9 d3dDevice);
+	void draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice);
 
 	void moveLeft();
 	void moveRight();

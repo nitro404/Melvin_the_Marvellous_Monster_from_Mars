@@ -8,13 +8,16 @@
 #include "Pet.h"
 #include "Graph.h"
 
+#if _DEBUG
+extern int externalScrollingOffset;
+#endif
+
 class Level {
 public:
 	Level(const char * fileName, SpriteSheets * externalSpriteSheets, Variables * settings, double & timeElapsed, int windowWidth, int windowHeight, LPDIRECT3DDEVICE9 d3dDevice);
 	~Level();
 
-//	bool checkCollision(D3DXVECTOR2 & position, double radius);
-	bool checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition, D3DXVECTOR2 & intersection);
+	bool checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition, D3DXVECTOR2 * intersection, double * newY);
 
 	void tick();
 	void draw(LPDIRECT3DDEVICE9 d3dDevice);
@@ -30,6 +33,11 @@ public:
 	vector<Object *> ai;
 	vector<Object *> items;
 
+	int xDimension;
+	int yDimension;
+	int mapWidth;
+	int mapHeight;
+
 private:
 	char * name;
 	SpriteSheets * spriteSheets;
@@ -42,5 +50,6 @@ private:
 	double & timeElapsed;
 	int windowWidth;
 	int windowHeight;
+	int scrollingOffset;
 	LPDIRECT3DDEVICE9 d3dDevice;
 };

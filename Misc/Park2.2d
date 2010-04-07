@@ -1,0 +1,24 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 16, 12
+Edges: 1
+	1024, 767; 2, 766
+Player: -72, 595, Alien, Alien Walk 1
+Pet: None
+Objects: 5
+	494, 368, Stuff, Tree 1
+	48, 368, Stuff, Tree 1
+	805, 230, Stuff, Hydro Line
+	30, 19, Stuff, Cloud Type 4-1
+	538, -3, Stuff, Cloud Type 4-3
+Tiles: 4
+	0, 10, Paths, Path
+	8, 10, Paths, Split Off Path
+	12, 10, Paths, Path and Road
+	4, 10, Paths, Path
+AI: 1
+	314, 625, People, Granny Neutral
+Items: 3
+	529, 449, Items, Glasses
+	646, 692, Items, Glass
+	969, 694, Items, Glass

@@ -1,0 +1,92 @@
+2D Cartesian World: Version 1.0
+Grid Size: 64
+Dimensions: 48, 12
+Edges: 43
+	2, 739; 3071, 738
+	576, 611; 471, 611
+	671, 651; 578, 652
+	765, 691; 678, 691
+	944, 696; 1035, 696
+	944, 654; 1037, 654
+	1064, 625; 1004, 616
+	1568, 698; 1476, 698
+	1568, 653; 1473, 654
+	1457, 587; 1513, 584
+	1536, 613; 1501, 609
+	1444, 590; 1397, 582
+	1441, 567; 1441, 567
+	1441, 567; 1404, 548
+	1549, 569; 1466, 560
+	1547, 517; 1495, 538
+	1495, 538; 1406, 525
+	1467, 510; 1402, 497
+	1457, 481; 1404, 457
+	1541, 425; 1496, 445
+	1400, 430; 1455, 444
+	1025, 592; 963, 599
+	963, 599; 918, 588
+	975, 574; 1057, 571
+	975, 574; 928, 557
+	999, 547; 931, 530
+	999, 547; 1064, 525
+	1064, 525; 1064, 525
+	987, 530; 917, 504
+	1075, 479; 1023, 496
+	969, 488; 929, 469
+	1014, 454; 1057, 432
+	570, 555; 515, 581
+	493, 555; 438, 527
+	564, 487; 504, 517
+	454, 590; 515, 581
+	493, 555; 534, 538
+	445, 477; 504, 517
+	969, 488; 1023, 471
+	1467, 510; 1555, 473
+	1457, 481; 1507, 463
+	1686, 660; 1637, 661
+	2338, 695; 2526, 694
+Player: 209, 245, Alien, Alien Walk 1
+Pet: None
+Objects: 16
+	86, 403, Stuff, Tree 1
+	420, 399, Stuff, Tree 2
+	898, 388, Stuff, Tree 3
+	1380, 381, Stuff, Tree 3
+	1785, 367, Stuff, Tree 2
+	1967, 228, Stuff, Hydro Line
+	2390, 227, Stuff, Hydro Line
+	2830, 227, Stuff, Hydro Line
+	470, 605, Platforms, Right Stair
+	938, 650, Platforms, Platform Painting
+	940, 691, Platforms, Platform Box
+	1615, 649, Items, Cow
+	2334, 689, Platforms, Platform Box
+	2430, 689, Platforms, Platform Box
+	1472, 692, Platforms, Platform Block
+	1471, 649, Platforms, Platform Block
+Tiles: 12
+	0, 10, Paths, Grass
+	4, 10, Paths, Grass
+	8, 10, Paths, Grass
+	12, 10, Paths, End Path
+	16, 10, Paths, Path
+	20, 10, Paths, Path
+	24, 10, Paths, Split Off Path
+	28, 10, Paths, Path and Road
+	32, 10, Paths, Road
+	36, 10, Paths, Road 2
+	40, 10, Paths, Split Off Road
+	44, 10, Paths, Road
+AI: 3
+	796, 589, People, Granny Happy
+	1320, 615, People, Girl Holding Baby Happy
+	2407, 509, People, Conductor Happy
+Items: 8
+	448, 507, Items, Glass
+	954, 459, Items, Glasses
+	-6, 662, Items, Wig
+	504, 499, Items, Pizza
+	1268, 630, Items, Basket
+	1875, 699, Items, Peach
+	3017, 658, Items, Train Whistle
+	1458, 518, Items, Whistle

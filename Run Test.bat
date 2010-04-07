@@ -20,6 +20,7 @@ ECHO.
 ECHO Running Debug executable...
 CD "%RELEASE_DIR%"
 "%GAME_EXE_DEBUG%"
+CD ..
 
 ECHO.
 ECHO Removing Debug executable...

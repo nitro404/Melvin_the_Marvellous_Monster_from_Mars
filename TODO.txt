@@ -8,6 +8,8 @@ LEVEL DESIGNER
 
 GAME ENGINE
  + Fix animations to use time
- + Fix collision detection code
+ + Fix collision detection code (y coord and max angle)
  + Finish pet following code
  + Finish grab item code
+ + Simple AI
+ + Scrolling + visibility checking
