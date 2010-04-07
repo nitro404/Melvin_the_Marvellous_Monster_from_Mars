@@ -85,7 +85,6 @@ bool Level::checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition
 				minY = tempY;
 			}
 			else {
-// Perhaps check if two points form angle < 180, if so then extend each x coordinate?
 				if(tempY < minY) {
 					minY = tempY;
 				}
