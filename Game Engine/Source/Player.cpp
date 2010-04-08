@@ -30,6 +30,7 @@ Player::Player(float xPos,
 				  level(externalLevel),
 				  disguise(DISGUISE_NONE),
 				  isJumping(false),
+				  doneJumping(true),
 				  jumpVelocity(32),
 				  jumpCooldown(0.8f),
 				  jumpTime(0),
@@ -57,7 +58,6 @@ Player::Player(float xPos,
 	loadSprites();
 
 	this->playerSprite = playerSpriteSheet->getSprite("Alien Walk 1");
-//	this->disguiseSprite = playerSpriteSheet->getSprite("Alien Walk 1 Wig");
 
 	this->scale = D3DXVECTOR2(1, 1);
 	this->size = D3DXVECTOR2(playerSprite->getWidth() * scale.x, playerSprite->getHeight() * scale.y);
@@ -76,6 +76,219 @@ Player::~Player() {
 	}
 	delete [] disguiseSprites;
 	delete [] playerSprites;
+}
+
+void Player::tick() {
+	static D3DXVECTOR2 previousLastPosition = position;
+	D3DXVECTOR2 lastPosition = position;
+	D3DXVECTOR2 lastBottomCenter(position.x + offset.x, position.y + size.y);
+	D3DXVECTOR2 previousLastBottomCenter(previousLastPosition.x + offset.x, previousLastPosition.y + size.y);
+
+	playerColour = D3DCOLOR_RGBA(255, 255, 255, 255);
+
+	jumpTime -= (float) timeElapsed;
+	if(jumpTime < 0 && velocity.x == 0 && velocity.y == 0) {
+		jumpTime = 0;
+		isJumping = false;
+	}
+
+	position.x += (isMoving) ? (((movementDirection >= 0) ? 1 : -1) * (float) (velocityStep * timeElapsed * 10)) : 0;
+	position.y += (float) (-velocity.y * (timeElapsed * 10));
+	velocity.y -= (float) (Constants::GRAVITY * (timeElapsed * 10));
+
+	playerSprite = playerSprites[movingAnimationSequence / movingAnimationInterval];
+	if(disguise != DISGUISE_NONE) {
+		disguiseSprite = disguiseSprites[disguise][(movingAnimationSequence / movingAnimationInterval)];
+	}
+
+	if(isMoving) {
+		movingAnimationSequence++;
+		if(movingAnimationSequence >= movingAnimationEnd) {
+			movingAnimationSequence = 0;
+		}
+	}
+
+	if(isGrabbing) {
+		grabAnimationSequence++;
+		if(grabAnimationSequence >= grabAnimationEnd) {
+			grabAnimationSequence = 0;
+			isGrabbing = false;
+			if(item != NULL) {
+				if(_stricmp(item->getName(), "Wig") == 0) {
+					disguise = DISGUISE_WIG;
+				}
+				else if(_stricmp(item->getName(), "BioHazard Suit") == 0) {
+					disguise = DISGUISE_BIO;
+				}
+				else if(_stricmp(item->getName(), "FBI Suit") == 0) {
+					disguise = DISGUISE_FBI;
+				}
+				else if(_stricmp(item->getName(), "Box") == 0) {
+					disguise = DISGUISE_BOX;
+				}
+			}
+			item = NULL;
+		}
+	}
+
+	if(isJumping) {
+		if(doneJumping) {
+			playerSprite = playerSprites[11];
+			if(disguise != DISGUISE_NONE) {
+				disguiseSprite = disguiseSprites[disguise][11];
+			}
+		}
+		else {
+			if(velocity.y >= -12) {
+				playerSprite = playerSprites[9];
+				if(disguise != DISGUISE_NONE) {
+					disguiseSprite = disguiseSprites[disguise][9];
+				}
+			}
+			else if(velocity.y < -12) {
+				playerSprite = playerSprites[10];
+				if(disguise != DISGUISE_NONE) {
+					disguiseSprite = disguiseSprites[disguise][10];
+				}
+			}
+		}
+	}
+
+	if(isGrabbing) {
+		int grabIndex = grabAnimationSequence / grabAnimationInterval;
+		if(item->getY() >= frontOfPlayer.y) {
+			playerSprite = playerSprites[3 + grabIndex];
+			if(disguise != DISGUISE_NONE) {
+				disguiseSprite = disguiseSprites[disguise][3 + grabIndex];
+			}
+		}
+		else {
+			playerSprite = playerSprites[6 + grabIndex];
+			if(disguise != DISGUISE_NONE) {
+				disguiseSprite = disguiseSprites[disguise][6 + grabIndex];
+			}
+		}
+	}
+
+	D3DXVECTOR2 intersection;
+	D3DXVECTOR2 bottomCenter(position.x + offset.x, position.y + size.y);
+#if _DEBUG
+	playerNewPosition = bottomCenter;
+	playerLastPosition = previousLastBottomCenter;
+#endif
+	double newY;
+	if(level.checkCollision(previousLastBottomCenter, bottomCenter, &intersection, &newY)) {
+		position.y = (float) (newY - size.y - 0.1f);
+		isJumping = false;
+		doneJumping = true;
+		velocity.x = 0;
+		velocity.y = 0;
+	}
+
+	if(position.y + size.y > windowHeight) {
+		position.y = windowHeight - size.y;
+		doneJumping = true;
+		velocity.x = 0;
+		velocity.y = 0;
+	}
+
+	if(getX() - getOffsetX() + spacing - (velocityStep * timeElapsed * 10) < 0) {
+		position.x = (float) -spacing;
+	}
+
+	if(getX() + getOffsetX() - spacing + (velocityStep * timeElapsed * 10) > level.mapWidth) {
+		position.x = level.mapWidth - (getOffsetX() * 2) + spacing;
+	}
+
+	frontOfPlayer = D3DXVECTOR2((movementDirection >= 0) ? getX() + offset.x - spacing : getX() - offset.x + spacing, getY() + 15);
+	previousLastPosition = lastPosition;
+
+	if(position != lastPosition) {
+		movementHistory.push_front(D3DXVECTOR2(position.x + offset.x, position.y + size.y));
+	}
+}
+
+void Player::draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice) {
+	D3DXVECTOR2 offsetPosition = position;
+	if(scrollingOffset != NULL) {
+		offsetPosition.x -= (*scrollingOffset);
+	}
+	if(movementDirection >= 0) {
+		playerSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
+		if(disguise != DISGUISE_NONE && disguiseSprite != NULL) {
+			disguiseSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
+		}
+	}
+	else {
+		playerSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
+		if(disguise != DISGUISE_NONE && disguiseSprite != NULL) {
+			disguiseSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
+		}
+	}
+
+#if _DEBUG
+//	testDrawEmptyBox(d3dDevice, getX(), getY(), offset.x, offset.y, &externalScrollingOffset);
+//	testDrawPoint(d3dDevice, getX(), getY(), &externalScrollingOffset);
+
+//	testDrawPoint(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, &externalScrollingOffset);
+	testDrawEmptyCircle(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, grabRadius, grabRadius, D3DCOLOR_XRGB(0, 0, 255), &externalScrollingOffset);
+#endif
+}
+
+void Player::moveLeft() {
+	movementDirection = -1;
+}
+
+void Player::moveRight() {
+	movementDirection = 1;
+}
+
+void Player::jump() {
+	if(!isJumping && jumpTime == 0) {
+		isJumping = true;
+		velocity.y = jumpVelocity;
+		jumpTime = jumpCooldown;
+		doneJumping = false;
+	}
+}
+
+void Player::grab() {
+	if(isGrabbing) { return; }
+
+	item = NULL;
+	for(unsigned int i=0;i<level.items.size();i++) {
+		if(CollisionHandler::checkRadiusIntersection(frontOfPlayer, level.items.at(i)->getCenter(), grabRadius, level.items.at(i)->getScaledRadius())) {
+			item = level.items.at(i);
+			break;
+		}
+	}
+
+	if(item == NULL) { return; }
+
+	isGrabbing = true;
+}
+
+bool Player::isDisguised() const {
+	return disguise != DISGUISE_NONE;
+}
+
+D3DXVECTOR2 Player::getFollowPosition() const {
+	if(movementHistory.empty()) {
+		return D3DXVECTOR2(0, 0);
+	}
+	else {
+		return movementHistory.back();
+	}
+}
+
+void Player::popFollowPosition() {
+	if(!movementHistory.empty()) {
+		movementHistory.pop_back();
+	}
+}
+
+bool Player::hasFollowPosition() {
+	return !movementHistory.empty();
 }
 
 void Player::loadSprites() {
@@ -153,208 +366,4 @@ void Player::loadSprites() {
 	disguiseSprites[DISGUISE_BIO][9] = playerSpriteSheet->getSprite("Alien Jump 1 BioHazard Suit");
 	disguiseSprites[DISGUISE_BIO][10] = playerSpriteSheet->getSprite("Alien Jump 2 BioHazard Suit");
 	disguiseSprites[DISGUISE_BIO][11] = playerSpriteSheet->getSprite("Alien Jump 3 BioHazard Suit");
-}
-
-void Player::tick() {
-	static D3DXVECTOR2 previousLastPosition = position;
-	D3DXVECTOR2 lastPosition = position;
-	D3DXVECTOR2 lastBottomCenter(position.x + offset.x, position.y + size.y);
-	D3DXVECTOR2 previousLastBottomCenter(previousLastPosition.x + offset.x, previousLastPosition.y + size.y);
-
-	playerColour = D3DCOLOR_RGBA(255, 255, 255, 255);
-
-	jumpTime -= (float) timeElapsed;
-	if(jumpTime < 0 && velocity.x == 0 && velocity.y == 0) {
-		jumpTime = 0;
-		isJumping = false;
-	}
-
-	position.x += (isMoving) ? (((movementDirection >= 0) ? 1 : -1) * (float) (velocityStep * timeElapsed * 10)) : 0;
-	position.y += (float) (-velocity.y * (timeElapsed * 10));
-	velocity.y -= (float) (Constants::GRAVITY * (timeElapsed * 10));
-
-	playerSprite = playerSprites[movingAnimationSequence / movingAnimationInterval];
-	if(disguise != DISGUISE_NONE) {
-		disguiseSprite = disguiseSprites[disguise][(movingAnimationSequence / movingAnimationInterval)];
-	}
-
-	if(isMoving) {
-		movingAnimationSequence++;
-		if(movingAnimationSequence >= movingAnimationEnd) {
-			movingAnimationSequence = 0;
-		}
-	}
-
-	if(isGrabbing) {
-		grabAnimationSequence++;
-		if(grabAnimationSequence >= grabAnimationEnd) {
-			grabAnimationSequence = 0;
-			isGrabbing = false;
-			if(item != NULL) {
-				if(_stricmp(item->getName(), "Wig") == 0) {
-					disguise = DISGUISE_WIG;
-				}
-				else if(_stricmp(item->getName(), "BioHazard Suit") == 0) {
-					disguise = DISGUISE_BIO;
-				}
-				else if(_stricmp(item->getName(), "FBI Suit") == 0) {
-					disguise = DISGUISE_FBI;
-				}
-				else if(_stricmp(item->getName(), "Box") == 0) {
-					disguise = DISGUISE_BOX;
-				}
-			}
-			item = NULL;
-		}
-	}
-
-	if(isJumping) {
-		if(velocity.y > 0.5) {
-			playerSprite = playerSprites[9];
-			if(disguise != DISGUISE_NONE) {
-				disguiseSprite = disguiseSprites[disguise][9];
-			}
-		}
-		else if(velocity.y <= 0.5 && velocity.y >= -0.5) {
-			playerSprite = playerSprites[10];
-			if(disguise != DISGUISE_NONE) {
-				disguiseSprite = disguiseSprites[disguise][10];
-			}
-		}
-		else if(velocity.y < -0.5) {
-			playerSprite = playerSprites[11];
-			if(disguise != DISGUISE_NONE) {
-				disguiseSprite = disguiseSprites[disguise][11];
-			}
-		}
-	}
-
-	if(isGrabbing) {
-		int grabIndex = grabAnimationSequence / grabAnimationInterval;
-		if(item->getY() >= frontOfPlayer.y) {
-			playerSprite = playerSprites[3 + grabIndex];
-			if(disguise != DISGUISE_NONE) {
-				disguiseSprite = disguiseSprites[disguise][3 + grabIndex];
-			}
-		}
-		else {
-			playerSprite = playerSprites[6 + grabIndex];
-			if(disguise != DISGUISE_NONE) {
-				disguiseSprite = disguiseSprites[disguise][6 + grabIndex];
-			}
-		}
-	}
-
-	D3DXVECTOR2 intersection;
-	D3DXVECTOR2 bottomCenter(position.x + offset.x, position.y + size.y);
-#if _DEBUG
-	playerNewPosition = bottomCenter;
-	playerLastPosition = previousLastBottomCenter;
-#endif
-	double newY;
-	if(level.checkCollision(previousLastBottomCenter, bottomCenter, &intersection, &newY)) {
-		position.y = (float) (newY - size.y - 0.1f);
-		isJumping = false;
-		velocity.x = 0;
-		velocity.y = 0;
-	}
-
-	if(position.y + size.y > windowHeight) {
-		position.y = windowHeight - size.y;
-		velocity.x = 0;
-		velocity.y = 0;
-	}
-
-	if(getX() - getOffsetX() + spacing - (velocityStep * timeElapsed * 10) < 0) {
-		position.x = (float) -spacing;
-	}
-
-	if(getX() + getOffsetX() - spacing + (velocityStep * timeElapsed * 10) > level.mapWidth) {
-		position.x = level.mapWidth - (getOffsetX() * 2) + spacing;
-	}
-
-	frontOfPlayer = D3DXVECTOR2((movementDirection >= 0) ? getX() + offset.x - spacing : getX() - offset.x + spacing, getY() + 15);
-	previousLastPosition = lastPosition;
-
-	if(position != lastPosition) {
-		movementHistory.push_front(D3DXVECTOR2(position.x + offset.x, position.y + size.y));
-	}
-}
-
-void Player::draw(int * scrollingOffset, LPDIRECT3DDEVICE9 d3dDevice) {
-	D3DXVECTOR2 offsetPosition = position;
-	if(scrollingOffset != NULL) {
-		offsetPosition.x -= (*scrollingOffset);
-	}
-	if(movementDirection >= 0) {
-		playerSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
-		if(disguise != DISGUISE_NONE && disguiseSprite != NULL) {
-			disguiseSprite->drawBackwards(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
-		}
-	}
-	else {
-		playerSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
-		if(disguise != DISGUISE_NONE && disguiseSprite != NULL) {
-			disguiseSprite->draw(&scale, &offset, 0, NULL, &offsetPosition, d3dDevice);
-		}
-	}
-
-#if _DEBUG
-//	testDrawEmptyBox(d3dDevice, getX(), getY(), offset.x, offset.y, &externalScrollingOffset);
-//	testDrawPoint(d3dDevice, getX(), getY(), &externalScrollingOffset);
-
-//	testDrawPoint(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, &externalScrollingOffset);
-	testDrawEmptyCircle(d3dDevice, frontOfPlayer.x, frontOfPlayer.y, grabRadius, grabRadius, D3DCOLOR_XRGB(0, 0, 255), &externalScrollingOffset);
-#endif
-}
-
-void Player::moveLeft() {
-	movementDirection = -1;
-}
-
-void Player::moveRight() {
-	movementDirection = 1;
-}
-
-void Player::jump() {
-	if(!isJumping && jumpTime == 0) {
-		isJumping = true;
-		velocity.y = jumpVelocity;
-		jumpTime = jumpCooldown;
-	}
-}
-
-void Player::grab() {
-	if(isGrabbing) { return; }
-
-	item = NULL;
-	for(unsigned int i=0;i<level.items.size();i++) {
-		if(CollisionHandler::checkRadiusIntersection(frontOfPlayer, level.items.at(i)->getCenter(), grabRadius, level.items.at(i)->getScaledRadius())) {
-			item = level.items.at(i);
-			break;
-		}
-	}
-
-	if(item == NULL) { return; }
-
-	isGrabbing = true;
-}
-
-D3DXVECTOR2 Player::getFollowPosition() const {
-	if(movementHistory.empty()) {
-		return D3DXVECTOR2(0, 0);
-	}
-	else {
-		return movementHistory.back();
-	}
-}
-
-void Player::popFollowPosition() {
-	if(!movementHistory.empty()) {
-		movementHistory.pop_back();
-	}
-}
-
-bool Player::hasFollowPosition() {
-	return !movementHistory.empty();
 }

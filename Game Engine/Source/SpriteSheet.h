@@ -30,7 +30,9 @@ public:
 	
 	~SpriteSheet();
 
-	int size();
+	int size() const;
+	Sprite * getImage() const;
+	void setImage(Sprite * sprite);
 	void addSprite(Sprite * sprite);
 	Sprite * elementAt(int index);
 	Sprite * getSprite(int index);

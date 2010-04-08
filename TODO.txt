@@ -10,3 +10,4 @@ GAME ENGINE
  + Fix collision detection code for downward slopes (radial vertex collision?)
  + Finish grab item code
  + Simple AI
+ + spriteSheetImage memory leak in SpriteSheet.cpp

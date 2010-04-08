@@ -27,6 +27,8 @@ void testDrawBox(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float 
 void testDrawEmptyCircle(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, float xr, float yr, D3DCOLOR colour, int * scrollingOffset);
 #endif
 
+int getRandomInt(int min, int max);
+float getRandomFloat(double min, double max);
 char * strtrimcpy(const char * data);
 bool isTrue(const char * str);
 void quit(const char * title, const char * message, ...);

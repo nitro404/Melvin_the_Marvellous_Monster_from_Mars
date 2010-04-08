@@ -2,9 +2,6 @@
 
 #include "Includes.h"
 #include "Variables.h"
-#include "Sprite.h"
-#include "SpriteSheet.h"
-#include "SpriteSheets.h"
 #include "Object.h"
 
 class Level;
@@ -21,6 +18,8 @@ public:
 	void moveRight();
 	void jump();
 	void grab();
+
+	bool isDisguised() const;
 
 	D3DXVECTOR2 getFollowPosition() const;
 	void popFollowPosition();
@@ -54,6 +53,7 @@ private:
 	int spacing;
 
 	bool isJumping;
+	bool doneJumping;
 	float jumpVelocity;
 	float jumpCooldown;
 	float jumpTime;

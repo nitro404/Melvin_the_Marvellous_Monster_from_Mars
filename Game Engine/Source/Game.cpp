@@ -290,7 +290,7 @@ void Game::processMenuInput() {
 	if(!menu->isActive()) { return; }
 
 	// select the current item in the menu
-	if(keyboardState[DIK_RETURN] & 0x80 || keyboardState[DIK_SPACE] & 0x80) {
+	if(keyboardState[DIK_RETURN] & 0x80 || keyboardState[DIK_NUMPADENTER] & 0x80 || keyboardState[DIK_SPACE] & 0x80) {
 		if(!menuSelectKeyPressed) { menu->select(); }
 		menuSelectKeyPressed = true;
 	}

@@ -6,6 +6,7 @@
 #include "SpriteSheets.h"
 #include "Player.h"
 #include "Pet.h"
+#include "AI.h"
 #include "Graph.h"
 
 #if _DEBUG
@@ -17,7 +18,7 @@ public:
 	Level(const char * fileName, SpriteSheets * externalSpriteSheets, Variables * settings, double & timeElapsed, int windowWidth, int windowHeight, LPDIRECT3DDEVICE9 d3dDevice);
 	~Level();
 
-	bool checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition, D3DXVECTOR2 * intersection, double * newY);
+	bool checkCollision(const D3DXVECTOR2 & lastPosition, const D3DXVECTOR2 & newPosition, D3DXVECTOR2 * intersection, double * newY);
 
 	void tick();
 	void draw(LPDIRECT3DDEVICE9 d3dDevice);
@@ -30,7 +31,7 @@ public:
 	Pet * pet;
 	vector<Object *> objects;
 	vector<Object *> tiles;
-	vector<Object *> ai;
+	vector<AI *> ai;
 	vector<Object *> items;
 
 	int xDimension;

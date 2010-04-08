@@ -75,7 +75,7 @@ Level::~Level() {
 	}
 }
 
-bool Level::checkCollision(D3DXVECTOR2 & lastPosition, D3DXVECTOR2 & newPosition, D3DXVECTOR2 * intersection, double * newY) {
+bool Level::checkCollision(const D3DXVECTOR2 & lastPosition, const D3DXVECTOR2 & newPosition, D3DXVECTOR2 * intersection, double * newY) {
 	double tempY;
 	double minY;
 	bool isColliding = false;
@@ -264,7 +264,7 @@ void Level::readFrom(ifstream &in) {
 	int numberOfAI = atoi(strchr(input, ':') + sizeof(char));
 	for(int i=0;i<numberOfAI;i++) {
 		in.getline(input, maxLength);
-		Object * newAI = Object::parseFrom(input, *spriteSheets);
+		AI * newAI = AI::parseFrom(input, *spriteSheets, windowWidth, windowHeight, mapWidth, mapHeight, *player, *this, timeElapsed);
 		if(newAI != NULL) { ai.push_back(newAI); }
 	}
 

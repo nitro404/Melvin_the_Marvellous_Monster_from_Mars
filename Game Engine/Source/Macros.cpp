@@ -1,5 +1,13 @@
 #include "Includes.h"
 
+int getRandomInt(int min, int max) {
+	return (rand() % (max - min + 1)) + min;
+}
+
+float getRandomFloat(double min, double max) {
+	return (float) (((rand() % (int) ((max - min) * 10000)) / 10000.0) + min);
+}
+
 char * strtrimcpy(const char * data) {
 	if(data == NULL) { return NULL; }
 	char * newData;

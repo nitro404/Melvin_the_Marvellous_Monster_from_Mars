@@ -59,10 +59,18 @@ SpriteSheet::~SpriteSheet() {
 		}
 	}
 	delete spriteSheet;
-	if(name != NULL) { delete [] name; }
+	if(name != NULL) { delete [] this->name; }
 }
 
-int SpriteSheet::size() { return sprites.size(); }
+int SpriteSheet::size() const { return this->sprites.size(); }
+
+Sprite * SpriteSheet::getImage() const {
+	return this->spriteSheet;
+}
+
+void SpriteSheet::setImage(Sprite * sprite) {
+	this->spriteSheet = spriteSheet;
+}
 
 void SpriteSheet::addSprite(Sprite * sprite) {
 	if(sprite == NULL) { return; }
@@ -520,6 +528,7 @@ SpriteSheet * SpriteSheet::parseFrom(ifstream & in, const char * spriteDirectory
 
 					spriteSheet = new SpriteSheet();
 					spriteSheet->setName(spriteSheetName);
+					spriteSheet->setImage(spriteSheetImage);
 					
 					Variables gridAttributes;
 					int * numberOfAttributes = new int[numberOfGrids];

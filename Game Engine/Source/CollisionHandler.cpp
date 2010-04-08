@@ -8,13 +8,17 @@ extern D3DXVECTOR2 playerCollisionPosition;
 
 bool CollisionHandler::checkLineIntersection(const Edge & edge, const D3DXVECTOR2 & p1, const D3DXVECTOR2 & p2, D3DXVECTOR2 * i, double * newY) {
 	double x1 = edge.a.x;
-	double y1 = edge.a.y + 0.8;
+	double y1 = edge.a.y;
 	double x2 = edge.b.x;
-	double y2 = edge.b.y + 0.8;
+	double y2 = edge.b.y;
 	double x3 = p1.x;
 	double y3 = p1.y;
 	double x4 = p2.x;
 	double y4 = p2.y;
+
+	//Add thickness to the collision line
+	y1 += 0.8;
+	y2 += 0.8;
 
     //Is Line Undefined
     if (x1 == x2 && y1 == y2 || x3 == x4 && y3 == y4) {
@@ -63,14 +67,30 @@ bool CollisionHandler::checkLineIntersection(const Edge & edge, const D3DXVECTOR
 	}
 
 	if(newY != NULL) {
+		x1 = edge.a.x;
+		y1 = edge.a.y;
+		x2 = edge.b.x;
+		y2 = edge.b.y;
+		double x3 = p2.x;
+		double slope = ((double) (y2 - y1)) / ((double) (x2 - x1));
+		double b = y1 + (slope * (0 - x1));
+		*newY = (slope * x3) + b + 0.8;
+
+		/*
 		double newX = p2.x;
 		double slope = ((double) (edge.b.y - edge.a.y)) / ((double) (edge.b.x - edge.a.x));
 		double b = edge.a.y + (slope * (0 - edge.a.x));
 		*newY = (slope * newX) + b;
+		*/
 #if _DEBUG
+		playerCollisionPointA = D3DXVECTOR2((float) x1, (float) ((slope * x1) + b));
+		playerCollisionPointB = D3DXVECTOR2((float) x2, (float) ((slope * x2) + b));
+		playerCollisionPosition = D3DXVECTOR2((float) x3, (float)  *newY);
+		/*
 		playerCollisionPointA = D3DXVECTOR2((float) edge.a.x, (float) ((slope * edge.a.x) + b));
 		playerCollisionPointB = D3DXVECTOR2((float) edge.b.x, (float) ((slope * edge.b.x) + b));
 		playerCollisionPosition = D3DXVECTOR2((float) newX, (float)  *newY);
+		*/
 #endif
 	}
 

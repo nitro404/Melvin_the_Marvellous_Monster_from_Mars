@@ -3,9 +3,6 @@
 #include "Includes.h"
 #include "Variables.h"
 #include "Object.h"
-#include "Sprite.h"
-#include "SpriteSheet.h"
-#include "SpriteSheets.h"
 #include "Items.h"
 
 class Player;
