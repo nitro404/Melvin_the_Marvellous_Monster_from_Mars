@@ -1,3 +1,12 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+// Level Designer                          //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 import java.io.*;
 import java.util.StringTokenizer;
 import java.awt.Dimension;

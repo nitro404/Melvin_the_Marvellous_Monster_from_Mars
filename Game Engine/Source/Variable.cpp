@@ -1,9 +1,18 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 //Created: September 18, 2008
 //Revised: February 14, 2010
 
 #include "Variable.h"
 
 Variable::Variable(const char * _id, const char * _value) {
+	//copy the id
 	if(_id == NULL) {
 		this->_id = new char[1];
 		this->_id[0] = '\0';
@@ -13,6 +22,7 @@ Variable::Variable(const char * _id, const char * _value) {
 		strcpy_s(this->_id,strlen(_id) + 1, _id);
 	}
 	
+	// copy the value
 	if(_value == NULL) {
 		this->_value = new char[1];
 		this->_value[0] = '\0';
@@ -24,9 +34,11 @@ Variable::Variable(const char * _id, const char * _value) {
 }
 
 Variable::Variable(const Variable & x) {
+	// copy the id
 	this->_id = new char[strlen(x._id) + 1];
 	strcpy_s(this->_id, strlen(x._id) + 1, x._id);
 	
+	// copy the value
 	this->_value = new char[strlen(x._value) + 1];
 	strcpy_s(this->_value, strlen(x._value) + 1, x._value);
 }
@@ -35,9 +47,11 @@ Variable & Variable::operator = (const Variable & x) {
 	delete [] this->_id;
 	delete [] this->_value;
 
+	// copy the id
 	this->_id = new char[strlen(x._id) + 1];
 	strcpy_s(this->_id, strlen(x._id) + 1, x._id);
 
+	// copy the value
 	this->_value = new char[strlen(x._value) + 1];
 	strcpy_s(this->_value, strlen(x._value) + 1, x._value);
 
@@ -49,9 +63,11 @@ Variable::~Variable(void) {
 	delete [] this->_value;
 }
 
+// change the id of the variable
 void Variable::id(const char * _id) {
 	delete [] this->_id;
 	
+	// copy the id
 	if(_id == NULL) {
 		this->_id = new char[1];
 		this->_id[0] = '\0';
@@ -62,9 +78,11 @@ void Variable::id(const char * _id) {
 	}
 }
 
+// change the value of the variable
 void Variable::value(const char * _value) {
 	delete [] this->_value;
 	
+	// copy the value
 	if(_value == NULL) {
 		this->_value = new char[1];
 		this->_value[0] = '\0';
@@ -75,9 +93,10 @@ void Variable::value(const char * _value) {
 	}
 }
 
-char * Variable::id() const  { return this->_id; }
-char * Variable::value() const  { return this->_value; }
+char * Variable::id() const  { return this->_id; } // get the variable id
+char * Variable::value() const  { return this->_value; } // get the variable value
 
+// parse the variable from a string of the form "ID: Value"
 bool Variable::parseFrom(const char * _data) {
 	if(_data == NULL || strlen(_data) < 1) {
 		return false;
@@ -93,13 +112,15 @@ bool Variable::parseFrom(const char * _data) {
 	char * value = NULL;
 	bool emptyID;
 	
+	// locate the index of the separator character
 	for(i=0;i<(int)strlen(_data);i++) {
 		if(_data[i] == separatorChar) {
 			separatorIndex = i;
 			break;
 		}
 	}
-	
+
+	// verify that the id is not an empty string
 	if(separatorIndex == -1 || separatorIndex == 0) {
 		return false;
 	}
@@ -114,6 +135,7 @@ bool Variable::parseFrom(const char * _data) {
 		return false;
 	}
 	
+	// locate the start and end of the id (to trim whitespace) and copy the id to a new string
 	start = 0;
 	end = separatorIndex - 1;
 	for(i=start;i<=end;i++) {
@@ -142,6 +164,7 @@ bool Variable::parseFrom(const char * _data) {
 		return false;
 	}
 	
+	// locate the start and end of the value (to trim whitespace) and copy the value to a new string
 	start = separatorIndex + 1;
 	end = strlen(_data) - 1;
 	for(i=start;i<=end;i++) {
@@ -170,9 +193,11 @@ bool Variable::parseFrom(const char * _data) {
 	if(this->_id != NULL) { delete [] this->_id; }
 	if(this->_value != NULL) { delete [] this->_value; }
 	
+	// copy the id
 	this->_id = new char[strlen(id) + 1];
 	strcpy_s(this->_id, strlen(id) + 1, id);
 	
+	// copy the value
 	this->_value = new char[strlen(value) + 1];
 	strcpy_s(this->_value, strlen(value) + 1, value);
 	
@@ -182,14 +207,17 @@ bool Variable::parseFrom(const char * _data) {
 	return true;
 }
 
+// equality operator override
 bool Variable::operator == (const Variable & x) const {
 	return _stricmp(this->_id, x._id) == 0;
 }
 
+// inequality operator override
 bool Variable::operator != (const Variable & x) const {
 	return !operator == (x);
 }
 
+// prints the variable to an output stream
 void Variable::printOn(ostream & o) const {
 	o << this->_id << ": " << this->_value;
 }

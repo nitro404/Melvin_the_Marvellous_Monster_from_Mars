@@ -1,5 +1,13 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 //Created: January 15, 2009
-//Revised: March 28, 2010
+//Revised: April 10, 2010
 
 #include "Variables.h"
 
@@ -35,6 +43,7 @@ Variables::~Variables(void) {
 	delete this->_variables;
 }
 
+// add a variable
 bool Variables::add(Variable * x) {
 	if(x == NULL || this->contains(x)) {
 		return false;
@@ -45,6 +54,7 @@ bool Variables::add(Variable * x) {
 	return true;
 }
 
+// add a copy of a variable
 bool Variables::addCopy(const Variable * x) {
 	if(x == NULL || this->contains(x)) {
 		return false;
@@ -55,19 +65,22 @@ bool Variables::addCopy(const Variable * x) {
 	return true;
 }
 
-bool Variables::remove(int _index) {
+// remove a variable at a specified index
+Variable * Variables::remove(int _index) {
 	if(_index < 0 || _index >= size()) {
-		return false;
+		return NULL;
 	}
 	
+	Variable * v = this->_variables->at(_index);
 	this->_variables->erase(this->_variables->begin() + _index);
 	
-	return true;
+	return v;
 }
 
-bool Variables::remove(const Variable * x) {
+// remove a variable
+Variable * Variables::remove(const Variable * x) {
 	if(x == NULL) {
-		return false;
+		return NULL;
 	}
 
 	int index = this->indexOf(x);
@@ -75,11 +88,13 @@ bool Variables::remove(const Variable * x) {
 		return false;
 	}
 
+	Variable * v = this->_variables->at(index);
 	this->_variables->erase(this->_variables->begin() + index);
 	
-	return true;
+	return v;
 }
 
+// clear the variables collection
 void Variables::clear(bool deleteItems) {
 	if(deleteItems && this->_variables->size() > 0) {
 		for(unsigned int i=0;i<this->_variables->size();i++) {
@@ -89,10 +104,12 @@ void Variables::clear(bool deleteItems) {
 	this->_variables->clear();
 }
 
+// get the number of variables in the collection
 int Variables::size() const {
 	return this->_variables->size();
 }
 
+// check if a variable is contained in the collection of variables
 bool Variables::contains(const Variable * x) const {
 	if(x == NULL) { return false; }
 
@@ -104,6 +121,7 @@ bool Variables::contains(const Variable * x) const {
 	return false;
 }
 
+// get the index of a variable within the collection of variables
 int Variables::indexOf(const Variable * x) const {
 	if(x == NULL) {
 		return -1;
@@ -117,6 +135,7 @@ int Variables::indexOf(const Variable * x) const {
 	return -1;
 }
 
+// get a variable at a specified index
 Variable * Variables::elementAt(int _index) const {
 	if(_index < 0 || _index >= size()) {
 		return NULL;
@@ -125,6 +144,7 @@ Variable * Variables::elementAt(int _index) const {
 	return this->_variables->at(_index);
 }
 
+// get a variable based on its id
 Variable * Variables::getVariable(char * _name) const {
 	if(_name == NULL || strlen(_name) == 0) { return NULL; }
 
@@ -136,6 +156,7 @@ Variable * Variables::getVariable(char * _name) const {
 	return NULL;
 }
 
+// get the value of a variable based on its id
 char * Variables::getValue(const char * _variableName) {
 	if(_variableName == NULL || strlen(_variableName) == 0) {
 		return NULL;
@@ -149,6 +170,7 @@ char * Variables::getValue(const char * _variableName) {
 	return NULL;
 }
 
+// check to see if a variable with a matching id exists in the collection of variables
 bool Variables::hasValue(const char * _variableName) {
 	if(_variableName == NULL || strlen(_variableName) == 0) {
 		return false;
@@ -162,22 +184,27 @@ bool Variables::hasValue(const char * _variableName) {
 	return false;
 }
 
+// parse a variable collection from a file and return it
 bool Variables::parseFrom(const char * _fileName, bool _append) {
 	if(_fileName == NULL || strlen(_fileName) == 0) {
 		return false;
 	}
 	
+	// declare input variables
 	const int MAX_STRING_LENGTH = 1024;
 	unsigned int i;
 	char temp[MAX_STRING_LENGTH];
 	Variable * v;
 	bool duplicate;
 	
+	// open the file
 	ifstream fpt(_fileName);
 	if(fpt == NULL) {
 		return false;
 	}
 	
+	// if appending to the current collection and the current collection does not exist, initialise it
+	// otherwise delete the current collection and re-initialise it
 	if(_append) {
 		if(this->_variables == NULL) {
 			this->_variables = new vector<Variable *>;
@@ -190,10 +217,13 @@ bool Variables::parseFrom(const char * _fileName, bool _append) {
 		this->_variables = new vector<Variable *>;
 	}
 	
+	// loop through the entire file
 	while(!fpt.eof()) {
+		// input a line and parse a variable from it
 		fpt.getline(temp, MAX_STRING_LENGTH);
 		v = new Variable();
 		if(v->parseFrom(temp)) {
+			// if a variable was successfully parsed, check to see that it is not a duplicate
 			duplicate = false;
 			for(i=0;i<this->_variables->size();i++) {
 				if(*this->_variables->at(i) == *v) {
@@ -202,10 +232,12 @@ bool Variables::parseFrom(const char * _fileName, bool _append) {
 					break;
 				}
 			}
+			// if the variable is not a duplicate, add the variable
 			if(!duplicate) {
 				this->_variables->push_back(v);
 			}
 		}
+		// if the variable was unsuccessfully parsed, delete it
 		else {
 			delete v;
 		}
@@ -214,6 +246,7 @@ bool Variables::parseFrom(const char * _fileName, bool _append) {
 	return true;
 }
 
+// equality operator override
 bool Variables::operator == (const Variables & x) const {
 	bool contains;
 	for(unsigned int i=0;i<this->_variables->size();i++) {
@@ -231,10 +264,12 @@ bool Variables::operator == (const Variables & x) const {
 	return true;
 }
 
+// inequality operator override
 bool Variables::operator != (const Variables & x) const {
 	return !operator == (x);
 }
 
+// prints the collection of variables to an output stream
 void Variables::printOn(ostream & o) const {
 	for(unsigned int i=0;i<this->_variables->size();i++) {
 		o << this->_variables->at(i)->id() << ": " << this->_variables->at(i)->value();

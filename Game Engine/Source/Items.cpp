@@ -1,3 +1,11 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 #include "Items.h"
 
 Items::Items() { }
@@ -27,22 +35,27 @@ Items::~Items() {
 	}
 }
 
+// returns the maximum number of items that can be stored
 int Items::getItemLimit() {
 	return this->limit;
 }
 
+// changes the maximum number of items that can be stored
 void Items::setItemLimit(int limit) {
 	this->limit = limit;
 }
 
+// removes the limit on the number of items that can be stored
 void Items::removeItemLimit() {
 	this->limit = -1;
 }
 
+// returns the number of items in the current item collection
 int Items::numberOfItems() {
 	return this->items.size();
 }
 
+// adds an item to the collection
 bool Items::addItem(Item &item) {
 	if(this->limit > 0 && (int) this->items.size() >= this->limit) { return false; }
 
@@ -55,6 +68,7 @@ bool Items::addItem(Item &item) {
 	return true;
 }
 
+// returns an item based on its name
 Item * Items::getItem(const char * itemName) {
 	for(unsigned int i=0;i<this->items.size();i++) {
 		if(_stricmp(this->items.at(i)->getName(), itemName) == 0) {
@@ -64,12 +78,14 @@ Item * Items::getItem(const char * itemName) {
 	return NULL;
 }
 
+// returns the item at the specified index
 Item * Items::getItem(int itemIndex) {
 	if(itemIndex < 0 || itemIndex >= (int) this->items.size()) { return NULL; }
 
 	return this->items.at(itemIndex);
 }
 
+// returns true if the collection contains the specified item
 bool Items::hasItem(Item &item) {
 	for(unsigned int i=0;i<items.size();i++) {
 		if(*this->items.at(i) == item) {
@@ -79,6 +95,7 @@ bool Items::hasItem(Item &item) {
 	return false;
 }
 
+// returns true if the collection contains the specified item based on its name
 bool Items::hasItem(const char * itemName) {
 	for(unsigned int i=0;i<this->items.size();i++) {
 		if(_stricmp(this->items.at(i)->getName(), itemName) == 0) {
@@ -88,6 +105,7 @@ bool Items::hasItem(const char * itemName) {
 	return false;
 }
 
+// removes an item from the collection
 bool Items::removeItem(const Item &item, bool deleteItem) {
 	for(unsigned int i=0;i<this->items.size();i++) {
 		if(*this->items.at(i) == item) {
@@ -98,6 +116,7 @@ bool Items::removeItem(const Item &item, bool deleteItem) {
 	return false;
 }
 
+// removes an item from the collection based on its name
 bool Items::removeItem(const char * itemName, bool deleteItem) {
 	for(unsigned int i=0;i<this->items.size();i++) {
 		if(_stricmp(this->items.at(i)->getName(), itemName) == 0) {
@@ -108,6 +127,7 @@ bool Items::removeItem(const char * itemName, bool deleteItem) {
 	return false;
 }
 
+// removes an item from the collection at the specified index
 bool Items::removeItem(int itemIndex, bool deleteItem) {
 	if(itemIndex < 0 || itemIndex >= (int) this->items.size()) { return false; }
 
@@ -116,6 +136,7 @@ bool Items::removeItem(int itemIndex, bool deleteItem) {
 	return true;
 }
 
+// returns the index of the specified item
 int Items::itemIndex(const Item &item) {
 	for(unsigned int i=0;i<this->items.size();i++) {
 		if(*this->items.at(i) == item) {
@@ -125,6 +146,7 @@ int Items::itemIndex(const Item &item) {
 	return -1;
 }
 
+// returns the index of the item with the specified name
 int Items::itemIndex(const char * itemName) {
 	for(unsigned int i=0;i<this->items.size();i++) {
 		if(_stricmp(this->items.at(i)->getName(), itemName) == 0) {
@@ -134,6 +156,7 @@ int Items::itemIndex(const char * itemName) {
 	return -1;
 }
 
+// returns true if two items are equal
 bool Items::operator == (const Items & x) const {
 	if(this->items.size() != x.items.size()) { return false; }
 
@@ -145,6 +168,7 @@ bool Items::operator == (const Items & x) const {
 	return true;
 }
 
+// returns true if two items are not equal
 bool Items::operator != (const Items & x) const {
 	return !operator == (x);
 }

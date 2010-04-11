@@ -1,6 +1,15 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 #include "Game.h"
 #include "Menu.h"
 
+// menu type constants
 const int Menu::MENU_MAIN = 0;
 const int Menu::MENU_NEWGAME = 1;
 const int Menu::MENU_HELP = 2;
@@ -27,11 +36,14 @@ Menu::Menu(int windowWidth,
 	this->windowWidth = windowWidth;
 	this->windowHeight = windowHeight;
 
+	// load the list of maps available to the game
 	loadMapList(settings->getValue("Map Directory"));
 
+	// create the menu fonts
 	titleFont = new Font("System", 96, Font::NORMAL, false, d3dDevice);
 	itemFont = new Font("System", 52, Font::BOLD, false, d3dDevice);
 
+	// create the main menu
 	int menuItemPosition = menuItemOffset;
 	mainMenuTitle = new Text((int) (windowWidth / 2.0f), titleOffset, Text::CENTER, Text::CENTER, titleColour, titleFont, true, d3dDevice, "Melvin the Marvellous");
 	mainMenuTitle2 = new Text((int) (windowWidth / 2.0f), titleOffset + 70, Text::CENTER, Text::CENTER, titleColour, titleFont, true, d3dDevice, "Monster from Mars");
@@ -39,6 +51,7 @@ Menu::Menu(int windowWidth,
 	mainMenuItems.push_back(new Text((int) (windowWidth / 2.0f), menuItemPosition += menuItemIncrement, Text::CENTER, Text::CENTER, inactiveColour, itemFont, true, d3dDevice, "Help"));
 	mainMenuItems.push_back(new Text((int) (windowWidth / 2.0f), menuItemPosition += menuItemIncrement, Text::CENTER, Text::CENTER, inactiveColour, itemFont, true, d3dDevice, "Quit"));
 
+	// create the map selection sub-menu
 	mapMenuTitle = new Text((int) (windowWidth / 2.0f), titleOffset, Text::CENTER, Text::CENTER, titleColour, titleFont, true, d3dDevice, "Choose Level");
 	for(unsigned int i=0;i<mapList.size();i++) {
 		char * mapNameWithExt = strchr((char *) mapList.at(i).c_str(), '\\') + sizeof(char);
@@ -50,6 +63,7 @@ Menu::Menu(int windowWidth,
 		delete [] mapName;
 	}
 
+	// create the help sub-menu
 	menuItemPosition = menuItemOffset;
 	helpMenuTitle = new Text((int) (windowWidth / 2.0f), titleOffset, Text::CENTER, Text::CENTER, titleColour, titleFont, true, d3dDevice, "Help");
 	helpMenuItems.push_back(new Text((int) (windowWidth / 2.0f),  menuItemOffset, Text::CENTER, Text::CENTER, inactiveColour, itemFont, true, d3dDevice, "Use WSAD or arrows to move."));
@@ -74,47 +88,59 @@ Menu::~Menu() {
 	delete itemFont;
 }
 
+// activate the currently selected menu item
 void Menu::select() {
+	// if the menu is not active, do nothing
 	if(!active) { return; }
 	
+	// main menu interaction
 	if(menuType == MENU_MAIN) {
+		// open the new game menu
 		if(mainMenuIndex == 0) {
 			setMenu(MENU_NEWGAME);
 		}
+		// open the help menu
 		else if(mainMenuIndex == 1) {
 			setMenu(MENU_HELP);
 		}
+		// close the game
 		else if(mainMenuIndex == 2) {
 			PostQuitMessage(0);
 		}
 	}
+	// load the selected map
 	else if(menuType == MENU_NEWGAME) {
 		game->loadLevel(mapList.at(mapMenuIndex).c_str());
 		resumeGame();
-		setMenu(MENU_MAIN);
 	}
+	// exit the help menu
 	else if(menuType == MENU_HELP) {
 		setMenu(MENU_MAIN);
 	}
 }
 
+// move the menu back
 void Menu::back() {
+	// display the menu if it is not active
 	if(!active) {
 		setMenu(MENU_MAIN);
 		pauseGame();
 	}
 	else {
+		// if the menu is in the main menu, quit the game
 		if(menuType == 0) {
 //			setMenu(MENU_MAIN);
 //			resumeGame();
 			PostQuitMessage(0);
 		}
+		// return to the previous menu
 		else if(menuType == 1 || menuType == 2) {
 			setMenu(MENU_MAIN);
 		}
 	}
 }
 
+// move the menu selection up
 void Menu::moveUp() {
 	// move the menu selection up (update colour on selected/previous object)
 	if(menuType == MENU_MAIN) {
@@ -131,6 +157,7 @@ void Menu::moveUp() {
 	}
 }
 
+// move the menu selection down
 void Menu::moveDown() {
 	// move the menu selection down (update colour on selected/previous object)
 	if(menuType == MENU_MAIN) {
@@ -147,11 +174,13 @@ void Menu::moveDown() {
 	}
 }
 
+// menu activation / deactivation methods
 bool Menu::isActive() { return active; }
 void Menu::activate() { active = true; }
 void Menu::deactivate() { active = false; }
 void Menu::toggle() { active = !active; }
 
+// generate a list of map paths from the specified directory
 void Menu::loadMapList(const char * mapDirectory) {
 	if(mapDirectory == NULL || strlen(mapDirectory) == 0) { return; }
 
@@ -162,8 +191,10 @@ void Menu::loadMapList(const char * mapDirectory) {
 	HANDLE hFile;
 	WIN32_FIND_DATA fileInformation;
 
+	// only add maps that end with .2d
 	strPattern = rootDirectory + "\\*.2d";
 
+	// generate a list of the maps
 	hFile = ::FindFirstFile(strPattern.c_str(), & fileInformation);
 	if(hFile != INVALID_HANDLE_VALUE) {
 		do {
@@ -171,6 +202,7 @@ void Menu::loadMapList(const char * mapDirectory) {
 				filePath.erase();
 				filePath = rootDirectory + "\\" + fileInformation.cFileName;
 
+				// add each map to the list of maps
 				if(!(fileInformation.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 					strFileName = fileInformation.cFileName;
 					mapList.push_back(filePath);
@@ -182,35 +214,36 @@ void Menu::loadMapList(const char * mapDirectory) {
 	}
 }
 
+// render the menu
 void Menu::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 	d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 	
 	d3dDevice->BeginScene();
 
 	if(menuType == MENU_MAIN) {
-		// draw the menu title
+		// render the menu title
 		mainMenuTitle->draw();
 		mainMenuTitle2->draw();
 
-		// draw the menu items
+		// render the menu items
 		for(unsigned int i=0;i<mainMenuItems.size();i++) {
 			mainMenuItems.at(i)->draw();
 		}
 	}
 	else if(menuType == MENU_NEWGAME) {
-		// draw the menu title
+		// render the menu title
 		mapMenuTitle->draw();
 
-		// draw the menu items
+		// render the menu items
 		for(unsigned int i=0;i<mapMenuItems.size();i++) {
 			mapMenuItems.at(i)->draw();
 		}
 	}
 	else if(menuType == MENU_HELP) {
-		// draw the menu title
+		// render the menu title
 		helpMenuTitle->draw();
 
-		// draw the menu items
+		// render the menu items
 		for(unsigned int i=0;i<helpMenuItems.size();i++) {
 			helpMenuItems.at(i)->draw();
 		}
@@ -221,24 +254,19 @@ void Menu::draw(LPDIRECT3DDEVICE9 d3dDevice) {
 	d3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
+// change to a different menu (or sub-menu)
 void Menu::setMenu(int type) {
+	// change the menu type
 	menuType = type;
-	/*
-	vector<Text *> * items;
-	if(type == MENU_MAIN) { items = &mainMenuItems; }
-	else if(type == MENU_NEWGAME) { items = &mapMenuItems; }
-	else if(type == MENU_HELP) { return; }
-	else { return; }
-	for(unsigned int i=0;i<items->size();i++) {
-		items->at(i)->setColour((i == 0) ? activeColour : inactiveColour);
-	}*/
 }
 
+// pause the game (show the menu)
 void Menu::pauseGame() {
 //	game->pause();
 	active = true;
 }
 
+// resume the game (hide the menu)
 void Menu::resumeGame() {
 	/*
 	game->resume();

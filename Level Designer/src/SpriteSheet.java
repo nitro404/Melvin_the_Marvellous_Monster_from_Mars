@@ -1,3 +1,12 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+// Level Designer                          //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -6,21 +15,56 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
+/**
+ * The SpriteSheet class represents a collection of Sprites (images) which are part of a larger SpriteSheet (image).
+ * The SpritrSheet class has support for parsing sprite sheets from a specific set of attributes
+ * as well as reading a list of sprite sheet data from a file, then parsing and creating a corresponding sprite sheet.
+ *
+ * There are 3 types of sprite sheets:
+ * 1) Arbitrary Offsets - A collection of offsets (x, y) and sizes (width, height) which each represent a sub-image (Sprite) within a larger image (SpriteSheet).
+ *                        Can be instantiated using a constructor or parsed from a file using an array of Rectangles. Name and type can also be specified
+ *                        for each individual Sprite if using the file parser in the order they are to be parsed.
+ *
+ * 2) Single Grid - Only requires a single offset (x, y) and a single size (width, height) as well as a specification indicating the number of rows and columns, and
+ *                  the direction to parse (vertical or horizontal). Name and type can also be specified for each Sprite in the order they are to be parsed.
+ *                  The constructor will automatically loop through, incrementing as appropriate and creating each Sprite from the SpriteSheet.
+ *
+ * 3) Multiple Grids - This specification currently only works from the data file parser and does not have a constructor available.
+ *                     Requires the same specifications as a single grid for each grid it is to parse within a single image - these specifications include
+ *                     offset of the current grid (x, y), sizes of each item in the current grid (width, height), number of rows and columns in the current grid
+ *                     and the direction to parse the current grid (vertical or horizontal).
+ * 
+ * @author Kevin Scroggins
+ */
 public class SpriteSheet {
 	
+	// local variables
 	private Vector<Sprite> sprites;
 	private String name;
 	
+	/** Invalid SpriteSheet type constant. */
 	final public static int TYPE_INVALID = -1;
+	/** Arbitrary Offset SpriteSheet type constant. */
 	final public static int TYPE_ARBITRARY_OFFSETS = 0;
+	/** Single Grid SpriteSheet type constant. */
 	final public static int TYPE_SINGLE_GRID = 1;
+	/** Multiple Grid SpriteSheet type constant. */
 	final public static int TYPE_MULTIPLE_GRIDS = 2;
 	
+	/**
+	 * Constructs an empty SpriteSheet.
+	 */
 	public SpriteSheet() {
 		this.sprites = new Vector<Sprite>();
 		this.name = null;
 	}
 	
+	/**
+	 * Constructs and initialises a SpriteSheet using a specified SpriteSheet image and a collection of offsets.
+	 * 
+	 * @param sprite the SpriteSheet image to parse into a collection of Sprites.
+	 * @param offsets the offsets specifying how to parse the SpriteSheet image.
+	 */
 	public SpriteSheet(Sprite sprite,
 					   Vector<Rectangle> offsets) {
 		this.name = null;
@@ -31,6 +75,8 @@ public class SpriteSheet {
 			System.exit(1);
 		}
 		
+		// loop through the collection of offsets and parse up the sprite sheet image
+		// according to each offset and store each sprite that is parsed
 		Rectangle o = null;
 		for(int i=0;i<offsets.size();i++) {
 			o = offsets.elementAt(i);
@@ -40,6 +86,12 @@ public class SpriteSheet {
 		}
 	}
 
+	/**
+	 * Constructs and initialises a SpriteSheet using a specified SpriteSheet image and a collection of offsets.
+	 * 
+	 * @param sprite the SpriteSheet image to parse into a collection of Sprites.
+	 * @param offsets the offsets specifying how to parse the SpriteSheet image.
+	 */
 	public SpriteSheet(Sprite sprite,
 					   Rectangle[] offsets) {
 		this.name = null;
@@ -50,6 +102,8 @@ public class SpriteSheet {
 			System.exit(1);
 		}
 		
+		// loop through the collection of offsets and parse up the sprite sheet image
+		// according to each offset and store each sprite that is parsed
 		Rectangle o = null;
 		for(int i=0;i<offsets.length;i++) {
 			o = offsets[i];
@@ -59,6 +113,20 @@ public class SpriteSheet {
 		}
 	}
 	
+	/**
+	 * Constructs and initialises a SpriteSheet using a grid specification.
+	 * 
+	 * @param sprite the SpriteSheet image to parse into a collection of Sprites.
+	 * @param xOffset the x offset of the grid.
+	 * @param yOffset the y offset of the grid.
+	 * @param width the width of each cell in the grid.
+	 * @param height the height of each cell in the grid.
+	 * @param xIncrement the amount to increment by to get to the next column.
+	 * @param yIncrement the amount to increment by to get to the next row.
+	 * @param horizontal the parsing direction.
+	 * @param numberOfRows the number of rows to parse.
+	 * @param numberOfColumns the number of columns to parse.
+	 */
 	public SpriteSheet(Sprite sprite,
 					   int xOffset,
 					   int yOffset,
@@ -78,6 +146,9 @@ public class SpriteSheet {
 			System.exit(1);
 		}
 		
+		// start parsing at the initial offset
+		// loop through all of the rows and columns incrementing the x position and y position as appropriate
+		// parse each sprite according to the current offset and size and store it
 		int xPos = xOffset;
 		int yPos = yOffset;
 		int k = 0;
@@ -92,23 +163,47 @@ public class SpriteSheet {
 		}
 	}
 	
+	/**
+	 * Returns the number of Sprites in the current SpriteSheet.
+	 * 
+	 * @return the number of Sprites in the current SpriteSheet.
+	 */
 	int size() {
 		return this.sprites.size();
 	}
 	
+	/**
+	 * Returns the Sprite located at the specified index.
+	 * 
+	 * @param index the location to obtain a Sprite from.
+	 * @return the Sprite located at the specified index.
+	 */
 	Sprite elementAt(int index) {
 		return this.getSprite(index);
 	}
 	
+	/**
+	 * Returns the Sprite located at the specified index.
+	 * 
+	 * @param index the location to obtain a Sprite from.
+	 * @return the Sprite located at the specified index.
+	 */
 	Sprite getSprite(int index) {
 		if(index < 0 || index >= sprites.size()) { return null; }
 		return sprites.elementAt(index);
 	}
 	
+	/**
+	 * Returns the Sprite with a matching name located within the SpriteSheet.
+	 * 
+	 * @param name the name to match.
+	 * @return the Sprite with a matching name located within the SpriteSheet.
+	 */
 	Sprite getSprite(String name) {
 		if(name == null || name.trim().length() == 0) { return null; }
 		String temp = name.trim();
 		
+		// loop through the collection of sprites until a Sprite with a matching name is found, then return it
 		for(int i=0;i<sprites.size();i++) {
 			if(this.sprites.elementAt(i).getName() != null &&
 			   this.sprites.elementAt(i).getName().equalsIgnoreCase(temp)) {
@@ -118,8 +213,17 @@ public class SpriteSheet {
 		return null;
 	}
 
+	/**
+	 * Returns a sub-collection of Sprites from the specified range within the current SpriteSheet.
+	 * 
+	 * @param startIndex the index to start collecting Sprites at.
+	 * @param endIndex the index to collect Sprites to.
+	 * @return the sub-collection of Sprites from the specified range within the current SpriteSheet.
+	 */
 	Vector<Sprite> getSprites(int startIndex, int endIndex) {
 		if(startIndex < 0 || endIndex >= sprites.size()) { return null; }
+		
+		// create a collection of Sprites and add the Sprites within the specified range to the collection, then return it
 		Vector<Sprite> spriteGroup = new Vector<Sprite>(endIndex - startIndex + 1);
 		for(int i=startIndex;i<=endIndex;i++) {
 			spriteGroup.add(sprites.elementAt(i));
@@ -127,10 +231,30 @@ public class SpriteSheet {
 		return spriteGroup;
 	}
 	
-	public String getName() { return this.name; }
+	/**
+	 * Returns the name of the current SpriteSheet.
+	 * 
+	 * @return the name of the current SpriteSheet.
+	 */
+	public String getName() {
+		return this.name;
+	}
 	
-	public void setName(String name) { this.name = name; }
+	/**
+	 * Changes the name of the current SpriteSheet.
+	 * 
+	 * @param name the name to assign to the current SpriteSheet.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 	
+	/**
+	 * Parse the SpriteSheet type from a String and return the corresponding integer representation.
+	 * 
+	 * @param data the String representation of the SpriteSheet type.
+	 * @return the integer representation of the SpriteSheet type.
+	 */
 	public static int parseType(String data) {
 		if(data == null || data.trim().length() == 0) { return TYPE_INVALID; }
 		String temp = data.trim();
@@ -147,6 +271,13 @@ public class SpriteSheet {
 		
 	}
 	
+	/**
+	 * Parses a SpriteSheet from an input stream and returns it.
+	 * 
+	 * @param in the input stream to parse a SpriteSheet from.
+	 * @param spriteDirectory the directory containing the SpriteSheet image files.
+	 * @return the SpriteSheet parsed from the input stream.
+	 */
 	public static SpriteSheet parseFrom(BufferedReader in, String spriteDirectory) {
 		if(in == null || spriteDirectory == null) {
 			System.out.println("ERROR: Cannot parse sprite sheet from null parameter(s).");
@@ -166,25 +297,31 @@ public class SpriteSheet {
 			while((input = in.readLine()) != null) {
 				data = input.trim();
 				
+				// if the line is blank, discard it
 				if(data.length() == 0) {
 					continue;
 				}
+				// otherwise if it contains data
 				else {
+					// attempt to parse a variable from the data and store it if successful
 					v = Variable.parseFrom(input);
 					
 					if(v != null) {
 						properties.add(v);
 					}
 					
+					// determine if the variable indicates that the attributes for a set of Sprites or collection of grids is about to begin
 					if(v != null && (v.getID().equalsIgnoreCase("Attributes") ||
 					   v.getID().equalsIgnoreCase("Grids") ||
 					   v.getID().equalsIgnoreCase("Number of Sprites"))) {
+						// get the SpriteSheet name
 						spriteSheetName = properties.getValue("SpriteSheet Name").replace(",", "");
 						if(spriteSheetName == null) {
 							System.out.println("ERROR: Sprite sheet must have a name.");
 							return null;
 						}
 						
+						// parse the SpriteSheet type
 						try { spriteSheetType = SpriteSheet.parseType(properties.getValue("SpriteSheet Type")); }
 						catch(NumberFormatException e) {
 							System.out.println("ERROR: Invalid sprite sheet type.");
@@ -195,6 +332,7 @@ public class SpriteSheet {
 							return null;
 						}
 						
+						// get the SpriteSheet image file name, then load the SpriteSheet image
 						spriteSheetFileName = properties.getValue("File Name");
 						if(spriteSheetFileName == null) {
 							System.out.println("ERROR: Invalid or missing sprite sheet image file name.");
@@ -216,6 +354,7 @@ public class SpriteSheet {
 							Variables spriteAttributes; 
 							int numberOfSprites;
 							
+							// verify that the number of Sprite offsets is valid
 							try { numberOfSprites = Integer.parseInt(v.getValue()); }
 							catch(NumberFormatException e) {
 								System.out.println("ERROR: Invalid number of sprites.");
@@ -239,12 +378,15 @@ public class SpriteSheet {
 								spriteTypes[i] = Sprite.TYPE_UNKNOWN;
 								offsets[i] = new Rectangle(0, 0, 0, 0);
 							}
+							// loop through and collect the attributes for each Sprite
 							for(int i=0;i<numberOfSprites;i++) {
+								// get the 5 Sprite attributes (index, name, type, offset, size)
 								spriteAttributes.clear();
 								for(int j=0;j<5;j++) {
 									spriteAttributes.add(Variable.parseFrom(in.readLine()));
 								}
 								
+								// store the Sprite index and validate it
 								try { spriteIndex = Integer.parseInt(spriteAttributes.getValue("Sprite")); }
 								catch(NumberFormatException e) {
 									System.out.println("ERROR: Invalid sprite attribute index.");
@@ -255,38 +397,45 @@ public class SpriteSheet {
 									return null;
 								} 
 								
+								// get the Sprite name
 								spriteName = spriteAttributes.getValue("Name").replace(",", "");
 								if(spriteName == null) {
 									System.out.println("ERROR: Sprite must have a name.");
 									return null;
 								}
 								
+								// get the Sprite type, then parse the type to an integer
 								spriteType = spriteAttributes.getValue("Type");
 								if(spriteType == null) {
 									System.out.println("ERROR: Sprite must have a type.");
 									return null;
 								}
 								
+								// get the offset for the Sprite
 								spriteOffset = Utilities.parsePoint(spriteAttributes.getValue("Offset"));
 								if(spriteOffset == null) {
 									System.out.println("ERROR: Invalid or missing sprite offset.");
 									return null;
 								}
 								
+								// get the size for the Sprite
 								spriteSize = Utilities.parseDimension(spriteAttributes.getValue("Size"));
 								if(spriteSize == null) {
 									System.out.println("ERROR: Invalid or missing sprite tile size.");
 									return null;
 								}
 								
+								// assign the values to temporary storage
 								spriteNames[spriteIndex] = spriteName;
 								spriteTypes[spriteIndex] = Sprite.parseType(spriteType);
 								offsets[spriteIndex] = new Rectangle(spriteOffset.x, spriteOffset.y, spriteSize.width, spriteSize.height);
 							}
 							
+							// once the attributes and offsets for all of the Sprites have been collected, create the SpriteSheet
 							spriteSheet = new SpriteSheet(spriteSheetImage, offsets);
 							spriteSheet.setName(spriteSheetName);
 							
+							// loop through the temporarily stored Sprite attributes and assign them to each corresponding Sprite
 							for(int i=0;i<numberOfSprites;i++) {
 								spriteSheet.getSprite(i).setName(spriteNames[i]);
 								spriteSheet.getSprite(i).setIndex(i);
@@ -302,30 +451,35 @@ public class SpriteSheet {
 							boolean horizontal;
 							int numberOfRows, numberOfColumns, numberOfAttributes;
 							
+							// get the number of Sprite attributes to read
 							try { numberOfAttributes = Integer.parseInt(v.getValue()); }
 							catch(NumberFormatException e) {
 								System.out.println("ERROR: Invalid number of sprite attributes.");
 								return null;
 							}
 							
+							// get the grid offset
 							offset = Utilities.parsePoint(properties.getValue("Offset"));
 							if(offset == null) {
 								System.out.println("ERROR: Invalid or missing sprite sheet offset.");
 								return null;
 							}
 							
+							// get the cell size
 							size = Utilities.parseDimension(properties.getValue("Size"));
 							if(size == null) {
 								System.out.println("ERROR: Invalid or missing sprite sheet tile size.");
 								return null;
 							}
 							
+							// get the increment values
 							increment = Utilities.parseDimension(properties.getValue("Increment"));
 							if(increment == null) {
 								System.out.println("ERROR: Invalid or missing sprite sheet tile increment.");
 								return null;
 							}
 							
+							// get the parsing direction
 							String temp = properties.getValue("Horizontal");
 							if(temp == null) {
 								System.out.println("ERROR: Missing horizontal / vertical sprite sheet specification.");
@@ -333,18 +487,21 @@ public class SpriteSheet {
 							}
 							horizontal = temp.equalsIgnoreCase("true");
 							
+							// get the number of rows in the grid
 							try { numberOfRows = Integer.parseInt(properties.getValue("Number of Rows")); }
 							catch(NumberFormatException e) {
 								System.out.println("ERROR: Missing number of rows in sprite sheet.");
 								return null;
 							}
 							
+							// get the number of columns in the grid
 							try { numberOfColumns = Integer.parseInt(properties.getValue("Number of Columns")); }
 							catch(NumberFormatException e) {
 								System.out.println("ERROR: Missing number of columns in sprite sheet.");
 								return null;
 							}
 							
+							// create the SpriteSheet based on the corresponding specifications
 							spriteSheet = new SpriteSheet(spriteSheetImage,
 														  offset.x,
 														  offset.y,
@@ -360,10 +517,14 @@ public class SpriteSheet {
 							int spriteIndex;
 							String spriteName, spriteType;
 							spriteAttributes = new Variables();
+							// loop through the SpriteSheet specifications
 							for(int i=0;i<numberOfAttributes;i++) {
+								// obtain the 3 specifications for the current Sprite (index, name, type)
 								for(int j=0;j<3;j++) {
 									spriteAttributes.add(Variable.parseFrom(in.readLine()));
 								}
+								
+								// get the Sprite index and validate it
 								try { spriteIndex = Integer.parseInt(spriteAttributes.getValue("Sprite")); }
 								catch(NumberFormatException e) {
 									System.out.println("ERROR: Invalid sprite attribute index.");
@@ -373,17 +534,24 @@ public class SpriteSheet {
 									System.out.println("ERROR: Sprite attribute index out of range.");
 									return null;
 								}
+								
+								// get the Sprite name
 								spriteName = spriteAttributes.getValue("Name").replace(",", "");;
+								
+								// get the Sprite type and parse it to an integer
 								spriteType = spriteAttributes.getValue("Type");
 								if(spriteName == null || spriteType == null) {
 									System.out.println("ERROR: Sprite name or type missing.");
 									return null;
 								}
+								
+								// assign the attributes to the corresponding Sprite
 								spriteSheet.sprites.elementAt(spriteIndex).setName(spriteName);
 								spriteSheet.sprites.elementAt(spriteIndex).setIndex(spriteIndex);
 								spriteSheet.sprites.elementAt(spriteIndex).setParentName(spriteSheetName);
 								spriteSheet.sprites.elementAt(spriteIndex).setType(Sprite.parseType(spriteType));
 								
+								// clear the attributes of the current Sprite
 								spriteAttributes.clear();
 							}
 						}
@@ -392,6 +560,7 @@ public class SpriteSheet {
 							int numberOfGrids;
 							int spriteIndexOffset = 0;
 							
+							// verify that the number of grids to parse is specified and validate it
 							try { numberOfGrids = Integer.parseInt(v.getValue()); }
 							catch(NumberFormatException e) {
 								System.out.println("ERROR: Invalid number of grids.");
@@ -402,9 +571,11 @@ public class SpriteSheet {
 								return null;
 							}
 							
+							// create an empty SpriteSheet
 							spriteSheet = new SpriteSheet();
 							spriteSheet.setName(spriteSheetName);
 							
+							// temporary storage
 							Variables gridAttributes = new Variables();
 							int numberOfAttributes[] = new int[numberOfGrids];
 							Point offset[] = new Point[numberOfGrids];
@@ -423,11 +594,14 @@ public class SpriteSheet {
 								numberOfColumns[i] = -1;
 							}
 							
+							// loop through all of the grids
 							for(int i=0;i<numberOfGrids;i++) {
+								// obtain the 8 attributes for each grid (index, offset, size, increment, parse direction, number of rows, number of columns, number of Sprite attributes)
 								for(int j=0;j<8;j++) {
 									gridAttributes.add(Variable.parseFrom(in.readLine()));
 								}
 								
+								// get the current grid index and validate it
 								int gridIndex;
 								try { gridIndex = Integer.parseInt(gridAttributes.getValue("Grid")); }
 								catch(NumberFormatException e) {
@@ -439,30 +613,35 @@ public class SpriteSheet {
 									return null;
 								}
 								
+								// get the number of Sprite attributes in the current grid
 								try { numberOfAttributes[gridIndex] = Integer.parseInt(gridAttributes.getValue("Attributes")); }
 								catch(NumberFormatException e) {
 									System.out.println("ERROR: Invalid number of sprite attributes.");
 									return null;
 								}
 								
+								// get the offset for the current grid
 								offset[gridIndex] = Utilities.parsePoint(gridAttributes.getValue("Offset"));
 								if(offset == null) {
 									System.out.println("ERROR: Invalid or missing sprite sheet offset.");
 									return null;
 								}
 								
+								// get the size of the cells in the grid
 								size[gridIndex] = Utilities.parseDimension(gridAttributes.getValue("Size"));
 								if(size == null) {
 									System.out.println("ERROR: Invalid or missing sprite sheet tile size.");
 									return null;
 								}
 								
+								// get the increment values for the current grid
 								increment[gridIndex] = Utilities.parseDimension(gridAttributes.getValue("Increment"));
 								if(increment == null) {
 									System.out.println("ERROR: Invalid or missing sprite sheet tile increment.");
 									return null;
 								}
 								
+								// get the parsing direction for the current grid
 								String temp = gridAttributes.getValue("Horizontal");
 								if(temp == null) {
 									System.out.println("ERROR: Missing horizontal / vertical sprite sheet specification.");
@@ -470,18 +649,23 @@ public class SpriteSheet {
 								}
 								horizontal[gridIndex] = temp.equalsIgnoreCase("true");
 								
+								// get the number of rows in the current grid
 								try { numberOfRows[gridIndex] = Integer.parseInt(gridAttributes.getValue("Number of Rows")); }
 								catch(NumberFormatException e) {
 									System.out.println("ERROR: Missing number of rows in sprite sheet.");
 									return null;
 								}
 								
+								// get the number of columns in the current grid
 								try { numberOfColumns[gridIndex] = Integer.parseInt(gridAttributes.getValue("Number of Columns")); }
 								catch(NumberFormatException e) {
 									System.out.println("ERROR: Missing number of columns in sprite sheet.");
 									return null;
 								}
 								
+								// start parsing at the initial offset
+								// loop through all of the rows and columns incrementing the x position and y position as appropriate
+								// parse each Sprite according to the current offset and size and store it in the main Sprite collection
 								int xPos = offset[gridIndex].x;
 								int yPos = offset[gridIndex].y;
 								for(int j=0;j<numberOfRows[gridIndex];j++) {
@@ -497,10 +681,14 @@ public class SpriteSheet {
 								int spriteIndex;
 								String spriteName, spriteType;
 								Variables spriteAttributes = new Variables();
+								// loop through the Sprite attribute specifications for the current grid
 								for(int j=0;j<numberOfAttributes[gridIndex];j++) {
+									// read in the 3 Sprite attributes (index, name, type) and store them
 									for(int k=0;k<3;k++) {
 										spriteAttributes.add(Variable.parseFrom(in.readLine()));
 									}
+									
+									// get the Sprite index and validate it
 									try { spriteIndex = spriteIndexOffset + Integer.parseInt(spriteAttributes.getValue("Sprite")); }
 									catch(NumberFormatException e) {
 										System.out.println("ERROR: Invalid sprite attribute index.");
@@ -510,20 +698,28 @@ public class SpriteSheet {
 										System.out.println("ERROR: Sprite attribute index out of range.");
 										return null;
 									}
+									
+									// get the Sprite name
 									spriteName = spriteAttributes.getValue("Name").replace(",", "");;
+									
+									// get the Sprite type and parse it to an integer
 									spriteType = spriteAttributes.getValue("Type");
 									if(spriteName == null || spriteType == null) {
 										System.out.println("ERROR: Sprite name or type missing.");
 										return null;
 									}
+									
+									// assign the current set of attributes to the corresponding Sprite
 									spriteSheet.sprites.elementAt(spriteIndex).setName(spriteName);
 									spriteSheet.sprites.elementAt(spriteIndex).setIndex(spriteIndex);
 									spriteSheet.sprites.elementAt(spriteIndex).setParentName(spriteSheetName);
 									spriteSheet.sprites.elementAt(spriteIndex).setType(Sprite.parseType(spriteType));
 									
+									// clear the current collection of Sprite attributes
 									spriteAttributes.clear();
 								}
 								
+								// clear the current collection of grid attributes and update the Sprite index offset (current position in the main SpriteSheet collection)
 								gridAttributes.clear();
 								spriteIndexOffset = spriteSheet.size();
 							}

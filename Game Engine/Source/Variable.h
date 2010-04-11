@@ -1,3 +1,11 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 //Created: September 18, 2008
 //Revised: February 14, 2010
 
@@ -14,18 +22,18 @@ public:
 	Variable & operator = (const Variable & x);
 	~Variable(void);
 	
-	void id(const char * _id);
-	void value(const char * _value);
+	void id(const char * _id); // change the id of the variable
+	void value(const char * _value); // change the value of the variable
 	
-	char * id() const;
-	char * value() const;
+	char * id() const; // get the variable id
+	char * value() const; // get the variable value
 
-	bool parseFrom(const char * _data);
+	bool parseFrom(const char * _data); // parse the variable from a string of the form "ID: Value"
 	
-	bool operator == (const Variable & x) const;
-	bool operator != (const Variable & x) const;
+	bool operator == (const Variable & x) const; // equality operator override
+	bool operator != (const Variable & x) const; // inequality operator override
 	
-	void printOn(ostream & o) const;
+	void printOn(ostream & o) const; // prints the variable to an output stream
 	
 private:
 	char * _id;

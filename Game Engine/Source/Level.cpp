@@ -1,3 +1,11 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 #include "Level.h"
 
 #if _DEBUG
@@ -34,12 +42,14 @@ Level::Level(const char * fileName,
 		quit("Error", "Cannot open level without corresponding sprite sheet collection.");
 	}
 
+	// open the level from the specified file
 	ifstream in;
 	in.open(fileName); 
 	if(in.bad()) {
 		quit("Error", "Unable to open level: \"%s\".", fileName);
 	}
 
+	// obtain the level name
 	const char * levelNameWithExt = strchr(fileName, '\\') + sizeof(char);
 	char * tempLevelName = new char[strlen(levelNameWithExt) + 1];
 	strcpy_s(tempLevelName, strlen(levelNameWithExt) + 1, levelNameWithExt);
@@ -49,9 +59,11 @@ Level::Level(const char * fileName,
 	strcpy_s(this->name, strlen(tempLevelName) + 1, tempLevelName);
 	delete [] tempLevelName;
 
+	// initialise the player and pet and assign default locations
 	player = new Player(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, timeElapsed, *this, settings, spriteSheets, d3dDevice);
 	pet = new Pet(windowWidth / 2.0f, (float) windowHeight, windowWidth, windowHeight, *player, timeElapsed, settings, spriteSheets, d3dDevice);
 
+	// load the map from the input stream
 	this->readFrom(in);
 
 	if(in.is_open()) { in.close(); }
@@ -75,11 +87,13 @@ Level::~Level() {
 	}
 }
 
+// check if an object is colliding with one of the boundary lines
 bool Level::checkCollision(const D3DXVECTOR2 & lastPosition, const D3DXVECTOR2 & newPosition, D3DXVECTOR2 * intersection, double * newY) {
 	double tempY;
 	double minY;
 	bool isColliding = false;
 	for(int i=0;i<boundaries.size();i++) {
+		// if a line is intersecting with the current line, keep track of the highest (lowest value, highest physical) value for the new x position
 		if(CollisionHandler::checkLineIntersection(*boundaries.elementAt(i), lastPosition, newPosition, intersection, &tempY)) {
 			if(!isColliding) {
 				minY = tempY;
@@ -92,6 +106,7 @@ bool Level::checkCollision(const D3DXVECTOR2 & lastPosition, const D3DXVECTOR2 &
 			isColliding = true;
 		}
 
+		// if the player is within a certain radius of the end an endpoint of a collision boundary, make sure the player is located above it
 		for(int j=0;j<2;j++) {
 			D3DXVECTOR2 temp;
 			if(j == 0) {
@@ -103,7 +118,7 @@ bool Level::checkCollision(const D3DXVECTOR2 & lastPosition, const D3DXVECTOR2 &
 				temp.y = (float) boundaries.elementAt(i)->b.y;
 			}
 			if(CollisionHandler::checkRadiusIntersection(temp, newPosition, 3, 3)) {
-				tempY = temp.y - 0.5f;
+				tempY = temp.y - 0.1f;
 				if(!isColliding) {
 					minY = tempY;
 				}
@@ -116,55 +131,73 @@ bool Level::checkCollision(const D3DXVECTOR2 & lastPosition, const D3DXVECTOR2 &
 			}
 		}
 	}
+	// if the pointer to newY exists, assign the minimum y value to it
 	if(newY != NULL && isColliding) {
 		*newY = minY;
 	}
 	return isColliding;
 }
 
+// update the level
 void Level::tick() {
+	// update the tiles
 	for(unsigned int i=0;i<tiles.size();i++) {
 		tiles.at(i)->tick();
 	}
+	// update the objects
 	for(unsigned int i=0;i<objects.size();i++) {
 		objects.at(i)->tick();
 	}
+	// update the ai characters
 	for(unsigned int i=0;i<ai.size();i++) {
 		ai.at(i)->tick();
 	}
+	// update the items
 	for(unsigned int i=0;i<items.size();i++) {
 		items.at(i)->tick();
 	}
+	// update the player
 	player->tick();
+	// update the pet
 	if(pet != NULL) { pet->tick(); }
 
+	// update the scrolling offset
 	int halfWidth = (windowWidth / 2) - 1;
 	float xPos = player->getCenter().x;
 	if(xPos > halfWidth && xPos < (mapWidth - 1) - halfWidth) {
 		scrollingOffset = (int) (player->getCenter().x - halfWidth);
 	}
+
 #if _DEBUG
+	// debug information
 	externalScrollingOffset = scrollingOffset;
 #endif
 }
 
 void Level::draw(LPDIRECT3DDEVICE9 d3dDevice) {
+	// render the tiles
 	for(unsigned int i=0;i<tiles.size();i++) {
 		tiles.at(i)->draw(&scrollingOffset, d3dDevice);
 	}
+	// render the objects
 	for(unsigned int i=0;i<objects.size();i++) {
 		objects.at(i)->draw(&scrollingOffset, d3dDevice);
 	}
+	// render the ai characters
 	for(unsigned int i=0;i<ai.size();i++) {
 		ai.at(i)->draw(&scrollingOffset, d3dDevice);
 	}
+	// render the player
 	player->draw(&scrollingOffset, d3dDevice);
+	// render the pet
 	if(pet != NULL) { pet->draw(&scrollingOffset, d3dDevice); }
+	// render the items
 	for(unsigned int i=0;i<items.size();i++) {
 		items.at(i)->draw(&scrollingOffset, d3dDevice);
 	}
 
 #if _DEBUG
+	// debug rendering
 	testDrawPoint(d3dDevice, (float) playerLastPosition.x, (float) playerLastPosition.y, D3DCOLOR_XRGB(255, 0, 255), &externalScrollingOffset);
 	testDrawPoint(d3dDevice, (float) playerNewPosition.x, (float) playerNewPosition.y, D3DCOLOR_XRGB(255, 0, 255), &externalScrollingOffset);
 
@@ -189,11 +222,14 @@ void Level::readFrom(ifstream &in) {
 	char input[maxLength];
 	char * temp, * temp2, * xData, * yData;
 
-	in.getline(input, maxLength); // header
+	// read the header (currently discarded)
+	in.getline(input, maxLength);
 
-	in.getline(input, maxLength); // grid size
+	// read the grid size (currently discarded)
+	in.getline(input, maxLength);
 
-	in.getline(input, maxLength); // dimension
+	// read the map dimensions
+	in.getline(input, maxLength);
 	temp = strtrimcpy(input);
 	xData = strchr(temp, ':') + sizeof(char);
 	yData = strchr(xData, ',');
@@ -205,14 +241,15 @@ void Level::readFrom(ifstream &in) {
 	mapWidth = xDimension * Constants::GRID_SIZE;
 	mapHeight = yDimension * Constants::GRID_SIZE;
 
-	in.getline(input, maxLength); // edges
+	in.getline(input, maxLength); // read the edges
 	int numberOfEdges = atoi(strchr(input, ':') + sizeof(char));
 	for(int i=0;i<numberOfEdges;i++) {
 		in.getline(input, maxLength);
 		boundaries.addEdge(Edge::parseFrom(input));
 	}
 
-	in.getline(input, maxLength); // player
+	// read the player
+	in.getline(input, maxLength);
 	temp = strtrimcpy(input);
 	xData = strchr(temp, ':') + sizeof(char);
 	yData = strchr(xData, ',');
@@ -223,7 +260,7 @@ void Level::readFrom(ifstream &in) {
 	delete [] temp;
 	player->setPosition((float) playerSpawn.x, (float) playerSpawn.y);
 
-	in.getline(input, maxLength); // pet
+	in.getline(input, maxLength); // read the pet
 	temp = strtrimcpy(input);
 	xData = strchr(temp, ':') + sizeof(char);
 	temp2 = strtrimcpy(xData);
@@ -244,7 +281,8 @@ void Level::readFrom(ifstream &in) {
 		pet->setPosition((float) petSpawn.x, (float) petSpawn.y);
 	}
 
-	in.getline(input, maxLength); // objects
+	// read the objects
+	in.getline(input, maxLength);
 	int numberOfObjects = atoi(strchr(input, ':') + sizeof(char));
 	for(int i=0;i<numberOfObjects;i++) {
 		in.getline(input, maxLength);
@@ -252,7 +290,8 @@ void Level::readFrom(ifstream &in) {
 		if(newObject != NULL) { objects.push_back(newObject); }
 	}
 
-	in.getline(input, maxLength); // tiles
+	// read the tiles
+	in.getline(input, maxLength);
 	int numberOfTiles = atoi(strchr(input, ':') + sizeof(char));
 	for(int i=0;i<numberOfTiles;i++) {
 		in.getline(input, maxLength);
@@ -260,7 +299,8 @@ void Level::readFrom(ifstream &in) {
 		if(newTile != NULL) { tiles.push_back(newTile); }
 	}
 
-	in.getline(input, maxLength); // ai
+	// read the ai characters
+	in.getline(input, maxLength);
 	int numberOfAI = atoi(strchr(input, ':') + sizeof(char));
 	for(int i=0;i<numberOfAI;i++) {
 		in.getline(input, maxLength);
@@ -268,7 +308,8 @@ void Level::readFrom(ifstream &in) {
 		if(newAI != NULL) { ai.push_back(newAI); }
 	}
 
-	in.getline(input, maxLength); // items
+	// read the items
+	in.getline(input, maxLength);
 	int numberOfItems = atoi(strchr(input, ':') + sizeof(char));
 	for(int i=0;i<numberOfItems;i++) {
 		in.getline(input, maxLength);

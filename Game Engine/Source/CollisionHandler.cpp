@@ -1,3 +1,11 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 #include "CollisionHandler.h"
 
 #if _DEBUG
@@ -60,12 +68,13 @@ bool CollisionHandler::checkLineIntersection(const Edge & edge, const D3DXVECTOR
         return false;
 	}
 
-    // Apply the discovered position to line A-B in the originial 
+    //Apply the discovered position to line A-B in the originial 
 	if(i != NULL) {
 	    i->x = (float) (x1 + (ABpos * theCos));
 	    i->y = (float) (y1 + (ABpos * theSin));
 	}
 
+	//Compute the new y value based on the line the object is colliding with and offset it based on the thickness of the line to prevent bouncing
 	if(newY != NULL) {
 		x1 = edge.a.x;
 		y1 = edge.a.y;
@@ -76,28 +85,18 @@ bool CollisionHandler::checkLineIntersection(const Edge & edge, const D3DXVECTOR
 		double b = y1 + (slope * (0 - x1));
 		*newY = (slope * x3) + b + 0.8;
 
-		/*
-		double newX = p2.x;
-		double slope = ((double) (edge.b.y - edge.a.y)) / ((double) (edge.b.x - edge.a.x));
-		double b = edge.a.y + (slope * (0 - edge.a.x));
-		*newY = (slope * newX) + b;
-		*/
 #if _DEBUG
+		// debug rendering
 		playerCollisionPointA = D3DXVECTOR2((float) x1, (float) ((slope * x1) + b));
 		playerCollisionPointB = D3DXVECTOR2((float) x2, (float) ((slope * x2) + b));
 		playerCollisionPosition = D3DXVECTOR2((float) x3, (float)  *newY);
-		/*
-		playerCollisionPointA = D3DXVECTOR2((float) edge.a.x, (float) ((slope * edge.a.x) + b));
-		playerCollisionPointB = D3DXVECTOR2((float) edge.b.x, (float) ((slope * edge.b.x) + b));
-		playerCollisionPosition = D3DXVECTOR2((float) newX, (float)  *newY);
-		*/
 #endif
 	}
 
-    //Success
     return true;
 }
 
 bool CollisionHandler::checkRadiusIntersection(const D3DXVECTOR2 & p1, const D3DXVECTOR2 & p2, double r1, double r2) {
+	// return true if the distance between two circles is less than 0
 	return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2)) < r1 + r2;
 }

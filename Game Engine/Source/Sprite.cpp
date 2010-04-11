@@ -1,5 +1,14 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 #include "Sprite.h"
 
+// sprite type constants
 int Sprite::TYPE_UNKNOWN = -1;
 int Sprite::TYPE_SHEET = 0;
 int Sprite::TYPE_TILE = 1;
@@ -10,6 +19,7 @@ int Sprite::TYPE_PET = 5;
 int Sprite::TYPE_AI = 6;
 int Sprite::TYPE_ITEM = 6;
 
+// constructor for creating a sprite from a given file name and sprite directory
 Sprite::Sprite(const char * fileName,
 			   const char * directory,
 			   LPDIRECT3DDEVICE9 d3dDevice)
@@ -51,6 +61,7 @@ Sprite::Sprite(const char * fileName,
 	D3DXMatrixScaling(&flipMatrix, -1, 1, 1);
 }
 
+// constructor for creating a subsprite from an already existing sprite's directx texture and sprite
 Sprite::Sprite(int x,
 			   int y,
 			   int spriteWidth,
@@ -69,6 +80,7 @@ Sprite::Sprite(int x,
 				  sprite(externalSprite),
 				  ownsSprite(false) { D3DXMatrixScaling(&flipMatrix, -1, 1, 1); }
 
+// destructor
 Sprite::~Sprite() {
 	if(ownsSprite) {
 		if(texture != NULL) { texture->Release(); }
@@ -78,22 +90,34 @@ Sprite::~Sprite() {
 	if(parentName != NULL) { delete [] parentName; }
 }
 
-int Sprite::getOffsetX() { return xOffset; }
-int Sprite::getOffsetY() { return yOffset; }
+// get the sprite's x offset (width / 2)
+int Sprite::getOffsetX() const { return xOffset; }
 
-int Sprite::getWidth() { return width; }
-int Sprite::getHeight() { return height; }
+// get the sprite's y offset (height / 2)
+int Sprite::getOffsetY() const { return yOffset; }
 
+// get the sprite's width
+int Sprite::getWidth() const { return width; }
+
+// get the sprite's height
+int Sprite::getHeight() const { return height; }
+
+// check if the sprite is tiled
 bool Sprite::isTiled() { return type == TYPE_TILE; }
 
-char * Sprite::getName() { return this->name; }
+// get the sprite's name
+char * Sprite::getName() const { return this->name; }
 
-char * Sprite::getParentName() { return this->parentName; }
+// get the name of the sprite sheet which the sprite belongs to
+char * Sprite::getParentName() const { return this->parentName; }
 
-int Sprite::getIndex() { return this->index; }
+// get the index of the sprite within its parent sprite sheet
+int Sprite::getIndex() const { return this->index; }
 
-int Sprite::getType() { return this->type; }
+// get the type of the sprite
+int Sprite::getType() const { return this->type; }
 
+// set the name of the sprite
 void Sprite::setName(char * name) {
 	if(name == NULL) { return; }
 	if(this->name != NULL) {
@@ -103,6 +127,7 @@ void Sprite::setName(char * name) {
 	strcpy_s(this->name, strlen(name) + 1, name);
 }
 
+// set the name of the sprite sheet which the sprite belongs to
 void Sprite::setParentName(char * parentName) {
 	if(parentName == NULL) {
 		this->parentName = NULL;
@@ -115,10 +140,12 @@ void Sprite::setParentName(char * parentName) {
 	strcpy_s(this->parentName, strlen(parentName) + 1, parentName);
 }
 
+// set the index of the sprite in its parent sprite sheet
 void Sprite::setIndex(int index) {
 	this->index = (index < -1) ? -1 : index;
 }
 
+// set the type of the sprite
 void Sprite::setType(int type) {
 	if(type == TYPE_SHEET ||
 	   type == TYPE_TILE ||
@@ -135,6 +162,13 @@ void Sprite::setType(int type) {
 	}
 }
 
+// get the sprite's directx texture handle
+LPDIRECT3DTEXTURE9 Sprite::getTexture() const { return texture; }
+
+// get the sprite's directx sprite handle
+LPD3DXSPRITE Sprite::getSprite() const { return sprite; }
+
+// parse the sprite's type from a string and return it
 int Sprite::parseType(const char * data) {
 	int type = TYPE_UNKNOWN;
 	if(data == NULL) { return type; }
@@ -168,15 +202,19 @@ int Sprite::parseType(const char * data) {
 	return type;
 }
 
+// render the sprite using a pre-computed matrix
 void Sprite::draw(D3DXMATRIX & transformationMatrix, LPDIRECT3DDEVICE9 d3dDevice) {
 	if(texture != NULL) {
+		// apply the transformation to the sprite
 		sprite->SetTransform(&transformationMatrix);
 
 		sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
+		// if the sprite is in its natural state, simply render it
 		if(xOffset < 0 && yOffset < 0) {
 			sprite->Draw(texture, NULL, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+		// otherwise render the sprite within a bounding box (a sub-sprite)
 		else {
 			RECT spriteRect = {xOffset, yOffset, xOffset + width, yOffset + width};
 			sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
@@ -186,17 +224,22 @@ void Sprite::draw(D3DXMATRIX & transformationMatrix, LPDIRECT3DDEVICE9 d3dDevice
 	}
 }
 
+// render the sprite using a pre-defined collection of transformation attributes
 void Sprite::draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice) {
 	if(texture != NULL) {
+		// compute the transformation to be applied to the sprite
 		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), position);
 
+		// apply the transformation to the sprite
 		sprite->SetTransform(&transformationMatrix);
 
 		sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
+		// if the sprite is in its natural state, simply render it
 		if(xOffset < 0 && yOffset < 0) {
 			sprite->Draw(texture, NULL, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+		// otherwise render the sprite within a bounding box (a sub-sprite)
 		else {
 			RECT spriteRect = {xOffset, yOffset, xOffset + width, yOffset + height};
 			sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
@@ -206,19 +249,24 @@ void Sprite::draw(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotati
 	}
 }
 
+// render the sprite backwards using a pre-defined set of transformation attributes
 void Sprite::drawBackwards(D3DXVECTOR2 * scale, D3DXVECTOR2 * scalingOffset, float rotationDegrees, D3DXVECTOR2 * rotationOffset, D3DXVECTOR2 * position, LPDIRECT3DDEVICE9 d3dDevice) {
 	if(texture != NULL) {
+		// compute the transformation to be applied to the sprite and then flip the transformation along the x axis
 		D3DXVECTOR2 flippedPosition(position->x + (scalingOffset->x * 2), position->y);
 		D3DXMatrixTransformation2D(&transformationMatrix, scalingOffset, 0, scale, rotationOffset, D3DXToRadian(rotationDegrees), &flippedPosition);
 		D3DXMatrixMultiply(&flippedTransformationMatrix, &flipMatrix, &transformationMatrix);
 
+		// apply the transformation to the sprite
 		sprite->SetTransform(&flippedTransformationMatrix);
 
 		sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
+		// if the sprite is in its natural state, simply render it
 		if(xOffset < 0 && yOffset < 0) {
 			sprite->Draw(texture, NULL, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+		// otherwise render the sprite within a bounding box (a sub-sprite)
 		else {
 			RECT spriteRect = {xOffset, yOffset, xOffset + width, yOffset + height};
 			sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_RGBA(255, 255, 255, 255));

@@ -1,3 +1,11 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 #include "Item.h"
 
 Item::Item(char * name) : name(0) {
@@ -35,14 +43,17 @@ Item::~Item() {
 	delete [] name;
 }
 
+// returns the name of the item
 char * Item::getName() {
 	return name;
 }
 
+// returns true of two items are equal
 bool Item::operator == (const Item & x) const {
 	return _stricmp(this->name, x.name) == 0;
 }
 
+// returns true if two items are not equal
 bool Item::operator != (const Item & x) const {
 	return !operator == (x);
 }

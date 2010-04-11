@@ -1,3 +1,11 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 #pragma once
 
 #include <windows.h>
@@ -17,6 +25,7 @@ using namespace std;
 #include "DirectX.h"
 
 #if _DEBUG
+// debug drawing function prototypes
 extern D3DCOLOR _DEBUG_COLOUR;
 void testDrawPoint(LPDIRECT3DDEVICE9 d3dDevice, float x, float y, D3DCOLOR colour, int * scrollingOffset);
 void testDrawLine(LPDIRECT3DDEVICE9 d3dDevice, float x1, float y1, float x2, float y2, D3DCOLOR colour, int * scrollingOffset);

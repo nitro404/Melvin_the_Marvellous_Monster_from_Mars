@@ -1,8 +1,15 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+// Level Designer                          //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
-
 import java.util.Vector;
 
 public class PalettePanel extends JPanel implements Scrollable, ActionListener {

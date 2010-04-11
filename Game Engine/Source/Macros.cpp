@@ -1,14 +1,26 @@
+// ======================================= //
+// Melvin the Marvellous Monster from Mars //
+//                                         //
+// Author: Kevin Scroggins                 //
+// E-Mail: nitro404@hotmail.com            //
+// Date: April 11, 2010                    //
+// ======================================= //
+
 #include "Includes.h"
 
+// returns a random integer between min and max
 int getRandomInt(int min, int max) {
 	return (rand() % (max - min + 1)) + min;
 }
 
+// returns a random float between min and max (MAY NOT WORK AS EXPECTED)
 float getRandomFloat(double min, double max) {
 	return (float) (((rand() % (int) ((max - min) * 10000)) / 10000.0) + min);
 }
 
+// trims whitespace off of the front and end of string passed into it, and returns a copy of the trimmed string
 char * strtrimcpy(const char * data) {
+	// verify the string
 	if(data == NULL) { return NULL; }
 	char * newData;
 	int length = strlen(data);
@@ -18,6 +30,7 @@ char * strtrimcpy(const char * data) {
 		return newData;
 	}
 
+	// find the new start and end of the string and verify that they do not overlap (0 length string)
 	const char * head = data;
 	const char * tail = data + (sizeof(char) * length) - 1;
 	int startPos = 0, endPos = length - 1;
@@ -35,6 +48,7 @@ char * strtrimcpy(const char * data) {
 		return newData;
 	}
 
+	// copy the contents of the string from the start to the end into a new string (trim) and return the copy
 	newData = new char[endPos - startPos + 2];
 	char * temp = newData;
 	for(int i=startPos;i<=endPos;i++) {
@@ -45,6 +59,7 @@ char * strtrimcpy(const char * data) {
 	return newData;
 }
 
+// returns true if the string represents something of the form "1", "Yes", "true" or "On" - case insensitive
 bool isTrue(const char * str) {
 	return	(str != NULL && strlen(str) > 0) &&
 			(str[0] == '1' ||
@@ -55,6 +70,7 @@ bool isTrue(const char * str) {
 			 (strlen(str) > 1 && _stricmp(str, "on") == 0));
 }
 
+// displays an error message box with a specified message (supports parameter lists), then closes the application
 void quit(const char * title, const char * message, ...) {
 	if(message != NULL) {
 		char buffer[256];
@@ -67,6 +83,7 @@ void quit(const char * title, const char * message, ...) {
 	exit(1);
 }
 
+// displays a message box with a specified message (supports parameter lists)
 void prompt(const char * message, ...) {
 	if(message != NULL) {
 		char buffer[256];
