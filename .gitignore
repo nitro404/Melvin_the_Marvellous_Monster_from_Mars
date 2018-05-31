@@ -1,0 +1,22 @@
+
+# /
+/Game
+
+# /Concept Art/
+/Concept Art/*.db
+
+# /Game Engine/
+/Game Engine/Debug
+/Game Engine/Release
+/Game Engine/*.user
+/Game Engine/*.ncb
+/Game Engine/*.sdf
+
+# /Level Designer/
+/Level Designer/bin
+
+# /Level Designer/doc/resources/
+/Level Designer/doc/resources/*.db
+
+# /Sprites/
+/Sprites/*.db
